@@ -13,10 +13,12 @@
 
   #field{ position:relative; width:100%; height:100%; }
 
+  #web{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+
   .frag{
     position:absolute; overflow:hidden; will-change:transform;
     box-shadow:0 8px 22px rgba(0,0,0,0.18);
-    cursor:grab;
+    cursor:grab; z-index:2;
     touch-action:none;
   }
   .frag.dragging{ cursor:grabbing; }
@@ -66,7 +68,7 @@
   <a class="ribbon-trigger" href="#" data-blog-link>blog</a>
 </div>
 
-<div id="field"></div>
+<div id="field"><canvas id="web"></canvas></div>
 
 <script>window.SITE_BASE = '';</script>
 <script src="./assets/js/nav.js"></script>
@@ -106,6 +108,49 @@ const images = projectPool.map((p) => {
 document.addEventListener('DOMContentLoaded', function () {
 
 const field = document.getElementById('field');
+
+// the rhizome web: a thin line from each tile to its couple of nearest
+// neighbours, redrawn every frame so it stays attached as tiles drift
+const webCanvas = document.getElementById('web');
+const webCtx = webCanvas.getContext('2d');
+function sizeWebCanvas(){
+  webCanvas.width = window.innerWidth;
+  webCanvas.height = window.innerHeight;
+}
+sizeWebCanvas();
+window.addEventListener('resize', sizeWebCanvas);
+
+function drawWeb(){
+  const w = webCanvas.width, h = webCanvas.height;
+  webCtx.clearRect(0, 0, w, h);
+  if (nodes.length < 2) return;
+
+  const centers = nodes.map(n => ({ x: n.x + n.w / 2, y: n.y + n.h / 2 }));
+  const NEIGHBOURS = 2; // each tile reaches for its 2 closest others
+  const drawn = new Set();
+
+  webCtx.strokeStyle = 'rgba(20,19,17,0.32)';
+  webCtx.lineWidth = 1;
+
+  centers.forEach((c, i) => {
+    const nearest = centers
+      .map((c2, j) => (j === i ? null : { j, d: Math.hypot(c.x - c2.x, c.y - c2.y) }))
+      .filter(Boolean)
+      .sort((a, b) => a.d - b.d)
+      .slice(0, NEIGHBOURS);
+
+    nearest.forEach(({ j }) => {
+      const key = i < j ? i + '-' + j : j + '-' + i;
+      if (drawn.has(key)) return;
+      drawn.add(key);
+      webCtx.beginPath();
+      webCtx.moveTo(c.x, c.y);
+      webCtx.lineTo(centers[j].x, centers[j].y);
+      webCtx.stroke();
+    });
+  });
+}
+
 const ribbonLeft = document.querySelector('.ribbon-left');
 const ribbonRight = document.querySelector('.ribbon-right');
 const ribbonTop = document.querySelector('.ribbon-top');
@@ -339,6 +384,8 @@ function tick(){
     const scale = n.dragging ? 1.08 : 1 + 0.08 * (1 - n.speed);
     n.el.style.transform = `translate(${n.x}px, ${n.y}px) rotate(${n.rot}deg) scale(${scale})`;
   });
+
+  drawWeb();
 
   requestAnimationFrame(tick);
 }
