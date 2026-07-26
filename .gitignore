@@ -4,3 +4,10 @@ omid kheirabadi — drift_files/
 
 # Claude Code local session config, not project content.
 .claude/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
