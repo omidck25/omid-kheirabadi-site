@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omid kheirabadi — projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./assets/css/fonts.css" rel="stylesheet">
+<link href="./assets/css/site.css" rel="stylesheet">
+<style>
+  html,body{ height:100%; overflow:hidden; }
+  body{ cursor:crosshair; }
+
+  #field{ position:relative; width:100%; height:100%; }
+
+  .frag{
+    position:absolute; overflow:hidden; will-change:transform;
+    box-shadow:0 8px 22px rgba(0,0,0,0.18);
+    cursor:grab;
+    touch-action:none;
+  }
+  .frag.dragging{ cursor:grabbing; }
+  .frag img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(15%) contrast(1.05); pointer-events:none; }
+  .frag .cap{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding:14px; background:rgba(17,16,15,0.72); color:#fff;
+    opacity:0; transition:opacity 0.28s; pointer-events:none;
+  }
+  .frag .cap .t{
+    font-family:'Newsreader',serif; font-style:italic; font-weight:400; font-size:0.9rem;
+    margin-bottom:5px;
+  }
+  .frag .cap .d{
+    font-family:'Newsreader', serif; font-weight:300; font-size:0.74rem; line-height:1.4;
+    color:rgba(255,255,255,0.72);
+  }
+  .frag.active .cap{ opacity:1; }
+  .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
+  .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
+  .frag .cap a{ pointer-events:auto; color:#e8a690; font-family:'Space Grotesk',sans-serif; font-size:0.66rem; letter-spacing:0.03em; margin-top:8px; display:inline-block; }
+
+  @media (prefers-reduced-motion: reduce){
+    .frag{ transition:none; }
+  }
+</style>
+</head>
+<body class="home">
+
+<div class="ribbon ribbon-top">
+  <a class="ribbon-brand" href="#">omid kheirabadi</a>
+</div>
+<div class="ribbon ribbon-left">
+  <button class="ribbon-trigger" type="button" data-section="projects"><span>projects</span></button>
+  <div class="ribbon-panel" id="panel-projects"></div>
+</div>
+<div class="ribbon ribbon-right">
+  <button class="ribbon-trigger" type="button" data-section="happenings"><span>happenings</span></button>
+  <div class="ribbon-panel" id="panel-happenings"></div>
+</div>
+<div class="ribbon ribbon-bottom">
+  <button class="ribbon-trigger" type="button" data-section="announcements">announcements</button>
+  <div class="ribbon-panel" id="panel-announcements"></div>
+  <a class="ribbon-trigger" href="#" data-info-link>info</a>
+  <a class="ribbon-trigger" href="#" data-store-link>art store</a>
+  <a class="ribbon-trigger" href="#" data-blog-link>blog</a>
+</div>
+
+<div id="field"></div>
+
+<script>window.SITE_BASE = '';</script>
+<script src="./assets/js/nav.js"></script>
+<script>
+// Each project has a small pool of candidate images; one is picked at random
+// per page load, so the homepage looks a little different every visit.
+const projectPool = [
+  { slug: "its-fine-really-silly-me", pool: ["01","05","10","14"], cap: "it's fine really, silly me!", desc: "A three-day residency happening at Time Window, February 2025.", href: "projects/its-fine-really-silly-me.html" },
+  { slug: "carnisse-in-flux", pool: ["01","06","12","17"], cap: "carnisse in flux", desc: "A performance-based research project on displacement and gentrification in Rotterdam Zuid.", href: "projects/carnisse-in-flux.html" },
+  { slug: "bingo-machine", pool: ["01","03","05","07"], cap: "bingo machine", desc: "A public happening at B32 Artspace, Maastricht.", href: "projects/bingo-machine.html" },
+  { slug: "happening-to-one-another", pool: ["01","04","07","10"], cap: "happening to one another", desc: "8-day performance sessions at Goethe-Institut Rotterdam.", href: "projects/happening-to-one-another.html" },
+  { slug: "inburgered-integrated", pool: ["01","06","11","17"], cap: "inburgered / integrated", desc: "A performance on the struggles of outsiders trying to integrate as “Dutch” citizens.", href: "projects/inburgered-integrated.html" },
+  { slug: "alive-and-unborn", pool: ["01","08","16","24"], cap: "alive & unborn", desc: "A dark satirical performance on late capitalism, credit and debt.", href: "projects/alive-and-unborn.html" },
+  { slug: "belfast-oppressed", pool: ["01","03","06","08"], cap: "belfast, oppressed", desc: "A residency in Belfast exploring performance as personal and collective liberation.", href: "projects/belfast-oppressed.html" },
+  { slug: "one-day-is-too-short", pool: ["01","07","13","19"], cap: "one day is too short...", desc: "A mock employment letter for five performance artists, Nest Art Space, The Hague.", href: "projects/one-day-is-too-short.html" },
+  { slug: "you-only-exist-on-paper", pool: ["01","04","07","10"], cap: "you only exist on paper", desc: "A fictional government letter on bureaucracy, debt and the discriminatory regime of paperwork.", href: "projects/you-only-exist-on-paper.html" },
+  { slug: "making-art", pool: ["01","06","11","16"], cap: "making art", desc: "KFC uniforms and fries boxes, presented as art.", href: "projects/making-art.html" },
+  { slug: "i-am-free-as-a-bird", pool: ["01","11","21","31"], cap: "i'm free as a bird", desc: "A performance and installation on privilege, labor and escape from the art academy.", href: "projects/i-am-free-as-a-bird.html" },
+  { slug: "spend-the-night-with-me", pool: ["01","04","07","10"], cap: "spend the night with me", desc: "11 hours between dusk and dawn with a stranger, lockdown, May 2020.", href: "projects/spend-the-night-with-me.html" },
+  { slug: "a-tough-soldier", pool: ["02","03","04","05"], cap: "a tough soldier", desc: "Iranian Army uniforms meet McDonald's fries boxes.", href: "projects/a-tough-soldier.html" },
+];
+
+const images = projectPool.map((p) => {
+  const pick = p.pool[Math.floor(Math.random() * p.pool.length)];
+  return {
+    src: `assets/images/projects/${p.slug}/${pick}.jpg`,
+    cap: p.cap,
+    desc: p.desc,
+    href: p.href,
+  };
+});
+
+// Everything below reads layout (ribbon widths) to size and place tiles, so
+// it waits for DOMContentLoaded — running it inline/synchronously risked
+// reading ribbon dimensions before the stylesheet had actually been applied,
+// which could silently produce a bogus (even negative) tile size.
+document.addEventListener('DOMContentLoaded', function () {
+
+const field = document.getElementById('field');
+const ribbonLeft = document.querySelector('.ribbon-left');
+const ribbonRight = document.querySelector('.ribbon-right');
+const ribbonTop = document.querySelector('.ribbon-top');
+const ribbonBottom = document.querySelector('.ribbon-bottom');
+function insets(){
+  return {
+    left: ribbonLeft.getBoundingClientRect().width,
+    right: ribbonRight.getBoundingClientRect().width,
+    top: ribbonTop.getBoundingClientRect().height,
+    bottom: ribbonBottom.getBoundingClientRect().height,
+  };
+}
+const W = window.innerWidth, H = window.innerHeight;
+const ins0 = insets();
+const SIZE = Math.min(240, (W - ins0.left - ins0.right) * 0.32);
+
+const nodes = [];
+
+function makeNode(el, w, h){
+  field.appendChild(el);
+
+  const ins = insets();
+  const node = {
+    el,
+    x: ins.left + Math.random() * Math.max(1, W - ins.left - ins.right - w),
+    y: ins.top + Math.random() * Math.max(1, H - ins.top - ins.bottom - h),
+    w, h,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: (Math.random() - 0.5) * 0.35,
+    rot: 0,
+    vrot: 0,
+    speed: 1,
+    stopped: false,
+    active: false,
+    engaged: false,
+    hovering: false,
+    tapped: false,
+    dragging: false,
+    dragOffsetX: 0,
+    dragOffsetY: 0
+  };
+
+  function syncState(){
+    const shouldStop = node.dragging || node.hovering || node.tapped;
+    node.engaged = shouldStop;
+    node.el.classList.toggle('stopped', shouldStop);
+    node.el.classList.toggle('active', shouldStop);
+  }
+
+  let downX = 0, downY = 0, moved = false;
+
+  el.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'mouse') {
+      node.hovering = true;
+      syncState();
+    }
+  });
+
+  el.addEventListener('pointerleave', (e) => {
+    if (e.pointerType === 'mouse') {
+      node.hovering = false;
+      syncState();
+    }
+  });
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('a')) return; // let caption links navigate normally, don't start a drag
+    e.stopPropagation();
+    el.setPointerCapture(e.pointerId);
+    downX = e.clientX; downY = e.clientY; moved = false;
+    node.dragging = true;
+    node.el.classList.add('dragging');
+    syncState();
+    node.dragOffsetX = e.clientX - node.x;
+    node.dragOffsetY = e.clientY - node.y;
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!node.dragging) return;
+    if (Math.abs(e.clientX - downX) > 4 || Math.abs(e.clientY - downY) > 4) moved = true;
+    node.x = e.clientX - node.dragOffsetX;
+    node.y = e.clientY - node.dragOffsetY;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const i = insets();
+    node.x = Math.max(i.left, Math.min(vw - i.right - node.w, node.x));
+    node.y = Math.max(i.top, Math.min(vh - i.bottom - node.h, node.y));
+  });
+
+  el.addEventListener('pointerup', (e) => {
+    node.dragging = false;
+    node.el.classList.remove('dragging');
+    if (e.pointerType !== 'mouse') {
+      // tap (no drag) toggles the freeze; a drag always releases it on drop
+      node.tapped = moved ? false : !node.tapped;
+    }
+    syncState();
+  });
+
+  nodes.push(node);
+  return node;
+}
+
+images.forEach((data) => {
+  const el = document.createElement('div');
+  el.className = 'frag';
+  el.style.width = SIZE + 'px';
+  el.style.height = SIZE + 'px';
+  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project &rarr;</a></div>`;
+  makeNode(el, SIZE, SIZE);
+});
+
+document.body.addEventListener('pointerdown', (e) => {
+  if (e.pointerType === 'touch') {
+    nodes.forEach(n => {
+      if (n.el !== e.target && !n.el.contains(e.target) && n.tapped) {
+        n.tapped = false;
+        n.engaged = n.dragging || n.hovering;
+        n.el.classList.toggle('stopped', n.engaged);
+        n.el.classList.toggle('active', n.engaged);
+      }
+    });
+  }
+});
+
+// Nodes that are dragging, hovered or tapped-frozen act as solid obstacles:
+// they don't get pushed, but moving nodes still bounce off them.
+function isFixed(n){ return n.dragging || n.engaged; }
+
+// Tiles are allowed to overlap a little (like loose photos on a table) —
+// only pushed apart once the overlap goes past a quarter of their width.
+const OVERLAP_ALLOWED = SIZE * 0.25;
+
+// Collision is checked against a virtually shrunk box (inset by half the
+// allowed overlap on every side), then resolved with the same single-axis
+// "least overlap" push used for a normal no-overlap solver. This keeps the
+// well-behaved convergence of that approach while letting tiles rest up to
+// OVERLAP_ALLOWED into each other before anything actually pushes back.
+const MARGIN = OVERLAP_ALLOWED;
+
+function resolveCollisions(ins, w, h){
+  for (let i = 0; i < nodes.length; i++) {
+    const a = nodes[i];
+    for (let j = i + 1; j < nodes.length; j++) {
+      const b = nodes[j];
+
+      const aSx = a.x + MARGIN / 2, aSy = a.y + MARGIN / 2, aSw = a.w - MARGIN, aSh = a.h - MARGIN;
+      const bSx = b.x + MARGIN / 2, bSy = b.y + MARGIN / 2, bSw = b.w - MARGIN, bSh = b.h - MARGIN;
+
+      const overlapX = Math.min(aSx + aSw, bSx + bSw) - Math.max(aSx, bSx);
+      const overlapY = Math.min(aSy + aSh, bSy + bSh) - Math.max(aSy, bSy);
+      if (overlapX <= 0 || overlapY <= 0) continue; // within the allowed overlap — leave them be
+
+      const aFixed = isFixed(a), bFixed = isFixed(b);
+      if (aFixed && bFixed) continue;
+
+      if (overlapX < overlapY) {
+        const sign = (a.x + a.w / 2 < b.x + b.w / 2) ? -1 : 1;
+        if (!aFixed && !bFixed) {
+          a.x += sign * overlapX / 2;
+          b.x -= sign * overlapX / 2;
+          a.vx = Math.max(Math.abs(a.vx), 0.05) * sign;
+          b.vx = Math.max(Math.abs(b.vx), 0.05) * -sign;
+        } else if (!aFixed) {
+          a.x += sign * overlapX;
+          a.vx = Math.max(Math.abs(a.vx), 0.05) * sign;
+        } else {
+          b.x -= sign * overlapX;
+          b.vx = Math.max(Math.abs(b.vx), 0.05) * -sign;
+        }
+      } else {
+        const sign = (a.y + a.h / 2 < b.y + b.h / 2) ? -1 : 1;
+        if (!aFixed && !bFixed) {
+          a.y += sign * overlapY / 2;
+          b.y -= sign * overlapY / 2;
+          a.vy = Math.max(Math.abs(a.vy), 0.05) * sign;
+          b.vy = Math.max(Math.abs(b.vy), 0.05) * -sign;
+        } else if (!aFixed) {
+          a.y += sign * overlapY;
+          a.vy = Math.max(Math.abs(a.vy), 0.05) * sign;
+        } else {
+          b.y -= sign * overlapY;
+          b.vy = Math.max(Math.abs(b.vy), 0.05) * -sign;
+        }
+      }
+
+      if (!aFixed) {
+        a.x = Math.max(ins.left, Math.min(w - ins.right - a.w, a.x));
+        a.y = Math.max(ins.top, Math.min(h - ins.bottom - a.h, a.y));
+      }
+      if (!bFixed) {
+        b.x = Math.max(ins.left, Math.min(w - ins.right - b.w, b.x));
+        b.y = Math.max(ins.top, Math.min(h - ins.bottom - b.h, b.y));
+      }
+    }
+  }
+}
+
+function tick(){
+  const w = window.innerWidth, h = window.innerHeight;
+  const ins = insets();
+
+  nodes.forEach(n => {
+    if (n.dragging) return; // position already driven by pointermove
+
+    n.stopped = n.engaged;
+
+    // ease the speed toward 0 (engaged) or 1 (free) instead of snapping,
+    // so starting/stopping is smooth rather than an abrupt jump
+    const target = n.engaged ? 0 : 1;
+    n.speed += (target - n.speed) * 0.12;
+
+    if (n.speed > 0.001) {
+      n.x += n.vx * n.speed;
+      n.y += n.vy * n.speed;
+      n.rot += n.vrot * n.speed;
+
+      if (n.x <= ins.left || n.x + n.w >= w - ins.right) n.vx *= -1;
+      if (n.y <= ins.top || n.y + n.h >= h - ins.bottom) n.vy *= -1;
+      n.x = Math.max(ins.left, Math.min(w - ins.right - n.w, n.x));
+      n.y = Math.max(ins.top, Math.min(h - ins.bottom - n.h, n.y));
+    }
+  });
+
+  // multiple passes per frame so clusters of 3+ overlapping tiles converge
+  // quickly instead of fighting each other across many separate frames
+  for (let iter = 0; iter < 4; iter++) {
+    resolveCollisions(ins, w, h);
+  }
+
+  nodes.forEach(n => {
+    const scale = n.dragging ? 1.08 : 1 + 0.08 * (1 - n.speed);
+    n.el.style.transform = `translate(${n.x}px, ${n.y}px) rotate(${n.rot}deg) scale(${scale})`;
+  });
+
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// exposed for debugging in the console — harmless in production
+window.SIZE = SIZE; window.nodes = nodes; window.insets = insets;
+window.resolveCollisions = resolveCollisions; window.OVERLAP_ALLOWED = OVERLAP_ALLOWED;
+
+}); // DOMContentLoaded
+</script>
+
+</body>
+</html>

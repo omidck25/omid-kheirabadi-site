@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omid kheirabadi — happenings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./assets/css/fonts.css" rel="stylesheet">
+<link href="./assets/css/site.css" rel="stylesheet">
+<style>
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:22px; margin-top:1.5em; }
+  .card{ display:block; text-decoration:none; color:var(--ink); }
+  .card .thumb{ width:100%; aspect-ratio:1; overflow:hidden; box-shadow:0 8px 22px rgba(0,0,0,0.18); background:#eee; }
+  .card .thumb img{ width:100%; height:100%; object-fit:cover; filter:grayscale(15%) contrast(1.05); display:block; }
+  .card .title{ font-family:'Newsreader',serif; font-style:italic; font-size:0.9rem; margin-top:0.6em; }
+  .card .year{ font-family:'Space Grotesk',sans-serif; font-style:normal; font-size:0.7rem; color:var(--rust); margin-left:0.5em; }
+</style>
+</head>
+<body>
+
+<div class="ribbon ribbon-top">
+  <a class="ribbon-brand" href="#">omid kheirabadi</a>
+</div>
+<div class="ribbon ribbon-left">
+  <button class="ribbon-trigger" type="button" data-section="projects"><span>projects</span></button>
+  <div class="ribbon-panel" id="panel-projects"></div>
+</div>
+<div class="ribbon ribbon-right">
+  <button class="ribbon-trigger" type="button" data-section="happenings"><span>happenings</span></button>
+  <div class="ribbon-panel" id="panel-happenings"></div>
+</div>
+<div class="ribbon ribbon-bottom">
+  <button class="ribbon-trigger" type="button" data-section="announcements">announcements</button>
+  <div class="ribbon-panel" id="panel-announcements"></div>
+  <a class="ribbon-trigger" href="#" data-info-link>info</a>
+  <a class="ribbon-trigger" href="#" data-store-link>art store</a>
+  <a class="ribbon-trigger" href="#" data-blog-link>blog</a>
+</div>
+
+<main class="page" style="max-width:960px;">
+  <h1>happenings</h1>
+  <p class="meta">6 documented happenings</p>
+
+  <div class="grid">
+    <a class="card" href="projects/carnisse-in-flux.html">
+      <div class="thumb"><img src="https://static.wixstatic.com/media/98c2fc_69b6c4b053c54060abcc8a07037b7881~mv2.jpg" alt=""></div>
+      <div class="title">carnisse in flux<span class="year">2024</span></div>
+    </a>
+    <a class="card" href="projects/its-fine-really-silly-me.html">
+      <div class="thumb"><img src="https://static.wixstatic.com/media/98c2fc_3764b0496de541c7b9250ea95eec997e~mv2.jpg" alt=""></div>
+      <div class="title">it's fine really, silly me!<span class="year">2025</span></div>
+    </a>
+    <a class="card" href="projects/bingo-machine.html">
+      <div class="thumb"><img src="https://static.wixstatic.com/media/98c2fc_e31899be3d3142ae9db75c9048421df7~mv2.jpg" alt=""></div>
+      <div class="title">bingo machine<span class="year">2024</span></div>
+    </a>
+    <a class="card" href="projects/happening-to-one-another.html">
+      <div class="thumb"><img src="https://static.wixstatic.com/media/98c2fc_b91a3cc69ea145adb3fa6df4c488ef6f~mv2.jpg" alt=""></div>
+      <div class="title">happening to one another<span class="year">2023</span></div>
+    </a>
+    <a class="card" href="projects/belfast-oppressed.html">
+      <div class="thumb"><img src="https://static.wixstatic.com/media/98c2fc_3a47eaf8debb4c7e92f456fb633c7468~mv2.jpg" alt=""></div>
+      <div class="title">belfast, oppressed<span class="year">2023</span></div>
+    </a>
+    <a class="card" href="projects/spend-the-night-with-me.html">
+      <div class="thumb" style="display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--grey);">spend the night with me</div>
+      <div class="title">spend the night with me<span class="year">2020</span></div>
+    </a>
+  </div>
+</main>
+
+<script>window.SITE_BASE = '';</script>
+<script src="./assets/js/nav.js"></script>
+</body>
+</html>

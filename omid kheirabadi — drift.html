@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<!-- saved from url=(0042)file:///C:/Users/omid/Downloads/drift.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omid kheirabadi — drift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./omid kheirabadi — drift_files/css2" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#141311;
+    --rust:#9c3b2e;
+    --grey:#8a857c;
+    --sidebar-w:200px;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; overflow:hidden; background:var(--bg); }
+  body{ font-family:'Newsreader', serif; color:var(--ink); cursor:crosshair; }
+
+  .tag{
+    position:fixed; top:22px; right:32px; z-index:50; pointer-events:none;
+    font-family:'Space Grotesk',sans-serif; font-size:0.7rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--grey);
+  }
+
+  .sidebar{
+    position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); z-index:60;
+    display:flex; flex-direction:column;
+    padding:26px 22px; background:var(--bg);
+    border-right:1px solid rgba(20,19,17,0.1);
+    cursor:default;
+  }
+  .sidebar .brand{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:0.92rem;
+    color:var(--ink); text-decoration:none; margin-bottom:40px;
+  }
+  .side-nav{ display:flex; flex-direction:column; }
+  .side-item{ border-bottom:1px solid rgba(20,19,17,0.1); }
+  .side-toggle{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    font:inherit; font-family:'Space Grotesk',sans-serif; font-size:0.76rem;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--ink);
+    padding:13px 0; display:flex; justify-content:space-between; align-items:center;
+  }
+  .side-toggle::after{ content:'+'; font-size:0.9rem; color:var(--grey); }
+  .side-item.open .side-toggle::after{ content:'\2212'; }
+  .side-drop{
+    list-style:none; max-height:0; overflow:hidden; transition:max-height 0.25s ease;
+  }
+  .side-item.open .side-drop{ max-height:70vh; overflow-y:auto; }
+  .side-drop li a{
+    display:block; padding:7px 0 7px 6px; font-family:'Newsreader',serif;
+    font-style:italic; font-size:0.78rem; line-height:1.3;
+    color:var(--grey); text-decoration:none; border-left:2px solid transparent;
+  }
+  .side-drop li a:hover{ color:var(--ink); border-left-color:var(--rust); }
+  .side-drop .empty{
+    padding:7px 0 7px 6px; font-family:'Newsreader',serif; font-style:italic;
+    font-size:0.78rem; color:var(--grey); opacity:0.7;
+  }
+
+  .sidebar .intro{
+    margin-top:auto; padding-top:20px;
+    font-style:italic; color:var(--grey); font-size:0.78rem; line-height:1.4;
+  }
+
+  #field{ position:relative; width:100%; height:100%; }
+
+  .frag{
+    position:absolute; overflow:hidden; will-change:transform;
+    box-shadow:0 8px 22px rgba(0,0,0,0.18);
+    cursor:grab;
+    touch-action:none;
+  }
+  .frag.dragging{ cursor:grabbing; }
+  .frag img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(15%) contrast(1.05); pointer-events:none; }
+  .frag .cap{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding:12px; background:rgba(255,255,255,0.86); color:var(--ink);
+    opacity:0; transition:opacity 0.28s; pointer-events:none;
+  }
+  .frag .cap .t{
+    font-family:'Space Grotesk',sans-serif; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.02em; text-transform:uppercase; margin-bottom:6px;
+  }
+  .frag .cap .d{
+    font-family:'Newsreader', serif; font-style:italic; font-size:0.76rem; line-height:1.35;
+    color:#2a2823;
+  }
+  .frag.active .cap{ opacity:1; }
+  .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
+  .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
+
+  @media (prefers-reduced-motion: reduce){
+    .frag{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tag">fragments — drift study</div>
+
+<aside class="sidebar">
+  <a class="brand" href="./omid kheirabadi — drift.html">omid kheirabadi</a>
+  <nav class="side-nav" id="sideNav"></nav>
+  <p class="intro">Everything drifts on its own. Touch or hover one piece to stop just that one and read about it — drag it to pick it up and place it yourself.</p>
+</aside>
+
+<div id="field"></div>
+
+<script>
+const images = [
+  { src: "https://static.wixstatic.com/media/98c2fc_3764b0496de541c7b9250ea95eec997e~mv2.jpg", cap: "it's fine really, silly me!", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_69b6c4b053c54060abcc8a07037b7881~mv2.jpg", cap: "carnisse in flux", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_e31899be3d3142ae9db75c9048421df7~mv2.jpg", cap: "bingo machine", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_b91a3cc69ea145adb3fa6df4c488ef6f~mv2.jpg", cap: "happening to one another", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_bef71bca3a4a43d6a9a4a0ef46c61c91~mv2.jpg", cap: "inburgered / integrated", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_b95c5ecd50f540e8a55324980db37fc6~mv2.jpg", cap: "alive & unborn", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_3a47eaf8debb4c7e92f456fb633c7468~mv2.jpg", cap: "belfast, oppressed", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_b585bec6725641d9961384ec2c3af622~mv2.jpg", cap: "one day is too short...", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_5b91fb72227f49c2a2aa8ef38a72886d~mv2.jpg", cap: "you only exist on paper", desc: "Replace with your real project text — a line or two on what this piece is about." },
+  { src: "https://static.wixstatic.com/media/98c2fc_6d5313f2fd4b4d1692b7e6cb305402de~mv2.jpg", cap: "i'm free as a bird", desc: "Replace with your real project text — a line or two on what this piece is about." },
+];
+
+// Sub-items shown when a sidebar entry is opened. Populated from the real
+// project list on omidkheirabadi.com; happenings/announcements/info get
+// filled in once that content is extracted.
+const sections = {
+  projects: [
+    { title: "it's fine really, silly me!", href: "projects/its-fine-really-silly-me.html" },
+    { title: "carnisse in flux", href: "projects/carnisse-in-flux.html" },
+    { title: "bingo machine", href: "projects/bingo-machine.html" },
+    { title: "happening to one another", href: "projects/happening-to-one-another.html" },
+    { title: "belfast, oppressed", href: "projects/belfast-oppressed.html" },
+    { title: "inburgered", href: "projects/inburgered-integrated.html" },
+    { title: "alive & unborn", href: "projects/alive-and-unborn.html" },
+    { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html" },
+    { title: "one day is too short...", href: "projects/one-day-is-too-short.html" },
+    { title: "making art", href: "projects/making-art.html" },
+    { title: "i'm free as a bird", href: "projects/i-am-free-as-a-bird.html" },
+    { title: "spend the night with me", href: "projects/spend-the-night-with-me.html" },
+    { title: "a tough soldier", href: "projects/a-tough-soldier.html" },
+  ],
+  happenings: [],
+  announcements: [],
+  info: [
+    { title: "bio", href: "info.html" },
+  ],
+};
+
+const sideNav = document.getElementById('sideNav');
+Object.keys(sections).forEach((key) => {
+  const item = document.createElement('div');
+  item.className = 'side-item';
+
+  const btn = document.createElement('button');
+  btn.className = 'side-toggle';
+  btn.type = 'button';
+  btn.textContent = key;
+
+  const list = document.createElement('ul');
+  list.className = 'side-drop';
+
+  const entries = sections[key];
+  if (entries.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'coming soon';
+    list.appendChild(li);
+  } else {
+    entries.forEach((entry) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = entry.href;
+      a.textContent = entry.title;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  }
+
+  btn.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.side-item.open').forEach((o) => o.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+
+  item.appendChild(btn);
+  item.appendChild(list);
+  sideNav.appendChild(item);
+});
+
+const field = document.getElementById('field');
+const sidebarEl = document.querySelector('.sidebar');
+function sidebarWidth(){ return sidebarEl.getBoundingClientRect().width; }
+const W = window.innerWidth, H = window.innerHeight;
+const SIZE = Math.min(220, (W - sidebarWidth()) * 0.32);
+
+const nodes = [];
+
+function makeNode(el, w, h){
+  field.appendChild(el);
+
+  const node = {
+    el,
+    x: sidebarWidth() + Math.random() * Math.max(1, W - sidebarWidth() - w),
+    y: Math.random() * Math.max(1, H - h),
+    w, h,
+    vx: (Math.random() - 0.5) * 1.3,
+    vy: (Math.random() - 0.5) * 1.3,
+    rot: 0,
+    vrot: 0,
+    stopped: false,
+    active: false,
+    engaged: false,
+    hovering: false,
+    tapped: false,
+    dragging: false,
+    dragOffsetX: 0,
+    dragOffsetY: 0
+  };
+
+  function syncState(){
+    const shouldStop = node.dragging || node.hovering || node.tapped;
+    node.engaged = shouldStop;
+    node.el.classList.toggle('stopped', shouldStop);
+    node.el.classList.toggle('active', shouldStop);
+  }
+
+  let downX = 0, downY = 0, moved = false;
+
+  el.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'mouse') {
+      node.hovering = true;
+      syncState();
+    }
+  });
+
+  el.addEventListener('pointerleave', (e) => {
+    if (e.pointerType === 'mouse') {
+      node.hovering = false;
+      syncState();
+    }
+  });
+
+  el.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    el.setPointerCapture(e.pointerId);
+    downX = e.clientX; downY = e.clientY; moved = false;
+    node.dragging = true;
+    node.el.classList.add('dragging');
+    syncState();
+    node.dragOffsetX = e.clientX - node.x;
+    node.dragOffsetY = e.clientY - node.y;
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!node.dragging) return;
+    if (Math.abs(e.clientX - downX) > 4 || Math.abs(e.clientY - downY) > 4) moved = true;
+    node.x = e.clientX - node.dragOffsetX;
+    node.y = e.clientY - node.dragOffsetY;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    node.x = Math.max(sidebarWidth(), Math.min(vw - node.w, node.x));
+    node.y = Math.max(0, Math.min(vh - node.h, node.y));
+  });
+
+  el.addEventListener('pointerup', (e) => {
+    node.dragging = false;
+    node.el.classList.remove('dragging');
+    if (e.pointerType !== 'mouse') {
+      // tap (no drag) toggles the freeze; a drag always releases it on drop
+      node.tapped = moved ? false : !node.tapped;
+    }
+    syncState();
+  });
+
+  nodes.push(node);
+  return node;
+}
+
+images.forEach((data) => {
+  const el = document.createElement('div');
+  el.className = 'frag';
+  el.style.width = SIZE + 'px';
+  el.style.height = SIZE + 'px';
+  el.innerHTML = `<img src="${data.src}" alt=""><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div></div>`;
+  makeNode(el, SIZE, SIZE);
+});
+
+document.body.addEventListener('pointerdown', (e) => {
+  if (e.pointerType === 'touch') {
+    nodes.forEach(n => {
+      if (n.el !== e.target && !n.el.contains(e.target) && n.tapped) {
+        n.tapped = false;
+        n.engaged = n.dragging || n.hovering;
+        n.el.classList.toggle('stopped', n.engaged);
+        n.el.classList.toggle('active', n.engaged);
+      }
+    });
+  }
+});
+
+function tick(){
+  const w = window.innerWidth, h = window.innerHeight;
+  const sbw = sidebarWidth();
+  nodes.forEach(n => {
+    if (n.dragging) {
+      n.el.style.transform = `translate(${n.x}px, ${n.y}px) rotate(${n.rot}deg) scale(1.08)`;
+      return;
+    }
+
+    n.stopped = n.engaged;
+
+    if (!n.stopped) {
+      n.x += n.vx;
+      n.y += n.vy;
+      n.rot += n.vrot;
+
+      if (n.x <= sbw || n.x + n.w >= w) n.vx *= -1;
+      if (n.y <= 0 || n.y + n.h >= h) n.vy *= -1;
+      n.x = Math.max(sbw, Math.min(w - n.w, n.x));
+      n.y = Math.max(0, Math.min(h - n.h, n.y));
+    }
+
+    const scale = n.stopped ? 1.08 : 1;
+    n.el.style.transform = `translate(${n.x}px, ${n.y}px) rotate(${n.rot}deg) scale(${scale})`;
+  });
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+window.addEventListener('resize', () => location.reload());
+</script>
+
+
+
+</body></html>
