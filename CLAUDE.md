@@ -9,8 +9,9 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 - `index.html` — homepage. "Drift" concept: photo tiles float/bounce around the
   screen, freeze on hover/tap to show a caption, draggable. One random image per
   project per pageload (see "Image pools" below).
-- `announcements.html`, `happenings.html` — content pages. `info.html` used
-  to be one too, but was removed — see "Info modal" below.
+- `happenings.html` — a content page. `info.html` and `announcements.html`
+  used to be pages too, but were both removed — see "Info modal" and
+  "Announcements modal" below.
 - `store.html`, `blog.html` — **drafts**, not real yet (see "Open items").
 - `projects/*.html` — 14 individual project pages, each with a hero image, the
   full write-up, and a filmstrip gallery of that project's photos at the bottom.
@@ -52,24 +53,34 @@ data object (projects / happenings / announcements) plus a few plain links
 - **Bottom**: a single "more" trigger, dropdown opening upward (same
   `.ribbon-panel` flyout mechanism as projects/happenings, just anchored to
   the bottom of the screen via `bottom:var(--ribbon-h)` instead of a side).
-  Inside `#panel-more`, three items, each with different behavior:
-  "info" (button, opens the info popup — see "Info modal" below),
-  "announcements" (real link to `announcements.html` — the only one of the
-  three that's still an actual separate page), "contact" (button, opens the
-  quick contact modal — see below). Merged into one menu per explicit
-  request ("not sure what to call it" — went with "more"; open to
-  relabeling). "Art store" and "blog" are temporarily removed from
-  navigation entirely (not deleted — `store.html` and `blog.html` still
-  exist as draft pages) until there's real content for them; `nav.js`'s
-  `PLAIN_LINKS` entries for them are left in place since the code already
-  no-ops gracefully when the corresponding `[data-*-link]` element isn't
-  present on a page, so no JS cleanup was needed to hide them.
+  Inside `#panel-more`, three buttons, all popups now, none of them a real
+  page: "info" (see "Info modal" below), "announcements" (see
+  "Announcements modal" below — used to be a real page, `announcements.html`
+  was removed the same way `info.html` was), "contact" (see "Contact modal"
+  below). Merged into one menu per explicit request ("not sure what to call
+  it" — went with "more"; open to relabeling). On desktop the panel shrinks
+  to a small popup that hugs its own content and floats centered above the
+  trigger (`#panel-more{ left:50%; right:auto; width:auto;
+  transform:translateX(-50%); }` inside the `min-width:721px` media query)
+  — it inherited full edge-to-edge width from the old long-announcements-list
+  layout, which read as an oversized white box for 3 short centered words on
+  a wide screen. Phone/tablet untouched, already in reasonable proportion at
+  that width. "Art store" and "blog" are temporarily removed from navigation
+  entirely (not deleted — `store.html` and `blog.html` still exist as draft
+  pages) until there's real content for them; `nav.js`'s `PLAIN_LINKS`
+  entries for them are left in place since the code already no-ops
+  gracefully when the corresponding `[data-*-link]` element isn't present on
+  a page, so no JS cleanup was needed to hide them.
 - The generic `data-section` open/close/current-page logic (originally built
   for projects/happenings) is reused as-is for "more" — no special-casing
-  needed there. What *is* special-cased: `populateRibbons()` propagates
-  `.current` from the `[data-announcements-link]` element up to the "more"
-  trigger itself when on `announcements.html`, since that link now lives
-  inside a nested panel rather than being the ribbon item directly.
+  needed there, and unlike before there's no longer a "current page inside
+  more" concept to propagate, since none of its three items are real pages.
+- Pages that are both a "project" and one of the curated "happenings" (they
+  share the same underlying project page) used to light up both the left
+  "projects" and right "happenings" ribbon triggers together. Happening
+  status now takes precedence in `populateRibbons()`: only "happenings"
+  reacts on those pages, "projects" stays black/unreacted. Pure JS class
+  logic, no device branching, so it's consistent phone/tablet/desktop.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).
@@ -103,8 +114,8 @@ shared ancestor. Keep this in mind before adding more items to any ribbon.
 
 ### Gotcha: Cloudflare strips `.html` from URLs — normalize before comparing
 
-Cloudflare's static asset serving redirects clean URLs (`/announcements.html`
-→ `/announcements`),
+Cloudflare's static asset serving redirects clean URLs (`/happenings.html`
+→ `/happenings`),
 so `location.pathname`'s last segment won't have the `.html` extension that
 `SECTIONS`/`PLAIN_LINKS` hrefs use. `nav.js` re-appends `.html` before comparing
 (`if (currentFile && !/\.html$/.test(currentFile)) currentFile += '.html';`) —
@@ -206,6 +217,29 @@ ordinary screens — `overflow-y:auto` + a generous `max-height` are kept
 only as a last-resort safety net for very small screens, not the intended
 way to view it. If more text gets added later, prefer trimming/tightening
 further over letting it silently start scrolling.
+
+## Announcements modal (`assets/js/nav.js`, `initAnnouncementsModal`)
+
+`announcements.html` was removed the same way `info.html` was, per explicit
+request ("it doesn't need its own page anymore"). All 20 entries (title,
+optional date, thumbnail image, body text) now live in a popup opened from
+"announcements" inside the "more" ribbon-bottom dropdown, on every page.
+
+Unlike the info modal, this one is built from a data array (`ANNOUNCEMENTS`,
+same slug/ext/title/when/body shape as the old page's markup) and DOM
+methods (`createElement`/`textContent`) rather than one big `innerHTML`
+string — with 20 entries' worth of quotes and apostrophes to get right,
+hand-escaping all of that into a string literal is exactly the kind of
+place a typo silently breaks the page; building nodes and setting
+`textContent` sidesteps escaping entirely. Thumbnails resolve to
+`assets/images/announcements/<slug>.<ext>` via `BASE`, same images the old
+page used (still there, only the page linking to them was removed).
+
+Kept intentionally small (smaller type, tighter spacing than the old page
+had) per explicit request. Unlike the info modal, this one is *expected* to
+scroll — 20 entries with images is a lot more content than the 3-paragraph
+bio — so `overflow-y:auto` here is the normal way to use it, not a
+last-resort fallback.
 
 ## Open items / known drafts
 

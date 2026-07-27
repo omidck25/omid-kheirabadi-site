@@ -292,6 +292,75 @@ body{
   .info-modal p{ font-size:0.78rem; line-height:1.42; margin-bottom:0.65em; }
 }
 
+/* ===== announcements modal (opened from "announcements" inside the "more"
+   ribbon-bottom dropdown, on every page — no separate page anymore).
+   20 entries with thumbnails, so unlike the info modal this one is
+   expected to scroll; kept compact (smaller type, tight spacing) per
+   explicit request so more fits before that scrolling is needed. ===== */
+.announcements-modal-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(20,19,17,0.6);
+  display:flex; align-items:center; justify-content:center;
+  padding:16px;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease;
+}
+.announcements-modal-overlay.open{ opacity:1; pointer-events:auto; }
+.announcements-modal{
+  background:#fff; width:100%; max-width:680px; max-height:88vh;
+  overflow-y:auto;
+  padding:2em 1.8em 1.8em;
+  box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  position:relative;
+  transform:translateY(14px);
+  transition:transform 0.25s ease;
+}
+.announcements-modal-overlay.open .announcements-modal{ transform:translateY(0); }
+.announcements-modal-close{
+  position:absolute; top:10px; right:12px;
+  background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer;
+  color:var(--grey); font-family:'Space Grotesk',sans-serif; padding:6px;
+}
+.announcements-modal-close:hover{ color:var(--ink); }
+.announcements-modal h2{
+  font-family:'Space Grotesk',sans-serif; font-weight:500;
+  font-size:1.3rem; margin-bottom:0.8em;
+}
+.announcements-modal .announcement{
+  padding-bottom:1em; margin-bottom:1em;
+  border-bottom:1px solid rgba(20,19,17,0.1);
+}
+.announcements-modal .announcement::after{ content:""; display:table; clear:both; }
+.announcements-modal .announcement:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.announcements-modal .announcement h3{
+  font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:0.92rem; margin-bottom:0.15em;
+}
+.announcements-modal .announcement .when{
+  font-family:'Space Grotesk',sans-serif; font-size:0.6rem; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--grey); margin-bottom:0.35em; display:block;
+}
+.announcements-modal .announcement p{
+  font-size:0.76rem; line-height:1.42; margin-bottom:0.5em; text-transform:lowercase;
+}
+.announcements-modal .announcement p:last-child{ margin-bottom:0; }
+.announcements-modal .announcement-thumb{
+  float:left; width:60px; height:60px; object-fit:cover;
+  margin:0.1em 0.85em 0.5em 0;
+  box-shadow:0 6px 16px rgba(0,0,0,0.16);
+  filter:grayscale(20%) contrast(1.05);
+  background:#eee;
+}
+
+@media (max-width:720px){
+  .announcements-modal-overlay{ padding:10px; }
+  .announcements-modal{ padding:1.6em 1.2em 1.4em; max-height:92vh; }
+  .announcements-modal h2{ font-size:1.15rem; margin-bottom:0.6em; }
+  .announcements-modal .announcement{ padding-bottom:0.8em; margin-bottom:0.8em; }
+  .announcements-modal .announcement h3{ font-size:0.86rem; }
+  .announcements-modal .announcement p{ font-size:0.72rem; }
+  .announcements-modal .announcement-thumb{ width:52px; height:52px; margin-right:0.65em; }
+}
+
 /* ===== store ===== */
 .store-grid{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));

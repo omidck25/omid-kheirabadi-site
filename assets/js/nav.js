@@ -34,7 +34,6 @@
   // plain (non-dropdown) links that just need their href set relative to
   // the current page's depth, plus a "current" highlight when active
   var PLAIN_LINKS = [
-    { attr: 'data-announcements-link', href: 'announcements.html' },
     { attr: 'data-store-link', href: 'store.html' },
     { attr: 'data-blog-link', href: 'blog.html' },
   ];
@@ -55,16 +54,6 @@
       el.setAttribute('href', BASE + link.href);
       if (currentFile === link.href) el.classList.add('current');
     });
-
-    // "announcements" lives inside the "more" dropdown now (alongside
-    // info/contact) rather than as its own ribbon item — if it's current,
-    // reflect that on the "more" trigger too so it stays upright/highlighted
-    // the same way any other current-page ribbon trigger does.
-    var announcementsLink = document.querySelector('[data-announcements-link]');
-    if (announcementsLink && announcementsLink.classList.contains('current')) {
-      var moreTrigger = document.querySelector('[data-section="more"]');
-      if (moreTrigger) moreTrigger.classList.add('current');
-    }
 
     // Some pages are both a "project" and one of the curated "happenings"
     // (they share the same underlying project page — happenings is just a
@@ -454,10 +443,162 @@
     });
   }
 
+  // announcements.html was removed the same way info.html was — the list
+  // now lives in a popup, opened from "announcements" inside the "more"
+  // dropdown. Kept as data + DOM-building (rather than one big innerHTML
+  // string like the info modal) since there are 20 entries with images —
+  // building nodes and setting textContent avoids having to hand-escape
+  // quotes/apostrophes across that much text.
+  var ANNOUNCEMENTS = [
+    { slug: 'summer-residency-in-istanbul', ext: 'jpg', title: 'Summer Residency in Istanbul', when: 'August 2025', body: [
+      'With great pleasure, I am participating in an intensive one week collaborative project at Saye Collective in Istanbul in August 2025.'
+    ] },
+    { slug: 'eendracht-festival', ext: 'png', title: 'EENDRACHT FESTIVAL', when: '17 July 2025', body: [
+      'On 17th of July, 2025, I will be showing "Radical Meditation" at Eendracht festival in Rotterdam. Radical Meditation is an immersive performance that emerged from the Experiential Learning program at Timewindow (Marie Louise), and was first shown in November 2024. The work satirically critiques the commodification of mindfulness, delivered by Radical Mindfulness Corporation, it blends corporate structures with spiritual practices, offering participants a transformative experience that challenges traditional notions of personal growth.'
+    ] },
+    { slug: 'performance-session-at-dokhuis', ext: 'jpeg', title: 'Performance Session at Dokhuis', when: '9 June 2025, 19:30–21:00', body: [
+      'How do we begin a conversation with someone we don\'t know? Can a brief encounter become a space of real connection? In this participatory performance session, Omid Kheirabadi invites you to explore the quality of dialogue through movement, presence, and collective creation. You won\'t be watching from the sidelines, as this is a shared experiment in performing together, with all the openness, awkwardness, and unexpected intimacy that can bring.',
+      'Through movement, improvisation, and conversation, we\'ll explore the dynamics of attention, presence, and connection. Omid\'s practice creates temporary spaces where people come together to move, speak, and improvise. These collective actions serve as a way to investigate how we relate to one another with the hope that something meaningful will arise among strangers.'
+    ] },
+    { slug: 'iv-grant-cbk-2025', ext: 'png', title: 'I&V GRANT CBK 2025', when: 'September–November 2025', body: [
+      'I am grateful to receive the "Impulse en Verdieping" grant from CBK Rotterdam for the upcoming video project "Whose street is this? decolonization of an ordinary neighborhood as common space" taking place from September till November 2025.'
+    ] },
+    { slug: 'art-rotterdam-exhibition', ext: 'png', title: 'ART Rotterdam Exhibition', when: '28–30 March', body: [
+      'I will be showing "Carnisse in Flux" at ART Rotterdam from 28th to 30th of March. This show is part of Prospects 2025 group exhibition organized by Mondriaan Fonds.'
+    ] },
+    { slug: 'the-end-has-no-end-performance-festival', ext: 'jpg', title: 'The End Has No End Performance Festival', when: '7–9 March, TimeWindow', body: [
+      'From March 7 – 9, TimeWindow I will be performing at The End Has No End, a ritualistic closing in the shape of a 3-day festival marking the transformation of our community. As we reach the end of our subsidy period, we come together in a powerful moment of collective farewell—grieving what is ending while celebrating all that we have built. Through performances of over 30 artists, as well as shared experiences, and artistic expressions, this festival is an archive of what we cherish. Though this chapter closes, the knowledge, relationships, and creative energy cultivated over the years will continue to shape new futures.'
+    ] },
+    { slug: 'marie-louise-artist-residency', ext: 'jpg', title: 'Marie-Louise Artist Residency', when: '30 November 2024', body: [
+      'After one week of intense residency, I will be showcasing the result of this period on 30th of November 2024. Curated and organized by Marta Wörner Sarabia, in consultation with Aubane Berthommé Martinez and Lieve Fikkers (WEEF Collective), the theme of this residency is Radical Mindfulness. To explore this topic, I was invited to be part of this group of fascinating artists whose practices reflect and interrogate this concept.'
+    ] },
+    { slug: 'graw-2024', ext: 'jpg', title: 'GRAW 2024', when: '21–22 September, TimeWindow studio', body: [
+      'I will be showing some test works for my upcoming exhibition at ART Rotterdam, in my studio space in TimeWindow. Join me and other 12 creatives from our community on the 21st and 22nd of September to experience it all. We are open from 11:00 to 22:15 on Saturday and from 11:00 to 17:00 on Sunday.'
+    ] },
+    { slug: 'praktijk-bijdrage-grant-cbk-2024', ext: 'png', title: 'Praktijk Bijdrage GRANT CBK 2024', when: null, body: [
+      'CBK has generously supported my current project "carnisse in Flux" with a one-time contribution of Praktijk Bijdrage. In collaboration with Shardenia Felicia, we are going to explore Rotterdam South, and specially the Carnisse neighborhood and the state of change it is going through due to the ongoing gentrification.'
+    ] },
+    { slug: 'artist-residency-in-switzerland', ext: 'png', title: 'Artist Residency in Switzerland', when: 'February–March 2024', body: [
+      'It\'s an honor to announce that I have been selected for a six-week artist residency at Fondation du Château Mercier in Sierre, Switzerland in February and March 2024.'
+    ] },
+    { slug: 'performance-at-cafe-theater-festival-2024', ext: 'png', title: 'Performance at Cafe Theater Festival 2024', when: '22–23 March, Café Pret, Rotterdam Zuid', body: [
+      'We\'ve been selected to present our new performance at Café Pret in Rotterdam Zuid as part of this year\'s Café Theater Festival. Taking place on March 22 & 23, the work is a collaboration between Isha van der Burg and Omid Kheirabadi—a layered, humorous exploration of two neighbors making a performance about two neighbors. What starts as playful meta-theatre spirals into a surreal investigation featuring Marx, a possibly fictional thinker named Gürt Woldertz (spelled wrong on purpose), and the unresolved mystery of basement defecation. No reservation needed—just drop by and watch it unfold.'
+    ] },
+    { slug: 'new-resident-of-timewindow', ext: 'gif', title: 'New Resident of TimeWindow', when: 'February 2024', body: [
+      'I am honored to announce that as of February 2024, I have become a new member and resident at TimeWindow creative community in Rotterdam.'
+    ] },
+    { slug: 'artist-residency-at-goethe-institute', ext: 'png', title: 'Artist residency at Goethe Institute', when: '1 September – 20 December 2023', body: [
+      'I am glad to announce that my research project "Happening to One Another" has been accepted to be part of the research and artist residency program at Goethe Institute in Rotterdam from the 1st of September until the 20th of December 2023.'
+    ] },
+    { slug: 'artist-start-grant', ext: 'png', title: 'Artist Start Grant', when: '2023', body: [
+      'I am honoured to receive a one-year grant from Mondriaan Fonds starting from 2023. I will be showcasing one project from this period in the Prospects exhibition in March 2025.'
+    ] },
+    { slug: 'open-call', ext: 'jpg', title: 'Open Call', when: 'September 2023', body: [
+      'I am looking for a few performance enthusiasts! For my project "Happening to One Another" I need some people who would like to be part of this artistic research and participate in four improvised performance sessions once a week in September 2023.'
+    ] },
+    { slug: 'oo-grant-cbk-2023', ext: 'jpg', title: 'O&O Grant CBK 2023', when: null, body: [
+      'Honored to receive the Research and Deepening Grant from CBK Rotterdam for the research project "Happening to one another: a study of performance art as a form of resistance."'
+    ] },
+    { slug: 'delft-fringe-festival-2023', ext: 'jpg', title: 'Delft Fringe Festival 2023', when: null, body: [
+      '\'alive & unborn\' is a dark satirical performance reflecting on the injustices created by years of the racist capitalist system, colonialism and slavery, and the demons of credit and debt. What\'s hope and how much of it is left for us?'
+    ] },
+    { slug: 'momo-festival-2023', ext: 'jpg', title: 'MOMO festival 2023', when: null, body: [
+      'Inburgered (Integrated) is a performance about the struggles of outsiders who try to integrate as "Dutch" citizens. Omid turns his focus toward Dutch society from his perspective of living in the Netherlands as an artist, performer, and researcher based in Rotterdam in this performance.'
+    ] },
+    { slug: 'creative-course-at-dakendagen-festival-2023', ext: 'jpg', title: 'Creative Course at Dakendagen Festival 2023', when: null, body: [
+      'One day performance workshop based on my two-week residency in Belfast, organized in collaboration with Dakendagen in two different locations in Rotterdam.'
+    ] },
+    { slug: 'artist-residency-in-belfast', ext: 'png', title: 'Artist Residency in Belfast', when: null, body: [
+      'I have been accepted to participate in the European Creative Rooftop Networks for exchange between Rotterdam, Belfast, and Nicosia for a two-week artist residency in Northern Ireland, a month of research, and to organize a creative workshop upon my return.'
+    ] }
+  ];
+
+  function initAnnouncementsModal() {
+    var trigger = document.querySelector('[data-announcements-trigger]');
+    if (!trigger) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'announcements-modal-overlay';
+
+    var modal = document.createElement('div');
+    modal.className = 'announcements-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'announcementsModalTitle');
+
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'announcements-modal-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.innerHTML = '&times;';
+    modal.appendChild(closeBtn);
+
+    var h2 = document.createElement('h2');
+    h2.id = 'announcementsModalTitle';
+    h2.textContent = 'announcements';
+    modal.appendChild(h2);
+
+    var list = document.createElement('div');
+    list.className = 'announcements-modal-list';
+
+    ANNOUNCEMENTS.forEach(function (item) {
+      var article = document.createElement('article');
+      article.className = 'announcement';
+
+      var img = document.createElement('img');
+      img.className = 'announcement-thumb';
+      img.src = BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext;
+      img.alt = '';
+      img.loading = 'lazy';
+      article.appendChild(img);
+
+      var h3 = document.createElement('h3');
+      h3.textContent = item.title;
+      article.appendChild(h3);
+
+      if (item.when) {
+        var when = document.createElement('span');
+        when.className = 'when';
+        when.textContent = item.when;
+        article.appendChild(when);
+      }
+
+      item.body.forEach(function (para) {
+        var p = document.createElement('p');
+        p.textContent = para;
+        article.appendChild(p);
+      });
+
+      list.appendChild(article);
+    });
+
+    modal.appendChild(list);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    function openModal() {
+      document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    trigger.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
     initContactModal();
     initInfoModal();
+    initAnnouncementsModal();
   });
 })();
