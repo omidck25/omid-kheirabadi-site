@@ -28,33 +28,12 @@
       { title: "belfast, oppressed", href: "projects/belfast-oppressed.html", year: "2023" },
       { title: "spend the night with me", href: "projects/spend-the-night-with-me.html", year: "2020" },
     ],
-    announcements: [
-      { title: "Summer Residency in Istanbul", href: "announcements.html#summer-residency-in-istanbul" },
-      { title: "EENDRACHT FESTIVAL", href: "announcements.html#eendracht-festival" },
-      { title: "Performance Session at Dokhuis", href: "announcements.html#performance-session-at-dokhuis" },
-      { title: "I&V GRANT CBK 2025", href: "announcements.html#iv-grant-cbk-2025" },
-      { title: "ART Rotterdam Exhibition", href: "announcements.html#art-rotterdam-exhibition" },
-      { title: "The End Has No End Performance Festival", href: "announcements.html#the-end-has-no-end-performance-festival" },
-      { title: "Marie-Louise Artist Residency", href: "announcements.html#marie-louise-artist-residency" },
-      { title: "GRAW 2024", href: "announcements.html#graw-2024" },
-      { title: "Praktijk Bijdrage GRANT CBK 2024", href: "announcements.html#praktijk-bijdrage-grant-cbk-2024" },
-      { title: "Artist Residency in Switzerland", href: "announcements.html#artist-residency-in-switzerland" },
-      { title: "Performance at Cafe Theater Festival 2024", href: "announcements.html#performance-at-cafe-theater-festival-2024" },
-      { title: "New Resident of TimeWindow", href: "announcements.html#new-resident-of-timewindow" },
-      { title: "Artist residency at Goethe Institute", href: "announcements.html#artist-residency-at-goethe-institute" },
-      { title: "Artist Start Grant", href: "announcements.html#artist-start-grant" },
-      { title: "Open Call", href: "announcements.html#open-call" },
-      { title: "O&O Grant CBK 2023", href: "announcements.html#oo-grant-cbk-2023" },
-      { title: "Delft Fringe Festival 2023", href: "announcements.html#delft-fringe-festival-2023" },
-      { title: "MOMO festival 2023", href: "announcements.html#momo-festival-2023" },
-      { title: "Creative Course at Dakendagen Festival 2023", href: "announcements.html#creative-course-at-dakendagen-festival-2023" },
-      { title: "Artist Residency in Belfast", href: "announcements.html#artist-residency-in-belfast" },
-    ],
   };
 
   // plain (non-dropdown) links that just need their href set relative to
   // the current page's depth, plus a "current" highlight when active
   var PLAIN_LINKS = [
+    { attr: 'data-announcements-link', href: 'announcements.html' },
     { attr: 'data-info-link', href: 'info.html' },
     { attr: 'data-store-link', href: 'store.html' },
     { attr: 'data-blog-link', href: 'blog.html' },

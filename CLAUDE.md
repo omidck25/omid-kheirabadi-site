@@ -35,8 +35,10 @@ art store, blog):
 - **Right** (vertical text, mirrored direction from left): "happenings" —
   dropdown with the 6 documented happenings + year.
 - **Top** (centered): brand "omid kheirabadi", links home.
-- **Bottom**: "announcements" (dropdown, 20 entries) + "info" + "art store" +
-  "blog" — all plain/direct links except announcements.
+- **Bottom**: "announcements", "info", "art store", "blog" — all plain/direct
+  links straight to their page (no dropdown). Announcements used to be a
+  dropdown of all 20 entries like projects/happenings, but was changed to a
+  plain link to the full `announcements.html` page per explicit request.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).

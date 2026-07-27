@@ -71,8 +71,7 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   transform:rotate(180deg); transition:transform 0.22s ease;
 }
 .ribbon-bottom .ribbon-trigger:hover,
-.ribbon-bottom .ribbon-trigger:focus,
-.ribbon-bottom.open [data-section]{
+.ribbon-bottom .ribbon-trigger:focus{
   transform:rotate(0deg);
   transition-delay:0.12s; /* a quick pass-by shouldn't be enough to trigger the flip */
 }
