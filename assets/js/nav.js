@@ -122,33 +122,33 @@
     });
   }
 
-  // Makes a .filmstrip gallery scroll endlessly in both directions by
-  // cloning a buffer of frames on each end and silently wrapping scrollLeft
-  // once the buffer is crossed. Also drives a slow automatic drift through
-  // the images (paused while the mouse is over it, or briefly after a
-  // manual arrow click) and adds prev/next arrow buttons, so browsing the
-  // gallery doesn't depend on grabbing the (now hidden) scrollbar thumb.
+  // Makes a .filmstrip gallery scroll — infinitely, with a slow ambient
+  // auto-drift, on desktop/mouse. On touch (phone AND tablet) it's a
+  // deliberately plain bounded scroller instead: no cloned buffer, no
+  // JS-driven scrollLeft jumps, no autoplay.
+  //
+  // Why the split: the infinite-loop illusion works by cloning frames at
+  // each end and silently jumping scrollLeft by one gallery-width once
+  // the user scrolls into the clone buffer. On a mouse that's harmless —
+  // wheel scroll fires discrete events with no ongoing gesture to
+  // interrupt. On touch it isn't: while a finger is actively dragging
+  // (or the browser is still running momentum/inertia after release),
+  // the browser owns an internal touch-tracking state tied to scrollLeft.
+  // Any programmatic scrollLeft change during that window — no matter
+  // how carefully timed — fights that native state and desyncs it,
+  // which is what repeated fix attempts (pausing autoplay, hiding the
+  // arrows, widening the buffer, batching the correction) kept failing
+  // to fully resolve: "loses control" / "jitters badly" after a few
+  // touches. Removing the JS scrollLeft manipulation from the touch path
+  // entirely removes the thing it was fighting with. A bounded gallery
+  // (first image to last, CSS scroll-snap doing the rest) is a small
+  // trade-off against a jittery "infinite" one.
   function loopifyFilmstrip(strip) {
     var frames = Array.prototype.slice.call(strip.children);
     var n = frames.length;
     if (n < 3) return;
 
-    var bufferCount = Math.min(n, 8);
-    var tailSource = frames.slice(-bufferCount); // clone these before the start
-    var headSource = frames.slice(0, bufferCount); // clone these after the end
-
-    function makeClone(el) {
-      var clone = el.cloneNode(true);
-      var img = clone.querySelector('img');
-      if (img) img.removeAttribute('loading'); // load buffer clones eagerly for accurate widths
-      return clone;
-    }
-
-    var tailClones = tailSource.map(makeClone);
-    var headClones = headSource.map(makeClone);
-
-    tailClones.forEach(function (c) { strip.insertBefore(c, strip.firstChild); });
-    headClones.forEach(function (c) { strip.appendChild(c); });
+    var coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 
     function widthOf(nodes) {
       var gap = parseFloat(getComputedStyle(strip).gap) || 0;
@@ -178,7 +178,7 @@
     wrap.appendChild(nextBtn);
 
     // Pause state used by the arrow buttons (mouse-only — they're hidden
-    // on touch devices below, see the pointer:coarse CSS rule).
+    // on touch devices via the pointer:coarse CSS rule).
     var paused = false;
     var resumeTimer = null;
     function pauseFor(ms) {
@@ -187,8 +187,7 @@
       resumeTimer = setTimeout(function () { paused = false; }, ms);
     }
 
-    // step by ~1.5 images per click, not a big page-sized jump — uses the
-    // average width of the real (un-cloned) frames since they vary in size
+    // step by ~1.5 images per click, not a big page-sized jump
     function stepWidth() {
       var avg = widthOf(frames) / frames.length;
       return avg * 1.5;
@@ -202,6 +201,28 @@
       strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
+    // Touch: stop here. Plain bounded scroller, native swipe only.
+    if (coarsePointer) return;
+
+    // ---- everything below is desktop/mouse only ----
+
+    var bufferCount = Math.min(n, 8);
+    var tailSource = frames.slice(-bufferCount); // clone these before the start
+    var headSource = frames.slice(0, bufferCount); // clone these after the end
+
+    function makeClone(el) {
+      var clone = el.cloneNode(true);
+      var img = clone.querySelector('img');
+      if (img) img.removeAttribute('loading'); // load buffer clones eagerly for accurate widths
+      return clone;
+    }
+
+    var tailClones = tailSource.map(makeClone);
+    var headClones = headSource.map(makeClone);
+
+    tailClones.forEach(function (c) { strip.insertBefore(c, strip.firstChild); });
+    headClones.forEach(function (c) { strip.appendChild(c); });
+
     function init() {
       var leadWidth = widthOf(tailClones);
       var originalWidth = widthOf(frames);
@@ -212,7 +233,8 @@
       // Looping (instead of a single if/else if) fully normalizes the
       // position in one pass no matter how far out of range a single
       // scroll step landed, rather than leaving it out of bounds for
-      // the next 'scroll' event to partially correct.
+      // the next 'scroll' event to partially correct. Safe here since
+      // this whole branch is mouse-only — no touch gesture to fight.
       strip.addEventListener('scroll', function () {
         while (strip.scrollLeft < leadWidth - originalWidth + 8) {
           strip.scrollLeft += originalWidth;
@@ -222,17 +244,8 @@
         }
       });
 
-      // Autoplay is desktop/mouse-only (fine pointer). On touch it kept
-      // fighting the browser's own momentum/inertia scrolling no matter
-      // how the pause/resume timing was tuned — jitter and loss of
-      // control kept resurfacing after a few touches, worse on tablets
-      // with stronger momentum curves than phones. Touch devices now
-      // rely purely on native swipe scrolling plus the wrap correction
-      // above, the same mechanism that worked reliably before autoplay
-      // was ever introduced.
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-      if (!reduceMotion && !coarsePointer) {
+      if (!reduceMotion) {
         var hovering = false;
         strip.addEventListener('pointerenter', function () { hovering = true; });
         strip.addEventListener('pointerleave', function () { hovering = false; });
