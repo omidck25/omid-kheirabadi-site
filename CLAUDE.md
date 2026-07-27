@@ -29,16 +29,22 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 
 Every page has the same fixed frame, built by `nav.js` from a shared `SECTIONS`
 data object (projects / happenings / announcements) plus a few plain links (info,
-art store, blog):
+art store, blog) and the contact-modal trigger:
 
 - **Left** (vertical text): "projects" — dropdown with all 13 projects + year.
 - **Right** (vertical text, mirrored direction from left): "happenings" —
   dropdown with the 6 documented happenings + year.
 - **Top** (centered): brand "omid kheirabadi", links home.
-- **Bottom**: "announcements", "info", "art store", "blog" — all plain/direct
-  links straight to their page (no dropdown). Announcements used to be a
-  dropdown of all 20 entries like projects/happenings, but was changed to a
-  plain link to the full `announcements.html` page per explicit request.
+- **Bottom**: "info", "announcements", "contact" — all plain/direct
+  links/actions (no dropdown). Announcements used to be a dropdown of all 20
+  entries like projects/happenings, but was changed to a plain link to the
+  full `announcements.html` page per explicit request. "Contact" isn't a
+  link — it opens the quick contact modal (see below). "Art store" and
+  "blog" are temporarily removed from this ribbon (not deleted — `store.html`
+  and `blog.html` still exist as draft pages) until there's real content for
+  them; `nav.js`'s `PLAIN_LINKS` entries for them are left in place since the
+  code already no-ops gracefully when the corresponding `[data-*-link]`
+  element isn't present on a page, so no JS cleanup was needed to hide them.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).
