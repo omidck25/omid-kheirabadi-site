@@ -29,6 +29,10 @@ body{
   color:var(--ink); white-space:nowrap; text-decoration:none;
 }
 .ribbon-trigger.current{ color:var(--rust); font-weight:500; }
+/* the trigger for whichever page you're actually on stays upright/readable
+   permanently, not just on hover — clicking through to a page "locks in"
+   the readable orientation for as long as you're there */
+.ribbon-trigger.current{ transform:rotate(0deg) !important; }
 .ribbon.open [data-section]{ font-style:normal; }
 
 /* on the homepage the italic logic is reversed: normal by default, italic
@@ -95,9 +99,9 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   transition:max-width 0.28s ease, max-height 0.28s ease;
 }
 .ribbon-left .ribbon-panel{ top:0; left:var(--ribbon-w); bottom:0; max-width:0; }
-.ribbon-left.open .ribbon-panel{ max-width:260px; }
+.ribbon-left.open .ribbon-panel{ max-width:260px !important; }
 .ribbon-right .ribbon-panel{ top:0; right:var(--ribbon-w); bottom:0; max-width:0; }
-.ribbon-right.open .ribbon-panel{ max-width:260px; }
+.ribbon-right.open .ribbon-panel{ max-width:260px !important; }
 .ribbon-top .ribbon-panel{ top:var(--ribbon-h); left:0; right:0; max-height:0; }
 .ribbon-top.open .ribbon-panel{ max-height:220px; }
 .ribbon-bottom .ribbon-panel{ bottom:var(--ribbon-h); left:0; right:0; max-height:0; }
@@ -294,7 +298,7 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
 @media (max-width:720px){
   :root{ --ribbon-w:40px; --ribbon-h:44px; }
   .ribbon-left .ribbon-panel, .ribbon-right .ribbon-panel{ max-width:0; }
-  .ribbon-left.open .ribbon-panel, .ribbon-right.open .ribbon-panel{ max-width:80vw; }
+  .ribbon-left.open .ribbon-panel, .ribbon-right.open .ribbon-panel{ max-width:80vw !important; }
   .ribbon-top .ribbon-brand{ font-size:0.82rem; }
 
   /* 4 labels don't fit one line at this width — scroll horizontally

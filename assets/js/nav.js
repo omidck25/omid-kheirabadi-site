@@ -116,7 +116,11 @@
     });
 
     document.querySelectorAll('.ribbon-trigger[data-section]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', function (e) {
+        // stop this click from also reaching the "click outside closes it"
+        // listener below — on some touch browsers that could otherwise
+        // fire on the same tap and immediately re-close the panel
+        e.stopPropagation();
         var ribbon = btn.closest('.ribbon');
         var isOpen = ribbon.classList.contains('open');
         document.querySelectorAll('.ribbon.open').forEach(function (r) {

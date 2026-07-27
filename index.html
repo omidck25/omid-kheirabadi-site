@@ -24,21 +24,32 @@
   .frag .cap{
     position:absolute; inset:0; z-index:2;
     display:flex; flex-direction:column; justify-content:flex-end;
-    padding:14px; background:rgba(17,16,15,0.72); color:#fff;
+    padding:calc(var(--sz, 220) * 0.06px); background:rgba(17,16,15,0.72); color:#fff;
     opacity:0; transition:opacity 0.28s; pointer-events:none;
   }
+  /* caption text is sized off each tile's own --sz custom property (set in
+     JS from the same SIZE the tile itself uses) instead of a fixed rem
+     value, so it scales down with the tile on small screens instead of
+     staying full-size and overflowing a much smaller box */
   .frag .cap .t{
-    font-family:'Newsreader',serif; font-style:italic; font-weight:400; font-size:0.9rem;
-    margin-bottom:5px;
+    font-family:'Newsreader',serif; font-style:italic; font-weight:400;
+    font-size:clamp(0.62rem, calc(var(--sz, 220) * 0.075px), 0.9rem);
+    line-height:1.25; margin-bottom:0.35em;
   }
   .frag .cap .d{
-    font-family:'Newsreader', serif; font-weight:300; font-size:0.74rem; line-height:1.4;
+    font-family:'Newsreader', serif; font-weight:300;
+    font-size:clamp(0.52rem, calc(var(--sz, 220) * 0.06px), 0.74rem);
+    line-height:1.35;
     color:rgba(255,255,255,0.72);
   }
   .frag.active .cap{ opacity:1; }
   .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
   .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
-  .frag .cap a{ pointer-events:auto; color:#e8a690; font-family:'Space Grotesk',sans-serif; font-size:0.66rem; letter-spacing:0.03em; margin-top:8px; display:inline-block; }
+  .frag .cap a{
+    pointer-events:auto; color:#e8a690; font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(0.5rem, calc(var(--sz, 220) * 0.052px), 0.66rem);
+    letter-spacing:0.03em; margin-top:0.5em; display:inline-block;
+  }
 
   @media (prefers-reduced-motion: reduce){
     .frag{ transition:none; }
@@ -213,6 +224,7 @@ images.forEach((data) => {
   el.className = 'frag';
   el.style.width = SIZE + 'px';
   el.style.height = SIZE + 'px';
+  el.style.setProperty('--sz', SIZE);
   el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project &rarr;</a></div>`;
   makeNode(el, SIZE, SIZE);
 });
