@@ -66,6 +66,19 @@
       if (moreTrigger) moreTrigger.classList.add('current');
     }
 
+    // Some pages are both a "project" and one of the curated "happenings"
+    // (they share the same underlying project page — happenings is just a
+    // subset of projects). Both the left (projects) and right (happenings)
+    // ribbon triggers used to light up together on those pages. Happening
+    // status now takes precedence: only the happenings trigger reacts,
+    // projects stays black/unreacted, even though the page is technically
+    // in both lists. (List-item highlighting inside each dropdown is left
+    // alone — the page's title still shows as current in both lists, this
+    // only changes which top-level trigger button gets the color.)
+    var isHappening = SECTIONS.happenings.some(function (entry) {
+      return entry.href.split('#')[0].split('/').pop() === currentFile;
+    });
+
     Object.keys(SECTIONS).forEach(function (key) {
       var panel = document.getElementById('panel-' + key);
       if (!panel) return;
@@ -102,7 +115,7 @@
       }
 
       panel.appendChild(list);
-      if (hasCurrent) {
+      if (hasCurrent && !(key === 'projects' && isHappening)) {
         var trigger = document.querySelector('[data-section="' + key + '"]');
         if (trigger) trigger.classList.add('current');
       }
