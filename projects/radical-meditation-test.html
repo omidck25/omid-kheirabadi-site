@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omid kheirabadi — radical meditation (layout test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="../assets/css/fonts.css" rel="stylesheet">
+<link href="../assets/css/site.css" rel="stylesheet">
+<style>
+  /* ===== layout test: images woven into the text instead of a separate
+     gallery at the bottom. Scoped to this test page only (site.css
+     untouched) so it can be reviewed before deciding whether to carry it
+     over to the real project template. Visual treatment (grayscale +
+     contrast filter, drop shadow, hover-lift) is the same one the
+     homepage drift tiles and the old filmstrip already used, so it reads
+     as the same photo-object language as the rest of the site rather
+     than a new one. ===== */
+  .test-banner{
+    background:var(--ink); color:#fff; font-family:'Space Grotesk',sans-serif;
+    font-size:0.72rem; letter-spacing:0.04em; text-align:center;
+    padding:0.6em 1em; position:relative; z-index:70;
+  }
+  .test-banner a{ color:#e8a690; }
+
+  .story-block{ overflow:hidden; margin:2.4em 0; }
+  .story-block::after{ content:""; display:table; clear:both; }
+  .story-img{
+    display:block; width:100%; height:auto; object-fit:cover;
+    box-shadow:0 10px 26px rgba(0,0,0,0.18);
+    filter:grayscale(15%) contrast(1.05);
+    background:#eee;
+    transition:transform 0.3s ease;
+  }
+  .story-img:hover{ transform:translateY(-4px); }
+  .story-block.img-right .story-img{ float:right; width:44%; margin:0.2em 0 1em 1.8em; }
+  .story-block.img-left .story-img{ float:left; width:44%; margin:0.2em 1.8em 1em 0; }
+
+  .story-pair{ display:flex; gap:18px; margin:2.8em 0; }
+  .story-pair img{
+    flex:1; width:50%; height:300px; object-fit:cover;
+    box-shadow:0 10px 26px rgba(0,0,0,0.18);
+    filter:grayscale(15%) contrast(1.05);
+    transition:transform 0.3s ease;
+  }
+  .story-pair img:hover{ transform:translateY(-4px); }
+
+  .story-spread-label{
+    font-family:'Space Grotesk',sans-serif; font-size:0.68rem; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--grey); margin:3em 0 1em;
+  }
+  .story-spread{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+    gap:14px; margin-bottom:2em;
+  }
+  .story-spread img{
+    width:100%; height:180px; object-fit:cover;
+    box-shadow:0 8px 20px rgba(0,0,0,0.16);
+    filter:grayscale(15%) contrast(1.05);
+    transition:transform 0.25s ease;
+  }
+  .story-spread img:hover{ transform:translateY(-4px); }
+
+  @media (max-width:720px){
+    .story-block.img-right .story-img, .story-block.img-left .story-img{
+      float:none; width:100%; margin:0 0 1em;
+    }
+    .story-pair{ flex-direction:column; }
+    .story-pair img{ width:100%; height:220px; }
+    .story-spread{ grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px; }
+    .story-spread img{ height:130px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="test-banner">layout test — not linked from navigation, for review only &middot; real page: <a href="radical-meditation.html">radical-meditation.html</a></div>
+
+<div class="ribbon ribbon-top">
+  <a class="ribbon-brand" href="#">omid kheirabadi</a>
+</div>
+<div class="ribbon ribbon-left">
+  <button class="ribbon-trigger" type="button" data-section="projects"><span>projects</span></button>
+  <div class="ribbon-panel" id="panel-projects"></div>
+</div>
+<div class="ribbon ribbon-right">
+  <button class="ribbon-trigger" type="button" data-section="happenings"><span>happenings</span></button>
+  <div class="ribbon-panel" id="panel-happenings"></div>
+</div>
+<div class="ribbon ribbon-bottom">
+  <button class="ribbon-trigger" type="button" data-section="more">more</button>
+  <div class="ribbon-panel" id="panel-more">
+    <ul>
+      <li><button type="button" data-info-trigger>info</button></li>
+      <li><button type="button" data-announcements-trigger>announcements</button></li>
+      <li><button type="button" data-contact-trigger>contact</button></li>
+    </ul>
+  </div>
+</div>
+
+<main class="page">
+  <img class="project-hero" src="../assets/images/projects/radical-meditation/01.jpg" alt="radical meditation">
+  <h1>radical meditation</h1>
+  <p class="meta">Immersive performance &middot; Marie Louise, Rotterdam &middot; 2024</p>
+
+  <div class="story-block img-right">
+    <img class="story-img" src="../assets/images/projects/radical-meditation/02.jpg" alt="">
+    <p>Radical Meditation is an immersive performance that explores the relationship between mindfulness, power, and late-capitalist culture. Developed during an intensive residency at Marie Louise in Rotterdam, the work investigates the growing commodification of mindfulness and its transformation into a tool for productivity and self-optimization.</p>
+  </div>
+
+  <div class="story-block img-left">
+    <img class="story-img" src="../assets/images/projects/radical-meditation/03.jpg" alt="">
+    <p>Framed as a session by the fictional Radical Mindfulness Co.&trade;, the performance adopts the aesthetics and language of corporate wellness to blur the boundaries between sincerity and satire, inviting participants to question where personal transformation ends and ideological conditioning begins.</p>
+  </div>
+
+  <div class="story-pair">
+    <img src="../assets/images/projects/radical-meditation/04.jpg" alt="">
+    <img src="../assets/images/projects/radical-meditation/05.jpg" alt="">
+  </div>
+
+  <div class="story-block img-right">
+    <img class="story-img" src="../assets/images/projects/radical-meditation/06.jpg" alt="">
+    <p>Drawing from contemplative traditions, participatory performance, and social critique, Radical Meditation places audiences inside a carefully choreographed experience that unfolds through ritual, instruction, and collective participation.</p>
+  </div>
+
+  <div class="story-block img-left">
+    <img class="story-img" src="../assets/images/projects/radical-meditation/07.jpg" alt="">
+    <p>Rather than presenting a fixed narrative, the work creates a temporary community where humor, vulnerability, and critical reflection coexist. Premiered at Marie Louise in Rotterdam in 2024, the performance was later presented at THE END HAS NO END Festival at TimeWindow and at Eendracht Festival in 2025, continuing to evolve through each encounter with new audiences.</p>
+  </div>
+
+  <p class="story-spread-label">more from radical meditation</p>
+  <div class="story-spread">
+    <img src="../assets/images/projects/radical-meditation/08.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/09.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/10.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/11.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/12.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/13.jpg" alt="" loading="lazy">
+    <img src="../assets/images/projects/radical-meditation/14.jpg" alt="" loading="lazy">
+  </div>
+
+  <nav class="project-nav">
+    <a href="its-fine-really-silly-me.html">&larr; it's fine really, silly me!</a>
+    <a href="../index.html">all projects</a>
+    <a href="carnisse-in-flux.html">carnisse in flux &rarr;</a>
+  </nav>
+</main>
+
+<script>window.SITE_BASE = '../';</script>
+<script src="../assets/js/nav.js"></script>
+</body>
+</html>
