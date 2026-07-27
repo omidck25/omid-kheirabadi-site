@@ -31,7 +31,7 @@
 
 <main class="page">
   <h1>info</h1>
-  <p class="meta">bio &middot; contact</p>
+  <p class="meta">bio</p>
 
   <p>Omid Kheirabadi (b. 1992, Tehran) is a Rotterdam-based interdisciplinary performance artist and interior architect whose work critically examines societal structures, power dynamics, and collective agency within late-capitalist frameworks. His art challenges conventional narratives by exposing the oppressive mechanisms of global economic disparities, labor, legal systems, and Western hegemony while proposing alternative possibilities for coexistence and liberation. Omid's practice spans experimental performance, participatory workshops, and multimedia installations, all fostering dialogue and critical reflection. Over the past three years, he has developed performance sessions, inspired by Augusto Boal's Theatre of the Oppressed and the concept of arte útil. These participatory sessions break traditional performance boundaries by transforming audience members into collaborators, creating fluid spaces where hierarchies, power structures, and perceptions of space shift through collective action.</p>
 
@@ -39,99 +39,10 @@
 
   <p>His work has been showcased across Europe in exhibitions, festivals, and residencies, including Amsterdam, The Hague, Leuven, Utrecht, Belfast, Maastricht, and Rotterdam. In Zurich, at ZHdK's "Performative Interventions" program, he further explored the intersection of resistance against global capitalism and performance art, in an intensive artistic research seminar. Currently based at <a href="https://timewindow.nl/" target="_blank" rel="noopener">TimeWindow</a> in Rotterdam, Omid continues to push the boundaries of interdisciplinary practice, blending performance, spatial design, and participatory art to foster collective creativity and reimagine societal possibilities.</p>
 
-  <p class="meta" style="margin-top:2em;">education</p>
-  <p>MFA in Artistic Research, Royal Academy of Art, The Hague (2022)<br>
-  MA in Interior Architecture, Maastricht Academy of Architecture (2019)</p>
-
-  <p class="meta" style="margin-top:2em;">contact</p>
-  <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
-    <input type="hidden" name="access_key" value="6c272ff5-262f-418b-9d98-1b1960402820">
-    <input type="hidden" name="subject" value="New message from omidkheirabadi.com">
-    <input type="checkbox" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">
-
-    <div class="field">
-      <label for="cf-name">name</label>
-      <input type="text" id="cf-name" name="name" required>
-    </div>
-    <div class="field">
-      <label for="cf-email">email</label>
-      <input type="email" id="cf-email" name="email" required>
-    </div>
-    <div class="field">
-      <label for="cf-message">message</label>
-      <textarea id="cf-message" name="message" rows="5" required></textarea>
-    </div>
-    <button type="submit">send</button>
-    <p class="form-note" id="formNote" style="display:none;"></p>
-  </form>
-
   <a class="back-home" href="index.html">&larr; back to home</a>
 </main>
 
 <script>window.SITE_BASE = '';</script>
 <script src="./assets/js/nav.js"></script>
-<script>
-  const contactForm = document.getElementById('contactForm');
-  const formNote = document.getElementById('formNote');
-
-  function submitPayload(payload) {
-    return fetch(contactForm.action, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .catch(() => ({ success: false }));
-  }
-
-  function wait(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = contactForm.querySelector('button');
-    const payload = Object.fromEntries(new FormData(contactForm));
-
-    btn.disabled = true;
-    btn.classList.add('sending');
-    formNote.classList.remove('show', 'success', 'error');
-
-    // animate the button through "sending." / ".." / "..." while the
-    // request is in flight, with a minimum visible duration so it never
-    // feels instant even when the network is fast
-    let dots = 0;
-    const dotTimer = setInterval(() => {
-      dots = (dots % 3) + 1;
-      btn.textContent = 'sending' + '.'.repeat(dots);
-    }, 350);
-
-    const [data] = await Promise.all([submitPayload(payload), wait(1500)]);
-
-    clearInterval(dotTimer);
-    btn.disabled = false;
-    btn.classList.remove('sending');
-
-    formNote.style.display = 'block';
-    if (data.success) {
-      btn.textContent = 'sent ✓';
-      btn.classList.add('sent');
-      formNote.classList.add('success');
-      formNote.textContent = "Thank you — your message is on its way. I'll get back to you soon.";
-      contactForm.reset();
-      setTimeout(() => {
-        btn.classList.remove('sent');
-        btn.textContent = 'send';
-      }, 2400);
-    } else {
-      btn.textContent = 'send';
-      formNote.classList.add('error');
-      formNote.textContent = 'Something went wrong — please try again, or email directly.';
-    }
-
-    // trigger the fade/slide-in on the next frame so the transition actually runs
-    requestAnimationFrame(() => formNote.classList.add('show'));
-  });
-</script>
 </body>
 </html>

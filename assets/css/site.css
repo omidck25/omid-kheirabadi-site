@@ -174,30 +174,6 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   text-transform:uppercase; color:var(--rust); text-decoration:none;
 }
 
-.contact-form{ max-width:420px; margin-top:0.5em; }
-.contact-form .field{ margin-bottom:1.5em; }
-.contact-form label{
-  display:block; font-family:'Space Grotesk',sans-serif; font-size:0.68rem;
-  letter-spacing:0.05em; text-transform:uppercase; color:var(--grey); margin-bottom:0.5em;
-}
-.contact-form input, .contact-form textarea{
-  width:100%; border:none; border-bottom:1px solid rgba(20,19,17,0.25);
-  background:none; font:inherit; font-family:'Newsreader',serif; font-size:0.95rem;
-  color:var(--ink); padding:0.4em 0.1em; resize:vertical;
-}
-.contact-form input:focus, .contact-form textarea:focus{
-  outline:none; border-bottom-color:var(--rust);
-}
-.contact-form button{
-  font-family:'Space Grotesk',sans-serif; font-size:0.75rem; letter-spacing:0.05em;
-  text-transform:uppercase; background:var(--ink); color:#fff; border:none;
-  padding:0.7em 1.6em; cursor:pointer; min-width:112px;
-  transition:background 0.25s ease;
-}
-.contact-form button:hover{ background:var(--rust); }
-.contact-form button.sending{ background:var(--grey); cursor:default; }
-.contact-form button.sent{ background:#3a7a4e; }
-
 .form-note{
   font-family:'Newsreader',serif; font-style:italic; font-size:0.95rem;
   color:var(--ink); margin-top:1.4em; padding:0.9em 1.1em;
@@ -401,7 +377,6 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .store-grid{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:24px; }
   .blog-post-figures{ flex-direction:column; }
   .blog-post-figures img{ max-height:none; }
-  .contact-form{ max-width:100%; }
   .gallery{ margin:2.5em -6vw 0; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }

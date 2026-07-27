@@ -125,12 +125,16 @@ deliberate user request, not an inconsistency to "fix."
 - Images were downloaded directly from Wix's CDN at their already-served
   resolution (not the huge originals) — no re-compression needed.
 
-## Contact form (`info.html`)
+## Contact modal (`assets/js/nav.js`, `initContactModal`)
 
-Uses [Web3Forms](https://web3forms.com) (free, no backend). The access key in
-the form is live and confirmed connected to the user's correct inbox. Has a
-staged "sending..." animation with a forced minimum delay so it never feels
-instant, plus a styled success/error note.
+The only contact method on the site now — info.html's own form was removed
+per explicit request (it felt too formal/hard to find). A "contact" item in
+the bottom ribbon (every page) opens a small popup instead, injected by
+`nav.js`: To/From/Message stacked, one send button, styled after a simple
+mail-compose sheet. Uses [Web3Forms](https://web3forms.com) (free, no
+backend); the access key is live and confirmed connected to the user's
+correct inbox. Has a staged "sending..." animation with a forced minimum
+delay so it never feels instant, plus a styled success/error note.
 
 ## Open items / known drafts
 
