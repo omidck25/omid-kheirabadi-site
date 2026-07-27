@@ -324,3 +324,19 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   :root{ --ribbon-w:46px; --ribbon-h:48px; }
   .store-grid{ grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
 }
+
+/* On desktop/tablet, .page itself is capped at max-width:820px and isn't
+   centered, so on a wide viewport it sits flush-left with a lot of empty
+   space to the right. The gallery and prev/next nav below the text column
+   used to inherit that same narrow width. These two are pulled full-bleed
+   (edge to edge between the ribbons) instead, independent of the text
+   column's width. Left off mobile on purpose — at that width .page is
+   already close to the full available width anyway. */
+@media (min-width:721px){
+  .gallery{ width:calc(100vw - 2 * var(--ribbon-w)); }
+  .project-nav{
+    width:calc(100vw - 2 * var(--ribbon-w));
+    margin-left:-8vw;
+    padding-left:8vw; padding-right:8vw;
+  }
+}
