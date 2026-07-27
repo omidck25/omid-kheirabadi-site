@@ -125,12 +125,11 @@ function drawWeb(){
   webCtx.clearRect(0, 0, w, h);
   if (nodes.length < 2) return;
 
-  const centers = nodes.map(n => ({ x: n.x + n.w / 2, y: n.y + n.h / 2 }));
-  const NEIGHBOURS = 2; // each tile reaches for its 2 closest others
+  // depth (z) is -1..1; nearer tiles draw bolder, further ones fainter —
+  // reads as the web receding into the same space the tiles float in
+  const centers = nodes.map(n => ({ x: n.x + n.w / 2, y: n.y + n.h / 2, z: n.z || 0 }));
+  const NEIGHBOURS = 4; // each tile stays linked to its 4 closest others
   const drawn = new Set();
-
-  webCtx.strokeStyle = 'rgba(20,19,17,0.32)';
-  webCtx.lineWidth = 1;
 
   centers.forEach((c, i) => {
     const nearest = centers
@@ -143,6 +142,12 @@ function drawWeb(){
       const key = i < j ? i + '-' + j : j + '-' + i;
       if (drawn.has(key)) return;
       drawn.add(key);
+
+      const avgZ = (c.z + centers[j].z) / 2; // -1 (far) .. 1 (near)
+      const opacity = 0.45 + avgZ * 0.25;
+      webCtx.strokeStyle = `rgba(20,19,17,${Math.max(0.2, Math.min(0.75, opacity))})`;
+      webCtx.lineWidth = 0.8 + avgZ * 0.5;
+
       webCtx.beginPath();
       webCtx.moveTo(c.x, c.y);
       webCtx.lineTo(centers[j].x, centers[j].y);
@@ -180,6 +185,8 @@ function makeNode(el, w, h){
     w, h,
     vx: (Math.random() - 0.5) * 0.35,
     vy: (Math.random() - 0.5) * 0.35,
+    z: Math.random() * 2 - 1, // -1 (far) .. 1 (near) — depth in the third dimension
+    vz: (Math.random() - 0.5) * 0.006,
     rot: 0,
     vrot: 0,
     speed: 1,
@@ -365,12 +372,15 @@ function tick(){
     if (n.speed > 0.001) {
       n.x += n.vx * n.speed;
       n.y += n.vy * n.speed;
+      n.z += n.vz * n.speed;
       n.rot += n.vrot * n.speed;
 
       if (n.x <= ins.left || n.x + n.w >= w - ins.right) n.vx *= -1;
       if (n.y <= ins.top || n.y + n.h >= h - ins.bottom) n.vy *= -1;
+      if (n.z <= -1 || n.z >= 1) n.vz *= -1;
       n.x = Math.max(ins.left, Math.min(w - ins.right - n.w, n.x));
       n.y = Math.max(ins.top, Math.min(h - ins.bottom - n.h, n.y));
+      n.z = Math.max(-1, Math.min(1, n.z));
     }
   });
 
@@ -381,8 +391,14 @@ function tick(){
   }
 
   nodes.forEach(n => {
-    const scale = n.dragging ? 1.08 : 1 + 0.08 * (1 - n.speed);
+    // depth: nearer tiles (z→1) render larger, further ones (z→-1) smaller —
+    // collision boxes stay unchanged (2D only), this is purely visual
+    const depthScale = 1 + n.z * 0.4;
+    const scale = (n.dragging ? 1.08 : 1 + 0.08 * (1 - n.speed)) * depthScale;
     n.el.style.transform = `translate(${n.x}px, ${n.y}px) rotate(${n.rot}deg) scale(${scale})`;
+    if (!n.dragging && !n.engaged) {
+      n.el.style.zIndex = Math.round((n.z + 1) * 100);
+    }
   });
 
   drawWeb();
