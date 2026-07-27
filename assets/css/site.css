@@ -380,15 +380,24 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .gallery{ margin:2.5em -6vw 0; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
-  /* a tap/swipe is enough to browse on touch; the arrow buttons just
-     took up space and looked oversized at this width */
-  .filmstrip-arrow{ display:none; }
   .contact-modal{ padding:2em 1.4em 1.6em; }
 }
 
 @media (min-width:721px) and (max-width:1024px){
   :root{ --ribbon-w:46px; --ribbon-h:48px; }
   .store-grid{ grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+}
+
+/* The arrow buttons sit directly on top of the touch-scrollable image
+   row (absolutely positioned over it), so on any touch device a swipe
+   that starts near one could register as a tap instead — firing the
+   arrow's smooth-scroll while the browser's own swipe-scroll is also
+   running, which is what caused the jittery/fighting-with-itself feel.
+   Targets touch-primary devices directly (pointer: coarse) rather than
+   a specific viewport width, so it covers phones AND tablets alike —
+   a tap/swipe is enough to browse on touch either way. */
+@media (pointer: coarse){
+  .filmstrip-arrow{ display:none; }
 }
 
 /* On desktop/tablet, .page itself is capped at max-width:820px and isn't
