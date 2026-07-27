@@ -70,15 +70,17 @@ mirrored directions from each other.
 
 ### Gotcha: don't couple width-changing styles to space-evenly flex siblings
 
-The bottom ribbon holds 4 items in one `justify-content:space-evenly` flex row.
-Toggling `font-style: italic` on hover-in of one item changed *its own* rendered
-width slightly (italic glyphs measure differently), which reflowed the whole row
-and visibly shifted the other 3 items — looked like "random items jumping" and
-took a few rounds to actually diagnose. Fix: don't toggle width-affecting
-properties (font-style, font-weight, letter-spacing) on elements that share a
-flex row with siblings whose position matters. `transform` is always safe (it's
-post-layout, never triggers reflow) — that's why the rotate-on-hover doesn't have
-this problem.
+The bottom ribbon holds items in one `justify-content:space-evenly` flex row.
+Toggling `font-style: italic` on hover-in of one item (back when the site had
+an italic/upright font toggle — since removed, see "Single font system"
+below) changed *its own* rendered width slightly (italic glyphs measure
+differently), which reflowed the whole row and visibly shifted the other
+items — looked like "random items jumping" and took a few rounds to actually
+diagnose. The general lesson still applies even with italic gone: don't
+toggle width-affecting properties (font-style, font-weight, letter-spacing)
+on elements that share a flex row with siblings whose position matters.
+`transform` is always safe (it's post-layout, never triggers reflow) — that's
+why the rotate-on-hover doesn't have this problem.
 
 ### Gotcha: `.current`/`.open` styling must target the specific trigger, not the ribbon
 
@@ -108,12 +110,27 @@ ribbon item matches the page you're on (set by the `.current` class logic
 above) stays readable/upright the whole time you're on that page, not just on
 hover. Applies to all four ribbons, mobile and desktop.
 
-### Homepage-only reversed italics
+### Single font system: Space Grotesk everywhere, no italic
 
-On `index.html` only (`body.home` class), ribbon trigger text is upright by
-default and goes italic on hover/open — the opposite of every other page, where
-it's italic by default and goes upright on hover/open. This was an explicit,
-deliberate user request, not an inconsistency to "fix."
+The site used to mix two fonts — 'Newsreader' (an italic serif) for
+headings/titles/body text and 'Space Grotesk' (upright sans) for nav/meta
+labels — with an italic-default/upright-on-hover toggle on ribbon triggers
+(reversed on the homepage specifically: upright by default, italic on
+hover/open there). All of that was removed per explicit request ("simpler
+but still classy... fits a contemporary conceptual artist" + "the font of
+main texts and paragraphs I do not like"). The whole site — headings, body
+text, nav, everything — now uses 'Space Grotesk' only, upright, at weights
+400/500/700 (only weights actually @font-face'd in `assets/css/fonts.css`;
+don't reach for other weights without adding the face first). Newsreader's
+`@font-face` rules were deleted from `fonts.css` entirely since nothing
+references it anymore — if it's ever needed again, the previous version is
+in git history.
+
+This also simplified away the italic-driven ribbon interaction entirely
+(the `body.home` reversed-italic rule, the `.ribbon.open [data-section]`
+italic toggle, etc.) — the rotate-to-upright-on-hover/current-page behavior
+is untouched and is now the *only* interactive typographic signal on ribbon
+triggers, which is intentionally simpler than before.
 
 ## Homepage drift physics (`index.html` inline script)
 
@@ -174,6 +191,13 @@ reverting means: restoring `info.html` (git history has the last version
 before removal), re-adding its `data-info-link` ribbon item to all pages'
 bottom ribbon + `nav.js`'s `PLAIN_LINKS`, and removing `initInfoModal()` +
 its CSS.
+
+The modal is deliberately compact (small type, tight line-height, minimal
+padding) so the bio text fits within the viewport without scrolling on
+ordinary screens — `overflow-y:auto` + a generous `max-height` are kept
+only as a last-resort safety net for very small screens, not the intended
+way to view it. If more text gets added later, prefer trimming/tightening
+further over letting it silently start scrolling.
 
 ## Open items / known drafts
 
