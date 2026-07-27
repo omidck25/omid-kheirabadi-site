@@ -122,27 +122,24 @@
     });
   }
 
-  // Makes a .filmstrip gallery scroll — infinitely, with a slow ambient
-  // auto-drift, on desktop/mouse. On touch (phone AND tablet) it's a
-  // deliberately plain bounded scroller instead: no cloned buffer, no
-  // JS-driven scrollLeft jumps, no autoplay.
+  // Makes a .filmstrip gallery loop infinitely by cloning a small buffer
+  // of frames at each end and jumping scrollLeft by one gallery-width
+  // once the user scrolls into that buffer. Desktop/mouse also gets a
+  // slow ambient auto-drift.
   //
-  // Why the split: the infinite-loop illusion works by cloning frames at
-  // each end and silently jumping scrollLeft by one gallery-width once
-  // the user scrolls into the clone buffer. On a mouse that's harmless —
-  // wheel scroll fires discrete events with no ongoing gesture to
-  // interrupt. On touch it isn't: while a finger is actively dragging
-  // (or the browser is still running momentum/inertia after release),
-  // the browser owns an internal touch-tracking state tied to scrollLeft.
-  // Any programmatic scrollLeft change during that window — no matter
-  // how carefully timed — fights that native state and desyncs it,
-  // which is what repeated fix attempts (pausing autoplay, hiding the
-  // arrows, widening the buffer, batching the correction) kept failing
-  // to fully resolve: "loses control" / "jitters badly" after a few
-  // touches. Removing the JS scrollLeft manipulation from the touch path
-  // entirely removes the thing it was fighting with. A bounded gallery
-  // (first image to last, CSS scroll-snap doing the rest) is a small
-  // trade-off against a jittery "infinite" one.
+  // Touch (phone and tablet) gets the same loop, but the correction is
+  // debounced to only run once scrolling has fully settled — no active
+  // finger, no momentum still coasting — instead of on every 'scroll'
+  // event. That timing is the whole fix for the jitter reported earlier:
+  // while a finger is dragging, or the browser is still running
+  // momentum/inertia after release, it owns an internal touch-tracking
+  // state tied to scrollLeft, and ANY programmatic scrollLeft change
+  // during that window fights it, no matter how carefully timed.
+  // Waiting until scrolling is provably idle sidesteps that entirely —
+  // there's nothing left to fight. Touch also skips autoplay (nothing
+  // to fight there either, but no reason to add it back) and uses a
+  // smaller clone buffer, since it only needs to cover a single swipe's
+  // worth of distance rather than a continuously-running auto-drift.
   function loopifyFilmstrip(strip) {
     var frames = Array.prototype.slice.call(strip.children);
     var n = frames.length;
@@ -155,6 +152,13 @@
       return nodes.reduce(function (sum, el) {
         return sum + el.getBoundingClientRect().width + gap;
       }, 0);
+    }
+
+    function makeClone(el) {
+      var clone = el.cloneNode(true);
+      var img = clone.querySelector('img');
+      if (img) img.removeAttribute('loading'); // load buffer clones eagerly for accurate widths
+      return clone;
     }
 
     // wrap just the strip (not the "N images" label above it) so the
@@ -201,25 +205,9 @@
       strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
-    // Touch: stop here. Plain bounded scroller, native swipe only.
-    if (coarsePointer) return;
-
-    // ---- everything below is desktop/mouse only ----
-
-    var bufferCount = Math.min(n, 8);
-    var tailSource = frames.slice(-bufferCount); // clone these before the start
-    var headSource = frames.slice(0, bufferCount); // clone these after the end
-
-    function makeClone(el) {
-      var clone = el.cloneNode(true);
-      var img = clone.querySelector('img');
-      if (img) img.removeAttribute('loading'); // load buffer clones eagerly for accurate widths
-      return clone;
-    }
-
-    var tailClones = tailSource.map(makeClone);
-    var headClones = headSource.map(makeClone);
-
+    var bufferCount = coarsePointer ? Math.min(n, 4) : Math.min(n, 8);
+    var tailClones = frames.slice(-bufferCount).map(makeClone);
+    var headClones = frames.slice(0, bufferCount).map(makeClone);
     tailClones.forEach(function (c) { strip.insertBefore(c, strip.firstChild); });
     headClones.forEach(function (c) { strip.appendChild(c); });
 
@@ -232,17 +220,29 @@
 
       // Looping (instead of a single if/else if) fully normalizes the
       // position in one pass no matter how far out of range a single
-      // scroll step landed, rather than leaving it out of bounds for
-      // the next 'scroll' event to partially correct. Safe here since
-      // this whole branch is mouse-only — no touch gesture to fight.
-      strip.addEventListener('scroll', function () {
+      // scroll step landed.
+      function correct() {
         while (strip.scrollLeft < leadWidth - originalWidth + 8) {
           strip.scrollLeft += originalWidth;
         }
         while (strip.scrollLeft > leadWidth + originalWidth - 8) {
           strip.scrollLeft -= originalWidth;
         }
-      });
+      }
+
+      if (coarsePointer) {
+        var settleTimer = null;
+        strip.addEventListener('scroll', function () {
+          clearTimeout(settleTimer);
+          settleTimer = setTimeout(correct, 200);
+        });
+        return;
+      }
+
+      // Desktop/mouse: correct immediately on every scroll event — safe
+      // since there's no touch gesture to fight, and autoplay needs it
+      // to keep drifting smoothly through the loop without waiting.
+      strip.addEventListener('scroll', correct);
 
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!reduceMotion) {
