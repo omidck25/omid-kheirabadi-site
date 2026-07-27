@@ -11,16 +11,26 @@ step, no framework, no dependencies. Deployable as-is to any static host.
   project per pageload (see "Image pools" below).
 - `info.html`, `announcements.html`, `happenings.html` — content pages.
 - `store.html`, `blog.html` — **drafts**, not real yet (see "Open items").
-- `projects/*.html` — 13 individual project pages, each with a hero image, the
+- `projects/*.html` — 14 individual project pages, each with a hero image, the
   full write-up, and a filmstrip gallery of that project's photos at the bottom.
+  13 of these came from the original Wix scrape; `radical-meditation.html`
+  (2024) was added later directly from the user's own photos/text (not on the
+  original Wix site) — its images live at
+  `assets/images/projects/radical-meditation/` like any other project, just
+  not covered by `content/image-manifest.md`'s "from the Wix scrape" scope.
 - `assets/css/site.css` — the only stylesheet, shared by every page.
 - `assets/js/nav.js` — builds the ribbon nav + dropdown panels on every page
   (via `DOMContentLoaded`), and makes project galleries scroll infinitely.
 - `assets/images/projects/<slug>/` — 221 images downloaded from the original Wix
-  site, self-hosted (not hotlinked). Numbered `01.jpg`, `02.jpg`, ...
+  site, self-hosted (not hotlinked), plus 14 more for `radical-meditation`
+  supplied directly by the user. Numbered `01.jpg`, `02.jpg`, ...
 - `content/extracted-content.md` — full text extracted verbatim from the live Wix
   site (source of truth for all project descriptions, bio, announcements).
-- `content/image-manifest.md` — what's in each project's image folder.
+  Does not include `radical-meditation` (added later, not on Wix) — that
+  project's text came from a `.txt` file the user dropped into its image
+  folder, since incorporated into the page and removed.
+- `content/image-manifest.md` — what's in each project's image folder (13
+  Wix-scraped projects only, see above).
 - `omid kheirabadi — drift.html` + `omid kheirabadi — drift_files/` — **legacy**,
   the user's original single-file draft before the rebuild. Superseded by
   `index.html`. Safe to delete, kept only as a backup of their original work.

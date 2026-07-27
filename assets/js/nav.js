@@ -7,6 +7,7 @@
   var SECTIONS = {
     projects: [
       { title: "it's fine really, silly me!", href: "projects/its-fine-really-silly-me.html", year: "2025" },
+      { title: "radical meditation", href: "projects/radical-meditation.html", year: "2024" },
       { title: "carnisse in flux", href: "projects/carnisse-in-flux.html", year: "2024" },
       { title: "bingo machine", href: "projects/bingo-machine.html", year: "2024" },
       { title: "happening to one another", href: "projects/happening-to-one-another.html", year: "2023" },
