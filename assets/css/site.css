@@ -100,7 +100,7 @@ body{
    would otherwise spread these across separate columns instead of
    stacking them in one small list */
 #panel-more ul{ columns:1; width:200px; margin:0 auto; text-align:center; }
-#panel-more li a, #panel-more li button{ padding:3px 0; padding-left:0; border-left:none; }
+#panel-more li a, #panel-more li button{ padding:3px 0; padding-left:0; border-left:none; text-align:center; }
 .ribbon-panel li a, .ribbon-panel li button{
   display:block; width:100%; padding:6px 0; font:inherit; font-family:'Space Grotesk',sans-serif;
   font-weight:400; font-size:0.85rem; line-height:1.35; text-align:left;
