@@ -15,10 +15,14 @@
 
   .frag{
     position:absolute; overflow:hidden; will-change:transform;
-    box-shadow:0 8px 22px rgba(0,0,0,0.18);
     cursor:grab;
     touch-action:none;
   }
+  /* box-shadow while a tile is freely drifting caused a visible gray
+     "trail" behind it on some mobile GPUs — a blurred shadow repainting
+     every frame during continuous transform doesn't always clear cleanly.
+     Shadow now only applies once a tile is at rest (.stopped) or actively
+     held (.dragging), never while it's just bouncing around on its own. */
   .frag.dragging{ cursor:grabbing; }
   .frag img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(15%) contrast(1.05); pointer-events:none; }
   .frag .cap{

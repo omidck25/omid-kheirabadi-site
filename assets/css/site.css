@@ -364,25 +364,25 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .ribbon-left.open .ribbon-panel, .ribbon-right.open .ribbon-panel{ max-width:80vw !important; }
   .ribbon-top .ribbon-brand{ font-size:0.82rem; }
 
-  /* the bottom ribbon's labels don't fit one line at this width — scroll
-     horizontally instead of wrapping, since a wrapped 2nd line would be
-     clipped by the ribbon's fixed height */
-  .ribbon-bottom{
-    justify-content:flex-start; flex-wrap:nowrap; overflow-x:auto;
-    padding:0 18px; gap:22px;
-  }
+  /* now just 3 short items (info/announcements/contact) — space-evenly
+     from the base rule already fits them fine at this width, so no need
+     for the old horizontal-scroll workaround that was needed for 5 items */
+  .ribbon-bottom{ padding:0 18px; gap:16px; }
   .ribbon-bottom .ribbon-trigger{ font-size:0.78rem; }
 
   .page{ padding:calc(var(--ribbon-h) + 24px) 6vw calc(var(--ribbon-h) + 40px); }
   .store-grid{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:24px; }
   .blog-post-figures{ flex-direction:column; }
   .blog-post-figures img{ max-height:none; }
+  /* prev/all-projects/next in one row got crammed together on narrow
+     screens (titles can be long) — stack them instead, each full-width */
+  .project-nav{ flex-direction:column; align-items:flex-start; gap:0.9em; }
   .gallery{ margin:2.5em -6vw 0; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
-  .filmstrip-arrow{ width:36px; height:36px; font-size:1.15rem; margin-top:-18px; }
-  .filmstrip-arrow-prev{ left:1.5vw; }
-  .filmstrip-arrow-next{ right:1.5vw; }
+  /* a tap/swipe is enough to browse on touch; the arrow buttons just
+     took up space and looked oversized at this width */
+  .filmstrip-arrow{ display:none; }
   .contact-modal{ padding:2em 1.4em 1.6em; }
 }
 

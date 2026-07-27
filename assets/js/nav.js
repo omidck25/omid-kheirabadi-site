@@ -178,13 +178,21 @@
     wrap.appendChild(prevBtn);
     wrap.appendChild(nextBtn);
 
+    // Autoplay pauses on interaction and resumes after a delay. Touch
+    // release specifically waits out a fixed window rather than resuming
+    // instantly on pointerup — mobile browsers keep scrolling on their own
+    // (momentum/inertia) for a while after the finger lifts, and autoplay
+    // resuming immediately fought that momentum, which is what made touch
+    // scrolling feel difficult and jittery.
+    var hoveringMouse = false;
     var paused = false;
     var resumeTimer = null;
-    function pauseThenResume() {
+    function pauseFor(ms) {
       paused = true;
       clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(function () { paused = false; }, 1200);
+      resumeTimer = setTimeout(function () { paused = false; }, ms);
     }
+
     // step by ~1.5 images per click, not a big page-sized jump — uses the
     // average width of the real (un-cloned) frames since they vary in size
     function stepWidth() {
@@ -192,21 +200,28 @@
       return avg * 1.5;
     }
     prevBtn.addEventListener('click', function () {
-      pauseThenResume();
+      pauseFor(1200);
       strip.scrollBy({ left: -stepWidth(), behavior: 'smooth' });
     });
     nextBtn.addEventListener('click', function () {
-      pauseThenResume();
+      pauseFor(1200);
       strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
-    // mouse hover pauses/resumes immediately; a touch/pen press pauses
-    // until release, so autoplay never fights an active swipe
-    strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') paused = true; });
-    strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') paused = false; });
-    strip.addEventListener('pointerdown', function () { paused = true; });
-    strip.addEventListener('pointerup', function (e) { if (e.pointerType !== 'mouse') paused = false; });
-    strip.addEventListener('pointercancel', function (e) { if (e.pointerType !== 'mouse') paused = false; });
+    strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hoveringMouse = true; });
+    strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hoveringMouse = false; });
+    strip.addEventListener('pointerdown', function () {
+      paused = true;
+      clearTimeout(resumeTimer);
+    });
+    strip.addEventListener('pointerup', function (e) {
+      if (e.pointerType === 'mouse') { paused = hoveringMouse; return; }
+      pauseFor(1200); // let touch momentum scrolling settle first
+    });
+    strip.addEventListener('pointercancel', function (e) {
+      if (e.pointerType === 'mouse') { paused = hoveringMouse; return; }
+      pauseFor(1200);
+    });
 
     function init() {
       var leadWidth = widthOf(tailClones);
@@ -227,7 +242,7 @@
       if (!reduceMotion) {
         var AUTO_SPEED = 0.35; // px per animation frame — a slow, ambient drift
         (function tick() {
-          if (!paused) strip.scrollLeft += AUTO_SPEED;
+          if (!paused && !hoveringMouse) strip.scrollLeft += AUTO_SPEED;
           requestAnimationFrame(tick);
         })();
       }
