@@ -437,11 +437,16 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
    a tap/swipe is enough to browse on touch either way. */
 @media (pointer: coarse){
   .filmstrip-arrow{ display:none; }
-  /* the vertical bob and its box-shadow were meant for a static desktop
-     view — combined with touch-scrolling the gallery, the shadow left a
-     visible gray trail behind moving images on some mobile GPUs (same
-     class of bug as the homepage drift tiles). Both off on touch. */
-  .filmstrip img{ animation:none; box-shadow:none; }
+  /* the box-shadow left a visible gray trail behind moving images on
+     some mobile GPUs (same class of bug as the homepage drift tiles) —
+     off on touch. The vertical floaty bob is unrelated to that and
+     stays; only automatic *horizontal* movement (autoplay, already
+     mouse-only via JS) was ever meant to be off on touch. */
+  .filmstrip img{ box-shadow:none; }
+  /* one image per swipe: mandatory snap + scroll-snap-stop stops a fast
+     fling from skipping past several images in a single gesture */
+  .filmstrip{ scroll-snap-type:x mandatory; }
+  .filmstrip img{ scroll-snap-stop:always; }
 }
 
 /* On desktop/tablet, .page itself is capped at max-width:820px and isn't
