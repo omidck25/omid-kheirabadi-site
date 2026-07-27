@@ -143,8 +143,8 @@ function makeNode(el, w, h){
     x: ins.left + Math.random() * Math.max(1, W - ins.left - ins.right - w),
     y: ins.top + Math.random() * Math.max(1, H - ins.top - ins.bottom - h),
     w, h,
-    vx: (Math.random() - 0.5) * 0.35,
-    vy: (Math.random() - 0.5) * 0.35,
+    vx: (Math.random() - 0.5) * 0.28,
+    vy: (Math.random() - 0.5) * 0.28,
     rot: 0,
     vrot: 0,
     speed: 1,
@@ -256,6 +256,13 @@ const OVERLAP_ALLOWED = SIZE * 0.25;
 // OVERLAP_ALLOWED into each other before anything actually pushes back.
 const MARGIN = OVERLAP_ALLOWED;
 
+// Corrections are softened (applied partially, not all at once) so tiles
+// ease apart over a couple of frames instead of visibly snapping/teleporting
+// the instant they touch. Velocity is blended toward the outward push rather
+// than being set outright, for the same reason.
+const PUSH_FACTOR = 0.35;
+const VEL_BLEND = 0.25;
+
 function resolveCollisions(ins, w, h){
   for (let i = 0; i < nodes.length; i++) {
     const a = nodes[i];
@@ -274,31 +281,33 @@ function resolveCollisions(ins, w, h){
 
       if (overlapX < overlapY) {
         const sign = (a.x + a.w / 2 < b.x + b.w / 2) ? -1 : 1;
+        const push = overlapX * PUSH_FACTOR;
         if (!aFixed && !bFixed) {
-          a.x += sign * overlapX / 2;
-          b.x -= sign * overlapX / 2;
-          a.vx = Math.max(Math.abs(a.vx), 0.05) * sign;
-          b.vx = Math.max(Math.abs(b.vx), 0.05) * -sign;
+          a.x += sign * push / 2;
+          b.x -= sign * push / 2;
+          a.vx += (Math.max(Math.abs(a.vx), 0.05) * sign - a.vx) * VEL_BLEND;
+          b.vx += (Math.max(Math.abs(b.vx), 0.05) * -sign - b.vx) * VEL_BLEND;
         } else if (!aFixed) {
-          a.x += sign * overlapX;
-          a.vx = Math.max(Math.abs(a.vx), 0.05) * sign;
+          a.x += sign * push;
+          a.vx += (Math.max(Math.abs(a.vx), 0.05) * sign - a.vx) * VEL_BLEND;
         } else {
-          b.x -= sign * overlapX;
-          b.vx = Math.max(Math.abs(b.vx), 0.05) * -sign;
+          b.x -= sign * push;
+          b.vx += (Math.max(Math.abs(b.vx), 0.05) * -sign - b.vx) * VEL_BLEND;
         }
       } else {
         const sign = (a.y + a.h / 2 < b.y + b.h / 2) ? -1 : 1;
+        const push = overlapY * PUSH_FACTOR;
         if (!aFixed && !bFixed) {
-          a.y += sign * overlapY / 2;
-          b.y -= sign * overlapY / 2;
-          a.vy = Math.max(Math.abs(a.vy), 0.05) * sign;
-          b.vy = Math.max(Math.abs(b.vy), 0.05) * -sign;
+          a.y += sign * push / 2;
+          b.y -= sign * push / 2;
+          a.vy += (Math.max(Math.abs(a.vy), 0.05) * sign - a.vy) * VEL_BLEND;
+          b.vy += (Math.max(Math.abs(b.vy), 0.05) * -sign - b.vy) * VEL_BLEND;
         } else if (!aFixed) {
-          a.y += sign * overlapY;
-          a.vy = Math.max(Math.abs(a.vy), 0.05) * sign;
+          a.y += sign * push;
+          a.vy += (Math.max(Math.abs(a.vy), 0.05) * sign - a.vy) * VEL_BLEND;
         } else {
-          b.y -= sign * overlapY;
-          b.vy = Math.max(Math.abs(b.vy), 0.05) * -sign;
+          b.y -= sign * push;
+          b.vy += (Math.max(Math.abs(b.vy), 0.05) * -sign - b.vy) * VEL_BLEND;
         }
       }
 
