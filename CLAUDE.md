@@ -43,7 +43,8 @@ Every page has the same fixed frame, built by `nav.js` from a shared `SECTIONS`
 data object (projects / happenings / announcements) plus a few plain links
 (announcements, art store, blog) and the contact-modal trigger:
 
-- **Left** (vertical text): "projects" — dropdown with all 13 projects + year.
+- **Left** (vertical text): "projects" — dropdown with the 8 projects that
+  aren't also a curated happening, + year (see the dedup note below).
 - **Right** (vertical text, mirrored direction from left): "happenings" —
   dropdown with the 6 documented happenings + year.
 - **Top** (centered): brand "omid kheirabadi" — a plain link back to
@@ -75,12 +76,15 @@ data object (projects / happenings / announcements) plus a few plain links
   for projects/happenings) is reused as-is for "more" — no special-casing
   needed there, and unlike before there's no longer a "current page inside
   more" concept to propagate, since none of its three items are real pages.
-- Pages that are both a "project" and one of the curated "happenings" (they
-  share the same underlying project page) used to light up both the left
-  "projects" and right "happenings" ribbon triggers together. Happening
-  status now takes precedence in `populateRibbons()`: only "happenings"
-  reacts on those pages, "projects" stays black/unreacted. Pure JS class
-  logic, no device branching, so it's consistent phone/tablet/desktop.
+- The 6 curated "happenings" are a subset of the 13 Wix-scraped projects —
+  same underlying project pages, just featured in both places conceptually.
+  `SECTIONS.projects` deliberately excludes any entry that's also in
+  `SECTIONS.happenings`, so the same project page isn't listed in both
+  dropdowns. This also fixed a highlighting bug for free: pages in both
+  lists used to light up both the left "projects" and right "happenings"
+  ribbon triggers together; with the duplicate removed from `projects`,
+  only "happenings" ever matches on those pages, no special-casing needed
+  in `populateRibbons()` to keep them mutually exclusive.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).

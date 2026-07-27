@@ -5,20 +5,17 @@
   var BASE = window.SITE_BASE || '';
 
   var SECTIONS = {
+    // Entries that are also one of the curated "happenings" below are
+    // deliberately left out of this list — they live in the happenings
+    // dropdown only, so the same project page isn't listed in both menus.
     projects: [
-      { title: "it's fine really, silly me!", href: "projects/its-fine-really-silly-me.html", year: "2025" },
       { title: "radical meditation", href: "projects/radical-meditation.html", year: "2024" },
-      { title: "carnisse in flux", href: "projects/carnisse-in-flux.html", year: "2024" },
-      { title: "bingo machine", href: "projects/bingo-machine.html", year: "2024" },
-      { title: "happening to one another", href: "projects/happening-to-one-another.html", year: "2023" },
-      { title: "belfast, oppressed", href: "projects/belfast-oppressed.html", year: "2023" },
       { title: "inburgered", href: "projects/inburgered-integrated.html", year: "2023" },
       { title: "alive & unborn", href: "projects/alive-and-unborn.html", year: "2023" },
       { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html", year: "2021" },
       { title: "one day is too short...", href: "projects/one-day-is-too-short.html", year: "2022" },
       { title: "making art", href: "projects/making-art.html", year: "2020" },
       { title: "i'm free as a bird", href: "projects/i-am-free-as-a-bird.html", year: "2020" },
-      { title: "spend the night with me", href: "projects/spend-the-night-with-me.html", year: "2020" },
       { title: "a tough soldier", href: "projects/a-tough-soldier.html", year: "2019" },
     ],
     happenings: [
@@ -53,19 +50,6 @@
       if (!el) return;
       el.setAttribute('href', BASE + link.href);
       if (currentFile === link.href) el.classList.add('current');
-    });
-
-    // Some pages are both a "project" and one of the curated "happenings"
-    // (they share the same underlying project page — happenings is just a
-    // subset of projects). Both the left (projects) and right (happenings)
-    // ribbon triggers used to light up together on those pages. Happening
-    // status now takes precedence: only the happenings trigger reacts,
-    // projects stays black/unreacted, even though the page is technically
-    // in both lists. (List-item highlighting inside each dropdown is left
-    // alone — the page's title still shows as current in both lists, this
-    // only changes which top-level trigger button gets the color.)
-    var isHappening = SECTIONS.happenings.some(function (entry) {
-      return entry.href.split('#')[0].split('/').pop() === currentFile;
     });
 
     Object.keys(SECTIONS).forEach(function (key) {
@@ -104,7 +88,7 @@
       }
 
       panel.appendChild(list);
-      if (hasCurrent && !(key === 'projects' && isHappening)) {
+      if (hasCurrent) {
         var trigger = document.querySelector('[data-section="' + key + '"]');
         if (trigger) trigger.classList.add('current');
       }
