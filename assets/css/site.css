@@ -209,6 +209,79 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
 .form-note.success{ border-left-color:#3a7a4e; background:rgba(58,122,78,0.08); }
 .form-note.error{ border-left-color:var(--rust); background:rgba(156,59,46,0.08); }
 
+/* ===== quick contact modal (opened from the "contact" ribbon trigger,
+   available on every page) — a faster/less formal alternative to the full
+   contact form on info.html, inspired by a simple mail-compose sheet:
+   To / From / Message stacked, one big send action. ===== */
+.contact-modal-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(20,19,17,0.6);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease;
+}
+.contact-modal-overlay.open{ opacity:1; pointer-events:auto; }
+.contact-modal{
+  background:#fff; width:100%; max-width:420px;
+  padding:2.4em 2em 2em;
+  box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  position:relative;
+  transform:translateY(14px);
+  transition:transform 0.25s ease;
+}
+.contact-modal-overlay.open .contact-modal{ transform:translateY(0); }
+.contact-modal-close{
+  position:absolute; top:12px; right:14px;
+  background:none; border:none; font-size:1.6rem; line-height:1; cursor:pointer;
+  color:var(--grey); font-family:'Newsreader',serif; padding:6px;
+}
+.contact-modal-close:hover{ color:var(--ink); }
+.contact-modal h2{
+  font-family:'Newsreader',serif; font-style:italic; font-weight:400;
+  font-size:1.3rem; margin-bottom:1em;
+}
+.qc-row{
+  display:flex; align-items:baseline; gap:0.6em; padding:0.7em 0;
+  border-bottom:1px solid rgba(20,19,17,0.12);
+  font-family:'Space Grotesk',sans-serif; font-size:0.72rem;
+}
+.qc-label{
+  color:var(--grey); text-transform:uppercase; letter-spacing:0.05em; flex-shrink:0;
+}
+.qc-value{ font-family:'Newsreader',serif; font-style:italic; font-size:0.95rem; color:var(--ink); }
+.qc-input{
+  border:none; background:none; flex:1; min-width:0;
+  font:inherit; font-family:'Newsreader',serif; font-size:0.95rem; color:var(--ink); padding:0;
+}
+.qc-input:focus{ outline:none; }
+.qc-message-label{
+  font-family:'Space Grotesk',sans-serif; font-size:0.72rem; letter-spacing:0.05em;
+  text-transform:uppercase; color:var(--grey); display:block; margin-top:0.9em;
+}
+#qc-message{
+  width:100%; border:none; border-bottom:1px solid rgba(20,19,17,0.12);
+  background:none; font:inherit; font-family:'Newsreader',serif; font-size:0.95rem;
+  padding:0.7em 0; margin-top:0.3em; resize:vertical; min-height:110px;
+}
+#qc-message:focus{ outline:none; border-bottom-color:var(--rust); }
+.qc-actions{ display:flex; gap:12px; margin-top:1.8em; }
+.qc-send{
+  flex:2; font-family:'Space Grotesk',sans-serif; font-size:0.75rem; letter-spacing:0.05em;
+  text-transform:uppercase; background:var(--ink); color:#fff; border:none;
+  padding:0.85em 1em; cursor:pointer; transition:background 0.25s ease;
+}
+.qc-send:hover{ background:var(--rust); }
+.qc-send.sending{ background:var(--grey); cursor:default; }
+.qc-send.sent{ background:#3a7a4e; }
+.qc-cancel{
+  flex:1; font-family:'Space Grotesk',sans-serif; font-size:0.75rem; letter-spacing:0.05em;
+  text-transform:uppercase; background:none; border:1px solid rgba(20,19,17,0.25);
+  color:var(--ink); padding:0.85em 1em; cursor:pointer; transition:border-color 0.2s ease;
+}
+.qc-cancel:hover{ border-color:var(--ink); }
+.contact-modal .form-note{ margin-top:1em; font-size:0.85rem; }
+
 /* ===== store ===== */
 .store-grid{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
@@ -267,7 +340,26 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   overflow-x:auto; overflow-y:hidden;
   padding:20px 8vw 34px;
   scroll-snap-type:x proximity;
+  /* the strip auto-drifts and has prev/next arrows now, so the scrollbar
+     itself (fiddly to grab precisely) is just visual noise — it's still
+     fully scrollable via touch/trackpad/arrows, just not shown */
+  scrollbar-width:none; -ms-overflow-style:none;
 }
+.filmstrip::-webkit-scrollbar{ display:none; }
+
+.filmstrip-wrap{ position:relative; }
+.filmstrip-arrow{
+  position:absolute; top:50%; margin-top:-22px;
+  width:44px; height:44px; border-radius:50%; padding:0;
+  background:rgba(255,255,255,0.92); border:1px solid rgba(20,19,17,0.15);
+  font-family:'Newsreader',serif; font-size:1.4rem; line-height:1; color:var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.15);
+  z-index:5; transition:background 0.2s ease, color 0.2s ease;
+}
+.filmstrip-arrow:hover{ background:#fff; color:var(--rust); }
+.filmstrip-arrow-prev{ left:1.5vw; }
+.filmstrip-arrow-next{ right:1.5vw; }
 .filmstrip img{
   height:280px; width:auto; max-width:340px; object-fit:cover;
   box-shadow:0 10px 24px rgba(0,0,0,0.18);
@@ -300,9 +392,9 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .ribbon-left.open .ribbon-panel, .ribbon-right.open .ribbon-panel{ max-width:80vw !important; }
   .ribbon-top .ribbon-brand{ font-size:0.82rem; }
 
-  /* 4 labels don't fit one line at this width — scroll horizontally
-     instead of wrapping, since a wrapped 2nd line would be clipped by
-     the ribbon's fixed height */
+  /* the bottom ribbon's labels don't fit one line at this width — scroll
+     horizontally instead of wrapping, since a wrapped 2nd line would be
+     clipped by the ribbon's fixed height */
   .ribbon-bottom{
     justify-content:flex-start; flex-wrap:nowrap; overflow-x:auto;
     padding:0 18px; gap:22px;
@@ -318,6 +410,10 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .gallery-label{ margin:0 6vw 1em; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
+  .filmstrip-arrow{ width:36px; height:36px; font-size:1.15rem; margin-top:-18px; }
+  .filmstrip-arrow-prev{ left:1.5vw; }
+  .filmstrip-arrow-next{ right:1.5vw; }
+  .contact-modal{ padding:2em 1.4em 1.6em; }
 }
 
 @media (min-width:721px) and (max-width:1024px){

@@ -124,7 +124,10 @@
 
   // Makes a .filmstrip gallery scroll endlessly in both directions by
   // cloning a buffer of frames on each end and silently wrapping scrollLeft
-  // once the buffer is crossed.
+  // once the buffer is crossed. Also drives a slow automatic drift through
+  // the images (paused while the mouse is over it, or briefly after a
+  // manual arrow click) and adds prev/next arrow buttons, so browsing the
+  // gallery doesn't depend on grabbing the (now hidden) scrollbar thumb.
   function loopifyFilmstrip(strip) {
     var frames = Array.prototype.slice.call(strip.children);
     var n = frames.length;
@@ -154,6 +157,50 @@
       }, 0);
     }
 
+    // wrap just the strip (not the "N images" label above it) so the
+    // arrow buttons can be centered on the image row specifically
+    var wrap = document.createElement('div');
+    wrap.className = 'filmstrip-wrap';
+    strip.parentNode.insertBefore(wrap, strip);
+    wrap.appendChild(strip);
+
+    var prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'filmstrip-arrow filmstrip-arrow-prev';
+    prevBtn.setAttribute('aria-label', 'Previous images');
+    prevBtn.textContent = '‹';
+    var nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'filmstrip-arrow filmstrip-arrow-next';
+    nextBtn.setAttribute('aria-label', 'Next images');
+    nextBtn.textContent = '›';
+    wrap.appendChild(prevBtn);
+    wrap.appendChild(nextBtn);
+
+    var paused = false;
+    var resumeTimer = null;
+    function pauseThenResume() {
+      paused = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () { paused = false; }, 1200);
+    }
+    prevBtn.addEventListener('click', function () {
+      pauseThenResume();
+      strip.scrollBy({ left: -strip.clientWidth * 0.85, behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', function () {
+      pauseThenResume();
+      strip.scrollBy({ left: strip.clientWidth * 0.85, behavior: 'smooth' });
+    });
+
+    // mouse hover pauses/resumes immediately; a touch/pen press pauses
+    // until release, so autoplay never fights an active swipe
+    strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') paused = true; });
+    strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') paused = false; });
+    strip.addEventListener('pointerdown', function () { paused = true; });
+    strip.addEventListener('pointerup', function (e) { if (e.pointerType !== 'mouse') paused = false; });
+    strip.addEventListener('pointercancel', function (e) { if (e.pointerType !== 'mouse') paused = false; });
+
     function init() {
       var leadWidth = widthOf(tailClones);
       var originalWidth = widthOf(frames);
@@ -168,6 +215,15 @@
           strip.scrollLeft -= originalWidth;
         }
       });
+
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduceMotion) {
+        var AUTO_SPEED = 0.35; // px per animation frame — a slow, ambient drift
+        (function tick() {
+          if (!paused) strip.scrollLeft += AUTO_SPEED;
+          requestAnimationFrame(tick);
+        })();
+      }
     }
 
     var toWaitFor = tailClones.concat(headClones)
@@ -188,8 +244,117 @@
     });
   }
 
+  // Injects the quick "say hello" contact modal (opened from the "contact"
+  // ribbon trigger present on every page) and wires it up to Web3Forms —
+  // same backend/access key as the full form on info.html, just a faster
+  // path to it: To/From/Message stacked, one send action, no page nav.
+  function initContactModal() {
+    var trigger = document.querySelector('[data-contact-trigger]');
+    if (!trigger) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'contact-modal-overlay';
+    overlay.innerHTML =
+      '<div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">' +
+        '<button type="button" class="contact-modal-close" aria-label="Close">&times;</button>' +
+        '<h2 id="contactModalTitle">say hello</h2>' +
+        '<form id="quickContactForm" action="https://api.web3forms.com/submit" method="POST">' +
+          '<input type="hidden" name="access_key" value="6c272ff5-262f-418b-9d98-1b1960402820">' +
+          '<input type="hidden" name="subject" value="New message from omidkheirabadi.com">' +
+          '<input type="checkbox" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">' +
+          '<div class="qc-row"><span class="qc-label">To:</span><span class="qc-value">Omid Kheirabadi</span></div>' +
+          '<div class="qc-row"><label class="qc-label" for="qc-email">From:</label>' +
+            '<input class="qc-input" type="email" id="qc-email" name="email" placeholder="your email address" required></div>' +
+          '<label class="qc-message-label" for="qc-message">Message:</label>' +
+          '<textarea id="qc-message" name="message" required placeholder="Say hello..."></textarea>' +
+          '<p class="form-note" id="qcFormNote" style="display:none;"></p>' +
+          '<div class="qc-actions">' +
+            '<button type="submit" class="qc-send">Send Email</button>' +
+            '<button type="button" class="qc-cancel">Cancel</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var closeBtn = overlay.querySelector('.contact-modal-close');
+    var cancelBtn = overlay.querySelector('.qc-cancel');
+    var emailField = overlay.querySelector('#qc-email');
+    var form = overlay.querySelector('#quickContactForm');
+    var formNote = overlay.querySelector('#qcFormNote');
+
+    function openModal() {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () { emailField.focus(); }, 260);
+    }
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    trigger.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    function submitPayload(payload) {
+      return fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(function (res) { return res.json(); }).catch(function () { return { success: false }; });
+    }
+    function wait(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = form.querySelector('.qc-send');
+      var payload = Object.fromEntries(new FormData(form));
+
+      btn.disabled = true;
+      btn.classList.add('sending');
+      formNote.classList.remove('show', 'success', 'error');
+
+      var dots = 0;
+      var dotTimer = setInterval(function () {
+        dots = (dots % 3) + 1;
+        btn.textContent = 'Sending' + '.'.repeat(dots);
+      }, 350);
+
+      Promise.all([submitPayload(payload), wait(1200)]).then(function (results) {
+        var data = results[0];
+        clearInterval(dotTimer);
+        btn.disabled = false;
+        btn.classList.remove('sending');
+        formNote.style.display = 'block';
+
+        if (data.success) {
+          btn.textContent = 'Sent ✓';
+          btn.classList.add('sent');
+          formNote.classList.add('success');
+          formNote.textContent = "Thank you — your message is on its way. I'll get back to you soon.";
+          form.reset();
+          setTimeout(closeModal, 1600);
+          setTimeout(function () {
+            btn.classList.remove('sent');
+            btn.textContent = 'Send Email';
+          }, 1800);
+        } else {
+          btn.textContent = 'Send Email';
+          formNote.classList.add('error');
+          formNote.textContent = 'Something went wrong — please try again, or email directly.';
+        }
+        requestAnimationFrame(function () { formNote.classList.add('show'); });
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
+    initContactModal();
   });
 })();
