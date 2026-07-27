@@ -126,7 +126,7 @@ body{
   font-family:'Space Grotesk',sans-serif; font-size:0.7rem; letter-spacing:0.05em;
   text-transform:uppercase; color:var(--grey); margin-bottom:2em; font-weight:400;
 }
-.page p{ line-height:1.6; margin-bottom:1.1em; }
+.page p{ line-height:1.6; margin-bottom:1.1em; text-transform:lowercase; }
 .page a{ color:var(--rust); }
 
 .project-hero{
@@ -274,7 +274,7 @@ body{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.6em;
 }
-.info-modal p{ line-height:1.48; margin-bottom:0.8em; font-size:0.84rem; }
+.info-modal p{ line-height:1.48; margin-bottom:0.8em; font-size:0.84rem; text-transform:lowercase; }
 .info-modal p:last-child{ margin-bottom:0; }
 .info-modal a{ color:var(--rust); }
 
