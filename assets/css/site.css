@@ -458,4 +458,17 @@ body{
     margin-left:-8vw;
     padding-left:8vw; padding-right:8vw;
   }
+
+  /* the "more" panel inherited the old full-width/edge-to-edge layout
+     built for a long announcements list — for 3 short centered words
+     that reads as a needlessly massive white box on a wide screen.
+     Shrink it to a small popup that hugs its own content, floating
+     centered above the trigger (the ribbon-bottom's single item already
+     sits at the horizontal center of the viewport). Left alone on
+     phone/tablet, where the narrower viewport already keeps this in
+     proportion. */
+  #panel-more{
+    left:50%; right:auto; width:auto;
+    transform:translateX(-50%);
+  }
 }
