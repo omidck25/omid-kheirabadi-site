@@ -134,7 +134,7 @@
     var n = frames.length;
     if (n < 3) return;
 
-    var bufferCount = Math.min(n, 6);
+    var bufferCount = Math.min(n, 8);
     var tailSource = frames.slice(-bufferCount); // clone these before the start
     var headSource = frames.slice(0, bufferCount); // clone these after the end
 
@@ -230,10 +230,19 @@
 
       strip.scrollLeft = leadWidth;
 
+      // A fast tablet fling can cover more distance in one native scroll
+      // step than a single +/- originalWidth correction accounts for.
+      // Looping (instead of a single if/else if) fully normalizes the
+      // position in one pass no matter how far out of range it lands,
+      // rather than leaving it still out of bounds for the next 'scroll'
+      // event to partially correct — that gradual multi-step correction
+      // is what looked like repeated touches making it "jump over all
+      // the images."
       strip.addEventListener('scroll', function () {
-        if (strip.scrollLeft < leadWidth - originalWidth + 8) {
+        while (strip.scrollLeft < leadWidth - originalWidth + 8) {
           strip.scrollLeft += originalWidth;
-        } else if (strip.scrollLeft > leadWidth + originalWidth - 8) {
+        }
+        while (strip.scrollLeft > leadWidth + originalWidth - 8) {
           strip.scrollLeft -= originalWidth;
         }
       });
