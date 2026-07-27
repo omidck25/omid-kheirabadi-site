@@ -45,21 +45,31 @@ data object (projects / happenings / announcements) plus a few plain links
 - **Left** (vertical text): "projects" — dropdown with all 13 projects + year.
 - **Right** (vertical text, mirrored direction from left): "happenings" —
   dropdown with the 6 documented happenings + year.
-- **Top** (centered): brand "omid kheirabadi". On every page except the
-  homepage it's a plain link back to `index.html`. On the homepage itself,
-  clicking/touching it instead opens the info popup — see "Info modal" below.
-- **Bottom**: "announcements", "contact" — all plain/direct links/actions (no
-  dropdown). Announcements used to be a dropdown of all 20 entries like
-  projects/happenings, but was changed to a plain link to the full
-  `announcements.html` page per explicit request. "Contact" isn't a link — it
-  opens the quick contact modal (see below). "Info" used to be a third item
-  here linking to `info.html`; both are gone now (see "Info modal"). "Art
-  store" and "blog" are temporarily removed from this ribbon (not deleted —
-  `store.html` and `blog.html` still exist as draft pages) until there's real
-  content for them; `nav.js`'s `PLAIN_LINKS` entries for them are left in
-  place since the code already no-ops gracefully when the corresponding
-  `[data-*-link]` element isn't present on a page, so no JS cleanup was
-  needed to hide them.
+- **Top** (centered): brand "omid kheirabadi" — a plain link back to
+  `index.html`, on every page including the homepage. (It briefly had
+  special homepage-only click behavior that opened the info popup; that's
+  gone now, superseded by the "more" dropdown below.)
+- **Bottom**: a single "more" trigger, dropdown opening upward (same
+  `.ribbon-panel` flyout mechanism as projects/happenings, just anchored to
+  the bottom of the screen via `bottom:var(--ribbon-h)` instead of a side).
+  Inside `#panel-more`, three items, each with different behavior:
+  "info" (button, opens the info popup — see "Info modal" below),
+  "announcements" (real link to `announcements.html` — the only one of the
+  three that's still an actual separate page), "contact" (button, opens the
+  quick contact modal — see below). Merged into one menu per explicit
+  request ("not sure what to call it" — went with "more"; open to
+  relabeling). "Art store" and "blog" are temporarily removed from
+  navigation entirely (not deleted — `store.html` and `blog.html` still
+  exist as draft pages) until there's real content for them; `nav.js`'s
+  `PLAIN_LINKS` entries for them are left in place since the code already
+  no-ops gracefully when the corresponding `[data-*-link]` element isn't
+  present on a page, so no JS cleanup was needed to hide them.
+- The generic `data-section` open/close/current-page logic (originally built
+  for projects/happenings) is reused as-is for "more" — no special-casing
+  needed there. What *is* special-cased: `populateRibbons()` propagates
+  `.current` from the `[data-announcements-link]` element up to the "more"
+  trigger itself when on `announcements.html`, since that link now lives
+  inside a nested panel rather than being the ribbon item directly.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).
@@ -181,16 +191,14 @@ instant, plus a styled success/error note.
 `info.html` was removed entirely — an explicit, deliberate experiment
 ("let's try it, if I don't like it, you will redo it"), not something to
 casually re-add. The bio text now lives in a popup (`.info-modal-overlay`),
-injected by `nav.js`, that opens **only** when the "omid kheirabadi" brand
-text is clicked/touched **while already on the homepage** (`initInfoModal()`
-bails out immediately unless `document.body.classList.contains('home')`).
-On every other page that same brand text is left completely alone — it's
-still the plain link to `index.html` that `populateRibbons()` always sets,
-no popup, no intercepted click. If the user doesn't like this pattern,
-reverting means: restoring `info.html` (git history has the last version
-before removal), re-adding its `data-info-link` ribbon item to all pages'
-bottom ribbon + `nav.js`'s `PLAIN_LINKS`, and removing `initInfoModal()` +
-its CSS.
+injected by `nav.js`. It first opened only via a special click handler on
+the homepage's "omid kheirabadi" brand text; that was superseded by moving
+"info" into the "more" ribbon-bottom dropdown (see "Navigation" above),
+available identically on every page — `initInfoModal()` now just looks for
+`[data-info-trigger]` inside that panel, no `body.home` gating. If the user
+wants `info.html` back as a real page instead of a popup at all: git history
+has the last version before removal; re-add its `data-info-link` ribbon item
+and `nav.js`'s `PLAIN_LINKS` entry, and remove `initInfoModal()` + its CSS.
 
 The modal is deliberately compact (small type, tight line-height, minimal
 padding) so the bio text fits within the viewport without scrolling on

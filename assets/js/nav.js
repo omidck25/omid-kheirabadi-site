@@ -56,6 +56,16 @@
       if (currentFile === link.href) el.classList.add('current');
     });
 
+    // "announcements" lives inside the "more" dropdown now (alongside
+    // info/contact) rather than as its own ribbon item — if it's current,
+    // reflect that on the "more" trigger too so it stays upright/highlighted
+    // the same way any other current-page ribbon trigger does.
+    var announcementsLink = document.querySelector('[data-announcements-link]');
+    if (announcementsLink && announcementsLink.classList.contains('current')) {
+      var moreTrigger = document.querySelector('[data-section="more"]');
+      if (moreTrigger) moreTrigger.classList.add('current');
+    }
+
     Object.keys(SECTIONS).forEach(function (key) {
       var panel = document.getElementById('panel-' + key);
       if (!panel) return;
@@ -275,10 +285,11 @@
     });
   }
 
-  // Injects the quick "say hello" contact modal (opened from the "contact"
-  // ribbon trigger present on every page) and wires it up to Web3Forms —
-  // same backend/access key as the full form on info.html, just a faster
-  // path to it: To/From/Message stacked, one send action, no page nav.
+  // Injects the quick "say hello" contact modal (opened from "contact"
+  // inside the "more" ribbon-bottom dropdown, present on every page) and
+  // wires it up to Web3Forms — same backend/access key as the old full
+  // form on info.html, just a faster path to it: To/From/Message stacked,
+  // one send action, no page nav.
   function initContactModal() {
     var trigger = document.querySelector('[data-contact-trigger]');
     if (!trigger) return;
@@ -314,6 +325,9 @@
     var formNote = overlay.querySelector('#qcFormNote');
 
     function openModal() {
+      // trigger lives inside the "more" ribbon-bottom dropdown now — close
+      // it so it's not still visibly open behind the modal
+      document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
       setTimeout(function () { emailField.focus(); }, 260);
@@ -384,14 +398,14 @@
   }
 
   // The standalone info.html page is gone — the bio text now lives in a
-  // popup, reachable ONLY by clicking/touching the "omid kheirabadi"
-  // brand text while already on the homepage (body.home). On every other
-  // page that same brand text is left as a plain link back home (its
-  // normal href, already set by populateRibbons() above) — no popup there.
+  // popup, opened from "info" inside the "more" ribbon-bottom dropdown,
+  // present on every page (merged there alongside announcements/contact
+  // per explicit request). The "omid kheirabadi" brand text up top is
+  // just the plain link back to index.html it always was — no special
+  // click handling on it, on any page including the homepage.
   function initInfoModal() {
-    if (!document.body.classList.contains('home')) return;
-    var brand = document.querySelector('.ribbon-brand');
-    if (!brand) return;
+    var trigger = document.querySelector('[data-info-trigger]');
+    if (!trigger) return;
 
     var overlay = document.createElement('div');
     overlay.className = 'info-modal-overlay';
@@ -407,8 +421,10 @@
 
     var closeBtn = overlay.querySelector('.info-modal-close');
 
-    function openModal(e) {
-      e.preventDefault();
+    function openModal() {
+      // trigger lives inside the "more" ribbon-bottom dropdown — close it
+      // so it's not still visibly open behind the modal
+      document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -417,7 +433,7 @@
       document.body.style.overflow = '';
     }
 
-    brand.addEventListener('click', openModal);
+    trigger.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
     document.addEventListener('keydown', function (e) {

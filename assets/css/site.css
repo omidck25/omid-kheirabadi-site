@@ -95,13 +95,19 @@ body{
 .ribbon-top .ribbon-panel ul, .ribbon-bottom .ribbon-panel ul{
   width:auto; columns:220px; column-gap:2.4em;
 }
-.ribbon-panel li a{
-  display:block; padding:6px 0; font-family:'Space Grotesk',sans-serif;
-  font-weight:400; font-size:0.85rem; line-height:1.35;
-  color:var(--grey); text-decoration:none; border-left:1px solid transparent;
-  padding-left:8px; break-inside:avoid;
+/* just 3 short items (info/announcements/contact) — the multi-column
+   layout above is meant for long lists (20 announcements, etc.) and
+   would otherwise spread these across separate columns instead of
+   stacking them in one small list */
+#panel-more ul{ columns:1; width:200px; }
+.ribbon-panel li a, .ribbon-panel li button{
+  display:block; width:100%; padding:6px 0; font:inherit; font-family:'Space Grotesk',sans-serif;
+  font-weight:400; font-size:0.85rem; line-height:1.35; text-align:left;
+  color:var(--grey); text-decoration:none; background:none; border:none;
+  border-left:1px solid transparent; padding-left:8px; break-inside:avoid; cursor:pointer;
 }
-.ribbon-panel li a:hover, .ribbon-panel li a.current{ color:var(--ink); border-left-color:var(--rust); }
+.ribbon-panel li a:hover, .ribbon-panel li a.current,
+.ribbon-panel li button:hover{ color:var(--ink); border-left-color:var(--rust); }
 .ribbon-panel li a .year{
   font-family:'Space Grotesk',sans-serif; font-size:0.66rem;
   letter-spacing:0.03em; color:var(--rust); margin-left:0.6em; opacity:0.85;
@@ -240,8 +246,8 @@ body{
 .qc-cancel:hover{ border-color:var(--ink); }
 .contact-modal .form-note{ margin-top:1em; font-size:0.85rem; }
 
-/* ===== info modal (homepage only — click/touch the "omid kheirabadi"
-   brand text; on every other page that text is just a link back home) ===== */
+/* ===== info modal (opened from "info" inside the "more" ribbon-bottom
+   dropdown, on every page) ===== */
 .info-modal-overlay{
   position:fixed; inset:0; z-index:100;
   background:rgba(20,19,17,0.6);
