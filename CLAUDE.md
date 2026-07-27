@@ -66,6 +66,24 @@ together. Fixed by targeting the specific trigger element directly
 (`.ribbon-trigger.current`, `.ribbon-bottom.open [data-section]`) instead of the
 shared ancestor. Keep this in mind before adding more items to any ribbon.
 
+### Gotcha: Cloudflare strips `.html` from URLs — normalize before comparing
+
+Cloudflare's static asset serving redirects clean URLs (`/info.html` → `/info`),
+so `location.pathname`'s last segment won't have the `.html` extension that
+`SECTIONS`/`PLAIN_LINKS` hrefs use. `nav.js` re-appends `.html` before comparing
+(`if (currentFile && !/\.html$/.test(currentFile)) currentFile += '.html';`) —
+without this, the "current page" never matches and the ribbon trigger for the
+page you're on never gets `.current` (so it never locks upright). Local
+`file://` testing won't catch this since local paths keep the extension; it
+only shows up on the live Cloudflare deployment.
+
+### The current-page ribbon trigger stays upright permanently
+
+`.ribbon-trigger.current{ transform:rotate(0deg) !important; }` — whichever
+ribbon item matches the page you're on (set by the `.current` class logic
+above) stays readable/upright the whole time you're on that page, not just on
+hover. Applies to all four ribbons, mobile and desktop.
+
 ### Homepage-only reversed italics
 
 On `index.html` only (`body.home` class), ribbon trigger text is upright by
@@ -120,8 +138,10 @@ instant, plus a styled success/error note.
   the user is ready.
 - **`blog.html`**: two placeholder posts showing the format (title, date, 1-2
   images, short text). Needs real posts.
-- **Hosting**: not deployed yet. Recommended Cloudflare Pages or Netlify (both
-  free, no build step needed — just deploy the folder).
+- **Hosting**: live on Cloudflare Workers static assets at
+  `omid-kheirabadi-site.omid-ck25.workers.dev`, auto-deploys on push to `main`.
+  Custom domain `omidkheirabadi.com` (owned via Namecheap) intentionally not
+  connected yet — user wants to wait until the site is finalized.
 - Some project years are missing — see above.
 
 ## A note on this dev environment's preview tool
@@ -133,3 +153,11 @@ that was needed repeatedly: open a genuinely new tab, or swap the
 `<link>`/`<script>` src via a cache-busting query string through
 `javascript_exec` to confirm a fix actually landed. This is a tool-only quirk,
 not a real production caching issue — real visitors won't hit it.
+
+Also: the ribbon panels animate `max-width` on open (CSS `transition`). Reading
+`getComputedStyle(panel).maxWidth` via `javascript_exec` *synchronously right
+after* a click dispatch reads mid-transition (or pre-paint) and reports `0px`
+even when the underlying CSS/JS is correct — this looks exactly like a broken
+dropdown but isn't. Wait ~300ms after the click before checking computed
+styles/dimensions, or check `classList.contains('open')` instead of measuring
+layout immediately.

@@ -61,7 +61,11 @@
   ];
 
   function populateRibbons() {
+    // Cloudflare's static asset serving strips ".html" from URLs
+    // (info.html -> /info), so re-add it before comparing against SECTIONS/
+    // PLAIN_LINKS hrefs, which always keep the extension.
     var currentFile = location.pathname.split('/').pop() || 'index.html';
+    if (currentFile && !/\.html$/.test(currentFile)) currentFile += '.html';
 
     var brand = document.querySelector('.ribbon-brand');
     if (brand) brand.setAttribute('href', BASE + 'index.html');
