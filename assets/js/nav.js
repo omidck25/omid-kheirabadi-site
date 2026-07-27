@@ -184,13 +184,19 @@
       clearTimeout(resumeTimer);
       resumeTimer = setTimeout(function () { paused = false; }, 1200);
     }
+    // step by ~1.5 images per click, not a big page-sized jump — uses the
+    // average width of the real (un-cloned) frames since they vary in size
+    function stepWidth() {
+      var avg = widthOf(frames) / frames.length;
+      return avg * 1.5;
+    }
     prevBtn.addEventListener('click', function () {
       pauseThenResume();
-      strip.scrollBy({ left: -strip.clientWidth * 0.85, behavior: 'smooth' });
+      strip.scrollBy({ left: -stepWidth(), behavior: 'smooth' });
     });
     nextBtn.addEventListener('click', function () {
       pauseThenResume();
-      strip.scrollBy({ left: strip.clientWidth * 0.85, behavior: 'smooth' });
+      strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
     // mouse hover pauses/resumes immediately; a touch/pen press pauses

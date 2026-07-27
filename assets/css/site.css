@@ -379,8 +379,8 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
 .filmstrip .frame:hover img{ animation-play-state:paused; }
 
 @keyframes floaty{
-  0%, 100%{ transform:translateY(0) translateX(0); }
-  50%{ transform:translateY(-9px) translateX(2px); }
+  0%, 100%{ transform:translateY(0); }
+  50%{ transform:translateY(-9px); }
 }
 @media (prefers-reduced-motion: reduce){
   .filmstrip img{ animation:none; }
