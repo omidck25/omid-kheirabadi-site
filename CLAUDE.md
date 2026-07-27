@@ -9,7 +9,8 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 - `index.html` — homepage. "Drift" concept: photo tiles float/bounce around the
   screen, freeze on hover/tap to show a caption, draggable. One random image per
   project per pageload (see "Image pools" below).
-- `info.html`, `announcements.html`, `happenings.html` — content pages.
+- `announcements.html`, `happenings.html` — content pages. `info.html` used
+  to be one too, but was removed — see "Info modal" below.
 - `store.html`, `blog.html` — **drafts**, not real yet (see "Open items").
 - `projects/*.html` — 14 individual project pages, each with a hero image, the
   full write-up, and a filmstrip gallery of that project's photos at the bottom.
@@ -38,23 +39,27 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 ## Navigation: the 4-ribbon frame
 
 Every page has the same fixed frame, built by `nav.js` from a shared `SECTIONS`
-data object (projects / happenings / announcements) plus a few plain links (info,
-art store, blog) and the contact-modal trigger:
+data object (projects / happenings / announcements) plus a few plain links
+(announcements, art store, blog) and the contact-modal trigger:
 
 - **Left** (vertical text): "projects" — dropdown with all 13 projects + year.
 - **Right** (vertical text, mirrored direction from left): "happenings" —
   dropdown with the 6 documented happenings + year.
-- **Top** (centered): brand "omid kheirabadi", links home.
-- **Bottom**: "info", "announcements", "contact" — all plain/direct
-  links/actions (no dropdown). Announcements used to be a dropdown of all 20
-  entries like projects/happenings, but was changed to a plain link to the
-  full `announcements.html` page per explicit request. "Contact" isn't a
-  link — it opens the quick contact modal (see below). "Art store" and
-  "blog" are temporarily removed from this ribbon (not deleted — `store.html`
-  and `blog.html` still exist as draft pages) until there's real content for
-  them; `nav.js`'s `PLAIN_LINKS` entries for them are left in place since the
-  code already no-ops gracefully when the corresponding `[data-*-link]`
-  element isn't present on a page, so no JS cleanup was needed to hide them.
+- **Top** (centered): brand "omid kheirabadi". On every page except the
+  homepage it's a plain link back to `index.html`. On the homepage itself,
+  clicking/touching it instead opens the info popup — see "Info modal" below.
+- **Bottom**: "announcements", "contact" — all plain/direct links/actions (no
+  dropdown). Announcements used to be a dropdown of all 20 entries like
+  projects/happenings, but was changed to a plain link to the full
+  `announcements.html` page per explicit request. "Contact" isn't a link — it
+  opens the quick contact modal (see below). "Info" used to be a third item
+  here linking to `info.html`; both are gone now (see "Info modal"). "Art
+  store" and "blog" are temporarily removed from this ribbon (not deleted —
+  `store.html` and `blog.html` still exist as draft pages) until there's real
+  content for them; `nav.js`'s `PLAIN_LINKS` entries for them are left in
+  place since the code already no-ops gracefully when the corresponding
+  `[data-*-link]` element isn't present on a page, so no JS cleanup was
+  needed to hide them.
 
 All ribbons are **white** with a hairline border (not colored — an earlier
 "funky colored ribbons" version was explicitly reverted).
@@ -86,7 +91,8 @@ shared ancestor. Keep this in mind before adding more items to any ribbon.
 
 ### Gotcha: Cloudflare strips `.html` from URLs — normalize before comparing
 
-Cloudflare's static asset serving redirects clean URLs (`/info.html` → `/info`),
+Cloudflare's static asset serving redirects clean URLs (`/announcements.html`
+→ `/announcements`),
 so `location.pathname`'s last segment won't have the `.html` extension that
 `SECTIONS`/`PLAIN_LINKS` hrefs use. `nav.js` re-appends `.html` before comparing
 (`if (currentFile && !/\.html$/.test(currentFile)) currentFile += '.html';`) —
@@ -144,13 +150,30 @@ deliberate user request, not an inconsistency to "fix."
 ## Contact modal (`assets/js/nav.js`, `initContactModal`)
 
 The only contact method on the site now — info.html's own form was removed
-per explicit request (it felt too formal/hard to find). A "contact" item in
-the bottom ribbon (every page) opens a small popup instead, injected by
-`nav.js`: To/From/Message stacked, one send button, styled after a simple
-mail-compose sheet. Uses [Web3Forms](https://web3forms.com) (free, no
-backend); the access key is live and confirmed connected to the user's
-correct inbox. Has a staged "sending..." animation with a forced minimum
-delay so it never feels instant, plus a styled success/error note.
+per explicit request (it felt too formal/hard to find), and info.html itself
+is now gone too (see below). A "contact" item in the bottom ribbon (every
+page) opens a small popup instead, injected by `nav.js`: To/From/Message
+stacked, one send button, styled after a simple mail-compose sheet. Uses
+[Web3Forms](https://web3forms.com) (free, no backend); the access key is
+live and confirmed connected to the user's correct inbox. Has a staged
+"sending..." animation with a forced minimum delay so it never feels
+instant, plus a styled success/error note.
+
+## Info modal (`assets/js/nav.js`, `initInfoModal`)
+
+`info.html` was removed entirely — an explicit, deliberate experiment
+("let's try it, if I don't like it, you will redo it"), not something to
+casually re-add. The bio text now lives in a popup (`.info-modal-overlay`),
+injected by `nav.js`, that opens **only** when the "omid kheirabadi" brand
+text is clicked/touched **while already on the homepage** (`initInfoModal()`
+bails out immediately unless `document.body.classList.contains('home')`).
+On every other page that same brand text is left completely alone — it's
+still the plain link to `index.html` that `populateRibbons()` always sets,
+no popup, no intercepted click. If the user doesn't like this pattern,
+reverting means: restoring `info.html` (git history has the last version
+before removal), re-adding its `data-info-link` ribbon item to all pages'
+bottom ribbon + `nav.js`'s `PLAIN_LINKS`, and removing `initInfoModal()` +
+its CSS.
 
 ## Open items / known drafts
 

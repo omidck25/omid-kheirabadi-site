@@ -35,7 +35,6 @@
   // the current page's depth, plus a "current" highlight when active
   var PLAIN_LINKS = [
     { attr: 'data-announcements-link', href: 'announcements.html' },
-    { attr: 'data-info-link', href: 'info.html' },
     { attr: 'data-store-link', href: 'store.html' },
     { attr: 'data-blog-link', href: 'blog.html' },
   ];
@@ -178,13 +177,8 @@
     wrap.appendChild(prevBtn);
     wrap.appendChild(nextBtn);
 
-    // Autoplay pauses on interaction and resumes after a delay. Touch
-    // release specifically waits out a fixed window rather than resuming
-    // instantly on pointerup — mobile browsers keep scrolling on their own
-    // (momentum/inertia) for a while after the finger lifts, and autoplay
-    // resuming immediately fought that momentum, which is what made touch
-    // scrolling feel difficult and jittery.
-    var hoveringMouse = false;
+    // Pause state used by the arrow buttons (mouse-only — they're hidden
+    // on touch devices below, see the pointer:coarse CSS rule).
     var paused = false;
     var resumeTimer = null;
     function pauseFor(ms) {
@@ -208,21 +202,6 @@
       strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
-    strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hoveringMouse = true; });
-    strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hoveringMouse = false; });
-    strip.addEventListener('pointerdown', function () {
-      paused = true;
-      clearTimeout(resumeTimer);
-    });
-    strip.addEventListener('pointerup', function (e) {
-      if (e.pointerType === 'mouse') { paused = hoveringMouse; return; }
-      pauseFor(1200); // let touch momentum scrolling settle first
-    });
-    strip.addEventListener('pointercancel', function (e) {
-      if (e.pointerType === 'mouse') { paused = hoveringMouse; return; }
-      pauseFor(1200);
-    });
-
     function init() {
       var leadWidth = widthOf(tailClones);
       var originalWidth = widthOf(frames);
@@ -230,14 +209,10 @@
 
       strip.scrollLeft = leadWidth;
 
-      // A fast tablet fling can cover more distance in one native scroll
-      // step than a single +/- originalWidth correction accounts for.
       // Looping (instead of a single if/else if) fully normalizes the
-      // position in one pass no matter how far out of range it lands,
-      // rather than leaving it still out of bounds for the next 'scroll'
-      // event to partially correct — that gradual multi-step correction
-      // is what looked like repeated touches making it "jump over all
-      // the images."
+      // position in one pass no matter how far out of range a single
+      // scroll step landed, rather than leaving it out of bounds for
+      // the next 'scroll' event to partially correct.
       strip.addEventListener('scroll', function () {
         while (strip.scrollLeft < leadWidth - originalWidth + 8) {
           strip.scrollLeft += originalWidth;
@@ -247,11 +222,23 @@
         }
       });
 
+      // Autoplay is desktop/mouse-only (fine pointer). On touch it kept
+      // fighting the browser's own momentum/inertia scrolling no matter
+      // how the pause/resume timing was tuned — jitter and loss of
+      // control kept resurfacing after a few touches, worse on tablets
+      // with stronger momentum curves than phones. Touch devices now
+      // rely purely on native swipe scrolling plus the wrap correction
+      // above, the same mechanism that worked reliably before autoplay
+      // was ever introduced.
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!reduceMotion) {
+      var coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      if (!reduceMotion && !coarsePointer) {
+        var hovering = false;
+        strip.addEventListener('pointerenter', function () { hovering = true; });
+        strip.addEventListener('pointerleave', function () { hovering = false; });
         var AUTO_SPEED = 0.35; // px per animation frame — a slow, ambient drift
         (function tick() {
-          if (!paused && !hoveringMouse) strip.scrollLeft += AUTO_SPEED;
+          if (!paused && !hovering) strip.scrollLeft += AUTO_SPEED;
           requestAnimationFrame(tick);
         })();
       }
@@ -383,9 +370,52 @@
     });
   }
 
+  // The standalone info.html page is gone — the bio text now lives in a
+  // popup, reachable ONLY by clicking/touching the "omid kheirabadi"
+  // brand text while already on the homepage (body.home). On every other
+  // page that same brand text is left as a plain link back home (its
+  // normal href, already set by populateRibbons() above) — no popup there.
+  function initInfoModal() {
+    if (!document.body.classList.contains('home')) return;
+    var brand = document.querySelector('.ribbon-brand');
+    if (!brand) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'info-modal-overlay';
+    overlay.innerHTML =
+      '<div class="info-modal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">' +
+        '<button type="button" class="info-modal-close" aria-label="Close">&times;</button>' +
+        '<h2 id="infoModalTitle">info</h2>' +
+        '<p>Omid Kheirabadi (b. 1992, Tehran) is a Rotterdam-based interdisciplinary performance artist and interior architect whose work critically examines societal structures, power dynamics, and collective agency within late-capitalist frameworks. His art challenges conventional narratives by exposing the oppressive mechanisms of global economic disparities, labor, legal systems, and Western hegemony while proposing alternative possibilities for coexistence and liberation. Omid\'s practice spans experimental performance, participatory workshops, and multimedia installations, all fostering dialogue and critical reflection. Over the past three years, he has developed performance sessions, inspired by Augusto Boal\'s Theatre of the Oppressed and the concept of arte útil. These participatory sessions break traditional performance boundaries by transforming audience members into collaborators, creating fluid spaces where hierarchies, power structures, and perceptions of space shift through collective action.</p>' +
+        '<p>Projects such as Inburgered (MOMO Festival), Alive &amp; Unborn (Delft Fringe, 2023), Bingo Machine (B32, Maastricht, 2024), and Carnisse in Flux (2024) reflect his different approach to performance as a collaborative and transformative practice. During a four-month residency at the Goethe-Institut, Omid further refined his performance sessions, blending improvisation, collective creation, and critical dialogue into dynamic, site-specific works. Omid\'s dual expertise in interior architecture and artistic research informs his unique approach to space and performance, allowing him to craft experiences that challenge traditional spatial perceptions and roles. His academic background includes an MFA in Artistic Research from the Royal Academy of Art in The Hague (2022) and an MA in Interior Architecture from the Maastricht Academy of Architecture (2019).</p>' +
+        '<p>His work has been showcased across Europe in exhibitions, festivals, and residencies, including Amsterdam, The Hague, Leuven, Utrecht, Belfast, Maastricht, and Rotterdam. In Zurich, at ZHdK\'s "Performative Interventions" program, he further explored the intersection of resistance against global capitalism and performance art, in an intensive artistic research seminar. Currently based at <a href="https://timewindow.nl/" target="_blank" rel="noopener">TimeWindow</a> in Rotterdam, Omid continues to push the boundaries of interdisciplinary practice, blending performance, spatial design, and participatory art to foster collective creativity and reimagine societal possibilities.</p>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var closeBtn = overlay.querySelector('.info-modal-close');
+
+    function openModal(e) {
+      e.preventDefault();
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    brand.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
     initContactModal();
+    initInfoModal();
   });
 })();

@@ -258,6 +258,45 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
 .qc-cancel:hover{ border-color:var(--ink); }
 .contact-modal .form-note{ margin-top:1em; font-size:0.85rem; }
 
+/* ===== info modal (homepage only — click/touch the "omid kheirabadi"
+   brand text; on every other page that text is just a link back home) ===== */
+.info-modal-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(20,19,17,0.6);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease;
+}
+.info-modal-overlay.open{ opacity:1; pointer-events:auto; }
+.info-modal{
+  background:#fff; width:100%; max-width:640px; max-height:85vh;
+  overflow-y:auto;
+  padding:2.4em 2.2em 2.2em;
+  box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  position:relative;
+  transform:translateY(14px);
+  transition:transform 0.25s ease;
+}
+.info-modal-overlay.open .info-modal{ transform:translateY(0); }
+.info-modal-close{
+  position:absolute; top:12px; right:14px;
+  background:none; border:none; font-size:1.6rem; line-height:1; cursor:pointer;
+  color:var(--grey); font-family:'Newsreader',serif; padding:6px;
+}
+.info-modal-close:hover{ color:var(--ink); }
+.info-modal h2{
+  font-family:'Newsreader',serif; font-style:italic; font-weight:400;
+  font-size:1.5rem; margin-bottom:0.7em;
+}
+.info-modal p{ line-height:1.6; margin-bottom:1.1em; font-size:0.95rem; }
+.info-modal p:last-child{ margin-bottom:0; }
+.info-modal a{ color:var(--rust); }
+
+@media (max-width:720px){
+  .info-modal{ padding:2em 1.4em 1.6em; max-height:80vh; }
+}
+
 /* ===== store ===== */
 .store-grid{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
