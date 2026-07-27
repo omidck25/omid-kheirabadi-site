@@ -331,10 +331,6 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   margin:3em -8vw 0; padding:2.4em 0 0.5em;
   border-top:1px solid rgba(20,19,17,0.1);
 }
-.gallery-label{
-  font-family:'Space Grotesk',sans-serif; font-size:0.7rem; letter-spacing:0.06em;
-  text-transform:uppercase; color:var(--grey); margin:0 8vw 1.2em;
-}
 .filmstrip{
   display:flex; align-items:flex-end; gap:22px;
   overflow-x:auto; overflow-y:hidden;
@@ -407,7 +403,6 @@ body.home .ribbon-brand:hover, body.home .ribbon-brand:focus{ font-style:italic;
   .blog-post-figures img{ max-height:none; }
   .contact-form{ max-width:100%; }
   .gallery{ margin:2.5em -6vw 0; }
-  .gallery-label{ margin:0 6vw 1em; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
   .filmstrip-arrow{ width:36px; height:36px; font-size:1.15rem; margin-top:-18px; }
