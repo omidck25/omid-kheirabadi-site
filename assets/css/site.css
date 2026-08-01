@@ -197,11 +197,12 @@ body{
 }
 .contact-modal-overlay.open .contact-modal{ transform:translateY(0); }
 .contact-modal-close{
-  position:absolute; top:12px; right:14px;
-  background:none; border:none; font-size:1.6rem; line-height:1; cursor:pointer;
-  color:var(--grey); font-family:'Space Grotesk',sans-serif; padding:6px;
+  position:absolute; top:14px; right:16px;
+  background:none; border:none; cursor:pointer; padding:6px;
+  font-family:'Space Grotesk',sans-serif; font-size:0.68rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--grey);
 }
-.contact-modal-close:hover{ color:var(--ink); }
+.contact-modal-close:hover{ color:var(--rust); }
 .contact-modal h2{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:1em;
@@ -279,11 +280,12 @@ body{
 }
 .info-modal-overlay.open .info-modal{ transform:translateY(0); }
 .info-modal-close{
-  position:absolute; top:10px; right:12px;
-  background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer;
-  color:var(--grey); font-family:'Space Grotesk',sans-serif; padding:6px;
+  position:absolute; top:14px; right:16px;
+  background:none; border:none; cursor:pointer; padding:6px;
+  font-family:'Space Grotesk',sans-serif; font-size:0.68rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--grey);
 }
-.info-modal-close:hover{ color:var(--ink); }
+.info-modal-close:hover{ color:var(--rust); }
 .info-modal h2{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.6em;
@@ -334,11 +336,12 @@ body{
 }
 .announcements-modal-overlay.open .announcements-modal{ transform:translateY(0); }
 .announcements-modal-close{
-  position:absolute; top:10px; right:12px;
-  background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer;
-  color:var(--grey); font-family:'Space Grotesk',sans-serif; padding:6px;
+  position:absolute; top:14px; right:16px;
+  background:none; border:none; cursor:pointer; padding:6px;
+  font-family:'Space Grotesk',sans-serif; font-size:0.68rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--grey);
 }
-.announcements-modal-close:hover{ color:var(--ink); }
+.announcements-modal-close:hover{ color:var(--rust); }
 .announcements-modal h2{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.8em;

@@ -284,7 +284,7 @@
     overlay.className = 'contact-modal-overlay';
     overlay.innerHTML =
       '<div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">' +
-        '<button type="button" class="contact-modal-close" aria-label="Close">&times;</button>' +
+        '<button type="button" class="contact-modal-close" aria-label="Close">close</button>' +
         '<h2 id="contactModalTitle">say hello</h2>' +
         '<form id="quickContactForm" action="https://api.web3forms.com/submit" method="POST">' +
           '<input type="hidden" name="access_key" value="6c272ff5-262f-418b-9d98-1b1960402820">' +
@@ -397,7 +397,7 @@
     overlay.className = 'info-modal-overlay';
     overlay.innerHTML =
       '<div class="info-modal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">' +
-        '<button type="button" class="info-modal-close" aria-label="Close">&times;</button>' +
+        '<button type="button" class="info-modal-close" aria-label="Close">close</button>' +
         '<h2 id="infoModalTitle">info</h2>' +
         '<p>Omid Kheirabadi (b. 1992, Tehran) is a Rotterdam-based interdisciplinary performance artist and interior architect whose work critically examines societal structures, power dynamics, and collective agency within late-capitalist frameworks. His art challenges conventional narratives by exposing the oppressive mechanisms of global economic disparities, labor, legal systems, and Western hegemony while proposing alternative possibilities for coexistence and liberation. Omid\'s practice spans experimental performance, participatory workshops, and multimedia installations, all fostering dialogue and critical reflection. Over the past three years, he has developed performance sessions, inspired by Augusto Boal\'s Theatre of the Oppressed and the concept of arte útil. These participatory sessions break traditional performance boundaries by transforming audience members into collaborators, creating fluid spaces where hierarchies, power structures, and perceptions of space shift through collective action.</p>' +
         '<p>Projects such as Inburgered (MOMO Festival), Alive &amp; Unborn (Delft Fringe, 2023), Bingo Machine (B32, Maastricht, 2024), and Carnisse in Flux (2024) reflect his different approach to performance as a collaborative and transformative practice. During a four-month residency at the Goethe-Institut, Omid further refined his performance sessions, blending improvisation, collective creation, and critical dialogue into dynamic, site-specific works. Omid\'s dual expertise in interior architecture and artistic research informs his unique approach to space and performance, allowing him to craft experiences that challenge traditional spatial perceptions and roles. His academic background includes an MFA in Artistic Research from the Royal Academy of Art in The Hague (2022) and an MA in Interior Architecture from the Maastricht Academy of Architecture (2019).</p>' +
@@ -514,7 +514,7 @@
     closeBtn.type = 'button';
     closeBtn.className = 'announcements-modal-close';
     closeBtn.setAttribute('aria-label', 'Close');
-    closeBtn.innerHTML = '&times;';
+    closeBtn.textContent = 'close';
     modal.appendChild(closeBtn);
 
     var h2 = document.createElement('h2');
