@@ -90,8 +90,9 @@
 <script>window.SITE_BASE = '';</script>
 <script src="./assets/js/nav.js"></script>
 <script>
-// Each project has a small pool of candidate images; one is picked at random
-// per page load, so the homepage looks a little different every visit.
+// Each project has a small pool of candidate images. One is picked per page
+// load, and it's never the same one shown last time (tracked per-project in
+// localStorage), so no tile repeats its previous image on the next visit.
 const projectPool = [
   { slug: "its-fine-really-silly-me", pool: ["01","05","10","14"], cap: "it's fine really, silly me!", desc: "A three-day residency happening at Time Window, February 2025.", href: "projects/its-fine-really-silly-me.html" },
   { slug: "radical-meditation", pool: ["01","05","09","13"], cap: "radical meditation", desc: "An immersive performance on mindfulness, power, and late-capitalist culture.", href: "projects/radical-meditation.html" },
@@ -109,8 +110,22 @@ const projectPool = [
   { slug: "a-tough-soldier", pool: ["02","03","04","05"], cap: "a tough soldier", desc: "Iranian Army uniforms meet McDonald's fries boxes.", href: "projects/a-tough-soldier.html" },
 ];
 
+function pickImage(p) {
+  const key = 'lastImg:' + p.slug;
+  let lastIdx = -1;
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored !== null) lastIdx = parseInt(stored, 10);
+  } catch (e) {}
+  const choices = p.pool.map((_, i) => i).filter((i) => i !== lastIdx);
+  const pool = choices.length ? choices : p.pool.map((_, i) => i);
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  try { localStorage.setItem(key, String(idx)); } catch (e) {}
+  return p.pool[idx];
+}
+
 const images = projectPool.map((p) => {
-  const pick = p.pool[Math.floor(Math.random() * p.pool.length)];
+  const pick = pickImage(p);
   return {
     src: `assets/images/projects/${p.slug}/${pick}.jpg`,
     cap: p.cap,
