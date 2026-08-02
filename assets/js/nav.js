@@ -19,6 +19,7 @@
       { title: "a tough soldier", href: "projects/a-tough-soldier.html", year: "2019" },
     ],
     happenings: [
+      { title: "[wrong order]", href: "projects/wrong-order.html", year: "2025" },
       { title: "carnisse in flux", href: "projects/carnisse-in-flux.html", year: "2024" },
       { title: "it's fine really, silly me!", href: "projects/its-fine-really-silly-me.html", year: "2025" },
       { title: "bingo machine", href: "projects/bingo-machine.html", year: "2024" },
