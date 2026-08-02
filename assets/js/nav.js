@@ -272,6 +272,97 @@
     });
   }
 
+  // Click/tap any gallery image to view it enlarged, with prev/next
+  // (desktop) or swipe (touch) to browse the rest of that project's photos.
+  // Uses event delegation on the filmstrip rather than binding per-image
+  // click handlers, since loopifyFilmstrip() clones each image 2-3x in the
+  // DOM for the infinite-scroll illusion — direct handlers would only
+  // cover the original images, missing most of what's visible while
+  // actively scrolling.
+  function initGalleryLightbox() {
+    var filmstrips = document.querySelectorAll('.gallery .filmstrip');
+    if (!filmstrips.length) return;
+
+    var uniqueSrcs = [];
+    filmstrips.forEach(function (strip) {
+      Array.prototype.forEach.call(strip.querySelectorAll('img'), function (img) {
+        if (uniqueSrcs.indexOf(img.src) === -1) uniqueSrcs.push(img.src);
+      });
+    });
+    if (!uniqueSrcs.length) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    overlay.innerHTML =
+      '<button type="button" class="lightbox-close" aria-label="Close">&times;</button>' +
+      '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Previous image">&larr;</button>' +
+      '<img src="" alt="">' +
+      '<button type="button" class="lightbox-arrow lightbox-next" aria-label="Next image">&rarr;</button>';
+    document.body.appendChild(overlay);
+
+    var imgEl = overlay.querySelector('img');
+    var closeBtn = overlay.querySelector('.lightbox-close');
+    var prevBtn = overlay.querySelector('.lightbox-prev');
+    var nextBtn = overlay.querySelector('.lightbox-next');
+    var current = 0;
+
+    function show(i) {
+      current = (i + uniqueSrcs.length) % uniqueSrcs.length;
+      imgEl.src = uniqueSrcs[current];
+    }
+    function openAt(i) {
+      show(i);
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    filmstrips.forEach(function (strip) {
+      strip.addEventListener('click', function (e) {
+        var img = e.target.closest('img');
+        if (!img) return;
+        var idx = uniqueSrcs.indexOf(img.src);
+        if (idx === -1) return;
+        openAt(idx);
+      });
+    });
+    closeBtn.addEventListener('click', closeLightbox);
+    prevBtn.addEventListener('click', function () { show(current - 1); });
+    nextBtn.addEventListener('click', function () { show(current + 1); });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!overlay.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+
+    // Touch swipe to browse — arrows are hidden on touch devices
+    // (pointer:coarse, see site.css) in favor of swiping the image
+    // itself, same gesture as the gallery filmstrip.
+    var touchStartX = null, touchStartY = null;
+    overlay.addEventListener('touchstart', function (e) {
+      var t = e.changedTouches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+    }, { passive: true });
+    overlay.addEventListener('touchend', function (e) {
+      if (touchStartX === null) return;
+      var t = e.changedTouches[0];
+      var dx = t.clientX - touchStartX;
+      var dy = t.clientY - touchStartY;
+      touchStartX = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        show(current + (dx < 0 ? 1 : -1));
+      }
+    });
+  }
+
   // Injects the quick "say hello" contact modal (opened from "contact"
   // inside the "more" ribbon-bottom dropdown, present on every page) and
   // wires it up to Web3Forms — same backend/access key as the old full
@@ -594,6 +685,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
+    initGalleryLightbox();
     initContactModal();
     initInfoModal();
     initAnnouncementsModal();
