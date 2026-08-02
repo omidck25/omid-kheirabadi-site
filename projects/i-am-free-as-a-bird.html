@@ -32,24 +32,45 @@
   </div>
 </div>
 
-<!-- Sticky header video — test scoped to this page only: the video stays
-     in place (position:sticky, just below the top ribbon) while the text
-     scrolls underneath it. -->
+<!-- Video-left/text-right layout — test scoped to this page only. The
+     sticky video's containing block is .afab-layout, which ends right
+     where the text ends (just before the gallery), so it naturally
+     un-sticks and never overlaps the gallery below. Phone/tablet
+     collapses back to the plain stacked video-above-text layout every
+     other project page uses. -->
 <style>
-  .project-hero-video{ position:sticky; top:calc(var(--ribbon-h) + 14px); z-index:5; }
+  .afab-layout{ display:flex; align-items:flex-start; gap:3em; }
+  .afab-video{
+    order:1; flex:1.3 1 380px; min-width:0;
+    position:sticky; top:calc(var(--ribbon-h) + 14px);
+    height:auto; padding-top:0; aspect-ratio:16/9;
+  }
+  .afab-video iframe{ position:absolute; inset:0; width:100%; height:100%; }
+  .afab-text{ order:2; flex:1 1 300px; min-width:0; }
+  @media (min-width:721px){
+    .afab-layout{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
+  }
+  @media (max-width:900px){
+    .afab-layout{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
+    .afab-video{ order:-1; position:relative; top:auto; width:100%; flex:0 0 auto; }
+  }
 </style>
 <main class="page">
-  <div class="video-embed project-hero-video">
-    <iframe src="https://player.vimeo.com/video/497060490?app_id=122963&amp;autoplay=1&amp;muted=1&amp;loop=1" title="Is there any escape?" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+  <div class="afab-layout">
+    <div class="video-embed afab-video">
+      <iframe src="https://player.vimeo.com/video/497060490?app_id=122963&amp;autoplay=1&amp;muted=1&amp;loop=1" title="Is there any escape?" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+    </div>
+    <div class="afab-text">
+      <h1>i'm free as a bird</h1>
+      <p class="meta">Performance, installation &amp; screen-print series &middot; The Hague</p>
+
+      <p>In "I'm free as a bird," Omid, as an artist, challenged his identity as an 'art student' by assuming the role of a 'KFC worker.' This performance questioned concepts of privilege, inclusion, and the possibility of creating art within a capitalist framework. He documented his work at KFC with a GoPro camera, capturing repetitive actions in the confined spaces of fast-food restaurants. The performance culminated in his escape from the art academy, filming himself as he ran through the streets of The Hague. Then he used screenshots from this footage to create a series of unconventional images through screen-printing, defying traditional art-making methods and aesthetics.</p>
+
+      <p>This installation is a continuation of the performance "I'm free as a bird," held in the same building and behind the same windows and walls. After six months, Omid revisited the footage from that performance, with the intention of sharing it with the public. At the time, his studio was conveniently located next to the street-facing windows, effectively transforming the academy's facade into his canvas. These screen prints, characterized by their distorted and randomly colored designs, introduced an additional layer to the previous performance, which focused on his role and relationship with the institution.</p>
+
+      <p>Subsequently, from the screenshots of that footage, he curated a series of images by overlaying them. These results represent a collection of arbitrarily created visuals, embodying a performance that symbolized an escape from an art institution exhibited as an installation on the facade of the same place.</p>
+    </div>
   </div>
-  <h1>i'm free as a bird</h1>
-  <p class="meta">Performance, installation &amp; screen-print series &middot; The Hague</p>
-
-  <p>In "I'm free as a bird," Omid, as an artist, challenged his identity as an 'art student' by assuming the role of a 'KFC worker.' This performance questioned concepts of privilege, inclusion, and the possibility of creating art within a capitalist framework. He documented his work at KFC with a GoPro camera, capturing repetitive actions in the confined spaces of fast-food restaurants. The performance culminated in his escape from the art academy, filming himself as he ran through the streets of The Hague. Then he used screenshots from this footage to create a series of unconventional images through screen-printing, defying traditional art-making methods and aesthetics.</p>
-
-  <p>This installation is a continuation of the performance "I'm free as a bird," held in the same building and behind the same windows and walls. After six months, Omid revisited the footage from that performance, with the intention of sharing it with the public. At the time, his studio was conveniently located next to the street-facing windows, effectively transforming the academy's facade into his canvas. These screen prints, characterized by their distorted and randomly colored designs, introduced an additional layer to the previous performance, which focused on his role and relationship with the institution.</p>
-
-  <p>Subsequently, from the screenshots of that footage, he curated a series of images by overlaying them. These results represent a collection of arbitrarily created visuals, embodying a performance that symbolized an escape from an art institution exhibited as an installation on the facade of the same place.</p>
 
   <div class="gallery">
     <div class="filmstrip">
