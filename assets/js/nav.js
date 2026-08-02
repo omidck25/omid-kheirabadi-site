@@ -284,7 +284,7 @@
     overlay.className = 'contact-modal-overlay';
     overlay.innerHTML =
       '<div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">' +
-        '<button type="button" class="contact-modal-close" aria-label="Close">close</button>' +
+        '<button type="button" class="contact-modal-close" aria-label="Close">&times;</button>' +
         '<h2 id="contactModalTitle">say hello</h2>' +
         '<form id="quickContactForm" action="https://api.web3forms.com/submit" method="POST">' +
           '<input type="hidden" name="access_key" value="6c272ff5-262f-418b-9d98-1b1960402820">' +
@@ -397,7 +397,7 @@
     overlay.className = 'info-modal-overlay';
     overlay.innerHTML =
       '<div class="info-modal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">' +
-        '<button type="button" class="info-modal-close" aria-label="Close">close</button>' +
+        '<button type="button" class="info-modal-close" aria-label="Close">&times;</button>' +
         '<h2 id="infoModalTitle">info</h2>' +
         '<p>I\'m Omid Kheirabadi. I lived most of my life in Tehran and now live and work in Rotterdam. I make performance work and I am trained as an interior architect; both practices shape how I think about space, power, and the ways we live together. I am interested in the mechanisms that sustain global inequality, borders, and Western dominance, and in searching&mdash;even if only temporarily&mdash;for other ways people might exist together. My work moves between performance, participatory workshops, happenings, installations, and is almost always built around the active participation.</p>' +
         '<p>After completing my MFA in Artistic Research at the Royal Academy of Art in The Hague (2022), I have spent the last few years developing what I call performance sessions, inspired by Augusto Boal\'s Theatre of the Oppressed and the idea of arte útil. Art as something capable of producing real transformations in the world. Through the Performative Interventions program at the Zurich University of the Arts (ZHdK), I further explored the relationship between performance and resistance to global capitalism. During a four-month residency at the Goethe-Institut Rotterdam, I continued refining this practice, bringing together improvisation, collective creation, and open dialogue into site-responsive works shaped by the people involved and the specific places in which they unfold.</p>' +
@@ -524,7 +524,7 @@
     closeBtn.type = 'button';
     closeBtn.className = 'announcements-modal-close';
     closeBtn.setAttribute('aria-label', 'Close');
-    closeBtn.textContent = 'close';
+    closeBtn.textContent = '×';
     modal.appendChild(closeBtn);
 
     var h2 = document.createElement('h2');
