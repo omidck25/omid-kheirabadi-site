@@ -438,7 +438,7 @@
       'I am happy to share that I am joining the Graphic Design Bachelor at the Royal Academy of Art (KABK) in The Hague as a guest teacher, leading a course on presentation skills as part of the Design Bundle for first-year students, running from October to December 2025 and again from May to June 2026.'
     ] },
     { title: 'Guest Teacher at Gerrit Rietveld Academie', when: '2025–2026', body: [
-      'I am also teaching in the Fine Arts Bachelor at the Gerrit Rietveld Academie in Amsterdam, organizing studio visits, short courses, and performance workshops for second-year students, with a focus on concept development and practical implementation. In May 2026 I will return to lead a further performance workshop.'
+      'I am teaching in the Fine Arts Bachelor at the Gerrit Rietveld Academie in Amsterdam, now in its third year running an intensive performance workshop for second-year students, focused on improvised, collective concept development. The next edition takes place in May 2026.'
     ] },
     { slug: 'tu-berlin-workshop', ext: 'png', title: 'Workshop Facilitator at TU Berlin', when: 'June 2026', body: [
       'In June 2026 I will lead a two-day performance workshop at TU Berlin, as part of the academy-wide course "Art & Science" led by Prof. Vanessa Schaller.'
