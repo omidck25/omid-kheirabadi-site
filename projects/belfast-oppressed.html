@@ -65,5 +65,114 @@
 
 <script>window.SITE_BASE = '../';</script>
 <script src="../assets/js/nav.js"></script>
+
+<!-- Lightbox test — scoped to this page only. If it works well it can be
+     moved into nav.js/site.css to apply to every project gallery. -->
+<style>
+  .gallery .frame{ cursor:pointer; }
+  .lightbox-overlay{
+    position:fixed; inset:0; z-index:200;
+    background:rgba(17,16,15,0.92);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease;
+  }
+  .lightbox-overlay.open{ opacity:1; pointer-events:auto; }
+  .lightbox-overlay img{
+    max-width:100%; max-height:100%;
+    object-fit:contain;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox-close{
+    position:absolute; top:14px; right:16px;
+    background:none; border:none; cursor:pointer; padding:6px;
+    font-family:'Space Grotesk',sans-serif; font-size:1.6rem; line-height:1;
+    color:#b8b3a9; opacity:0.5; z-index:2;
+  }
+  .lightbox-close:hover{ color:#fff; opacity:1; }
+  .lightbox-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:none; border:none; cursor:pointer; padding:14px;
+    font-family:'Space Grotesk',sans-serif; font-size:2rem; line-height:1;
+    color:#b8b3a9; opacity:0.6; z-index:2;
+  }
+  .lightbox-arrow:hover{ color:#fff; opacity:1; }
+  .lightbox-prev{ left:6px; }
+  .lightbox-next{ right:6px; }
+  @media (max-width:720px){
+    .lightbox-arrow{ font-size:1.5rem; padding:10px; }
+  }
+</style>
+<script>
+(function(){
+  var gallery = document.querySelector('.gallery .filmstrip');
+  if (!gallery) return;
+
+  // The infinite-scroll filmstrip (see loopifyFilmstrip in nav.js) clones
+  // each image 2-3x in the DOM for the seamless-loop illusion, so we can't
+  // bind click handlers to specific elements captured at load time — by the
+  // time the clones are inserted, those handlers would only cover the
+  // originals, and most of what's visible while scrolling is clones. Instead:
+  // one delegated listener on the container (works no matter how many clone
+  // copies exist or when they were added) + a de-duplicated, in-order list
+  // of the real image srcs (built from this initial pre-clone DOM state) to
+  // navigate through.
+  var uniqueSrcs = [];
+  Array.from(gallery.querySelectorAll('img')).forEach(function(img){
+    if (uniqueSrcs.indexOf(img.src) === -1) uniqueSrcs.push(img.src);
+  });
+  if (!uniqueSrcs.length) return;
+
+  var overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML =
+    '<button type="button" class="lightbox-close" aria-label="Close">&times;</button>' +
+    '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Previous image">&larr;</button>' +
+    '<img src="" alt="">' +
+    '<button type="button" class="lightbox-arrow lightbox-next" aria-label="Next image">&rarr;</button>';
+  document.body.appendChild(overlay);
+
+  var imgEl = overlay.querySelector('img');
+  var closeBtn = overlay.querySelector('.lightbox-close');
+  var prevBtn = overlay.querySelector('.lightbox-prev');
+  var nextBtn = overlay.querySelector('.lightbox-next');
+  var current = 0;
+
+  function show(i){
+    current = (i + uniqueSrcs.length) % uniqueSrcs.length;
+    imgEl.src = uniqueSrcs[current];
+  }
+  function openAt(i){
+    show(i);
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  gallery.addEventListener('click', function(e){
+    var img = e.target.closest('img');
+    if (!img) return;
+    var idx = uniqueSrcs.indexOf(img.src);
+    if (idx === -1) return;
+    openAt(idx);
+  });
+  closeBtn.addEventListener('click', closeLightbox);
+  prevBtn.addEventListener('click', function(){ show(current - 1); });
+  nextBtn.addEventListener('click', function(){ show(current + 1); });
+  overlay.addEventListener('click', function(e){
+    if (e.target === overlay) closeLightbox();
+  });
+  document.addEventListener('keydown', function(e){
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+})();
+</script>
 </body>
 </html>
