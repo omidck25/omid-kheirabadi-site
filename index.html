@@ -59,6 +59,28 @@
   @media (prefers-reduced-motion: reduce){
     .frag{ transition:none; }
   }
+
+  /* Touch tiles are small (phones especially), and the cap is bottom-anchored
+     (justify-content:flex-end) — with title + description + link all
+     stacked, total content height could exceed the tile and the group
+     still anchors to the bottom, pushing the title (the first/topmost
+     item) up and out through the tile's own overflow:hidden. Dropping the
+     description on touch is the fix: title + link alone comfortably fit,
+     so the title is never clipped. The "view project" link also gets
+     bigger text and real padding so it's an easy target to tap, not just
+     read. */
+  @media (pointer: coarse){
+    .frag .cap .d{ display:none; }
+    .frag .cap{ padding:calc(var(--sz, 220) * 0.05px); }
+    .frag .cap .t{
+      font-size:clamp(0.68rem, calc(var(--sz, 220) * 0.085px), 0.95rem);
+      line-height:1.15; margin-bottom:0.2em;
+    }
+    .frag .cap a{
+      font-size:clamp(0.66rem, calc(var(--sz, 220) * 0.08px), 0.85rem);
+      font-weight:500; margin-top:0.35em; padding:0.3em 0; display:inline-block;
+    }
+  }
 </style>
 </head>
 <body class="home">
