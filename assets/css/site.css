@@ -148,6 +148,31 @@ body{
 .video-embed iframe{
   position:absolute; top:0; left:0; width:100%; height:100%; border:none;
 }
+
+/* ===== video-beside-text layout, for project pages whose hero video
+   sits next to the text instead of full-width above it. The video
+   sticks (from the very first pixel of scroll — top matches .page's
+   own padding-top, and the video's own margin-top is zeroed, so there's
+   no gap before it engages) while the text scrolls past it. Its sticky
+   containing block (.video-side) ends right where the text ends, just
+   before the gallery starts, so it naturally un-sticks there instead of
+   scrolling over the gallery below. Phone/tablet collapses back to the
+   plain stacked video-above-text layout every other project page uses. ===== */
+.video-side{ display:flex; align-items:flex-start; gap:3em; }
+.video-side-media{
+  order:1; flex:1.3 1 380px; min-width:0;
+  position:sticky; top:calc(var(--ribbon-h) + 40px);
+  height:auto; padding-top:0; margin-top:0; aspect-ratio:16/9;
+}
+.video-side-media iframe{ position:absolute; inset:0; width:100%; height:100%; }
+.video-side-text{ order:2; flex:1 1 300px; min-width:0; }
+@media (min-width:721px){
+  .video-side{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
+}
+@media (max-width:900px){
+  .video-side{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
+  .video-side-media{ order:-1; position:relative; top:auto; width:100%; flex:0 0 auto; }
+}
 .project-sub{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.25rem; margin:2.2em 0 0.6em;

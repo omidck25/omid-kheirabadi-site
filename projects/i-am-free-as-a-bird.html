@@ -32,35 +32,12 @@
   </div>
 </div>
 
-<!-- Video-left/text-right layout — test scoped to this page only. The
-     sticky video's containing block is .afab-layout, which ends right
-     where the text ends (just before the gallery), so it naturally
-     un-sticks and never overlaps the gallery below. Phone/tablet
-     collapses back to the plain stacked video-above-text layout every
-     other project page uses. -->
-<style>
-  .afab-layout{ display:flex; align-items:flex-start; gap:3em; }
-  .afab-video{
-    order:1; flex:1.3 1 380px; min-width:0;
-    position:sticky; top:calc(var(--ribbon-h) + 40px);
-    height:auto; padding-top:0; margin-top:0; aspect-ratio:16/9;
-  }
-  .afab-video iframe{ position:absolute; inset:0; width:100%; height:100%; }
-  .afab-text{ order:2; flex:1 1 300px; min-width:0; }
-  @media (min-width:721px){
-    .afab-layout{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
-  }
-  @media (max-width:900px){
-    .afab-layout{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
-    .afab-video{ order:-1; position:relative; top:auto; width:100%; flex:0 0 auto; }
-  }
-</style>
 <main class="page">
-  <div class="afab-layout">
-    <div class="video-embed afab-video">
+  <div class="video-side">
+    <div class="video-embed video-side-media">
       <iframe src="https://player.vimeo.com/video/497060490?app_id=122963&amp;autoplay=1&amp;muted=1&amp;loop=1" title="Is there any escape?" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
     </div>
-    <div class="afab-text">
+    <div class="video-side-text">
       <h1>i'm free as a bird</h1>
       <p class="meta">Performance, installation &amp; screen-print series &middot; The Hague</p>
 
