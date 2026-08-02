@@ -434,6 +434,15 @@
   // building nodes and setting textContent avoids having to hand-escape
   // quotes/apostrophes across that much text.
   var ANNOUNCEMENTS = [
+    { slug: 'kabk-guest-teacher', ext: 'png', title: 'Guest Teacher at Royal Academy of Art (KABK)', when: 'October 2025 – June 2026', body: [
+      'I am happy to share that I am joining the Graphic Design Bachelor at the Royal Academy of Art (KABK) in The Hague as a guest teacher, leading a course on presentation skills as part of the Design Bundle for first-year students, running from October to December 2025 and again from May to June 2026.'
+    ] },
+    { title: 'Guest Teacher at Gerrit Rietveld Academie', when: '2025–2026', body: [
+      'I am also teaching in the Fine Arts Bachelor at the Gerrit Rietveld Academie in Amsterdam, organizing studio visits, short courses, and performance workshops for second-year students, with a focus on concept development and practical implementation. In May 2026 I will return to lead a further performance workshop.'
+    ] },
+    { slug: 'tu-berlin-workshop', ext: 'png', title: 'Workshop Facilitator at TU Berlin', when: 'June 2026', body: [
+      'In June 2026 I will lead a two-day performance workshop at TU Berlin, as part of the academy-wide course "Art & Science" led by Prof. Vanessa Schaller.'
+    ] },
     { slug: 'summer-residency-in-istanbul', ext: 'jpg', title: 'Summer Residency in Istanbul', when: 'August 2025', body: [
       'With great pleasure, I am participating in an intensive one week collaborative project at Saye Collective in Istanbul in August 2025.'
     ] },
@@ -529,12 +538,14 @@
       var article = document.createElement('article');
       article.className = 'announcement';
 
-      var img = document.createElement('img');
-      img.className = 'announcement-thumb';
-      img.src = BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext;
-      img.alt = '';
-      img.loading = 'lazy';
-      article.appendChild(img);
+      if (item.slug) {
+        var img = document.createElement('img');
+        img.className = 'announcement-thumb';
+        img.src = BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext;
+        img.alt = '';
+        img.loading = 'lazy';
+        article.appendChild(img);
+      }
 
       var h3 = document.createElement('h3');
       h3.textContent = item.title;
