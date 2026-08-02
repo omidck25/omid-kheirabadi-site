@@ -34,20 +34,6 @@ body{
    the readable orientation for as long as you're there */
 .ribbon-trigger.current{ transform:rotate(0deg) !important; }
 
-/* Space Grotesk has no italic face, so hovering/focusing a ribbon title or
-   a menu heading switches to Familjen Grotesk italic instead — brings back
-   the reactive italic feel the site used to have before the font system
-   was simplified down to one family. Safe to toggle here (unlike the old
-   font-style-on-flex-siblings gotcha above) because the bottom ribbon now
-   holds a single "more" trigger rather than several sharing one row, and
-   the panel list items stack vertically instead of sitting side by side. */
-.ribbon-trigger:hover, .ribbon-trigger:focus,
-.ribbon-brand:hover, .ribbon-brand:focus,
-.ribbon-panel li a:hover, .ribbon-panel li button:hover{
-  font-family:'Familjen Grotesk', sans-serif;
-  font-style:italic;
-}
-
 .ribbon-top{
   top:0; left:var(--ribbon-w); right:var(--ribbon-w); height:var(--ribbon-h);
   background:var(--c-info);

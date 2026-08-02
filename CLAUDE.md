@@ -97,21 +97,19 @@ mirrored directions from each other.
 
 The bottom ribbon holds items in one `justify-content:space-evenly` flex row.
 Toggling `font-style: italic` on hover-in of one item (back when the site had
-an italic/upright font toggle — since removed, see "Single font system
-with a hover-italic accent" below) changed *its own* rendered width
-slightly (italic glyphs measure differently), which reflowed the whole
-row and visibly shifted the other items — looked like "random items
-jumping" and took a few rounds to actually diagnose. The general lesson
-still applies even now that italic is back (see below): don't toggle
-width-affecting properties (font-style, font-weight, letter-spacing,
-font-family) on elements that share a flex row with siblings whose
-position matters. `transform` is always safe (it's post-layout, never
-triggers reflow) — that's why the rotate-on-hover doesn't have this
-problem. Hover-italic was judged safe to reintroduce specifically
-because the bottom ribbon no longer has multiple triggers sharing one
-row (down to a single "more" trigger) and panel list items stack
-vertically rather than side by side — re-verify this reasoning before
-adding a new item to any ribbon.
+an italic/upright font toggle — since removed, see "Single font system"
+below) changed *its own* rendered width slightly (italic glyphs measure
+differently), which reflowed the whole row and visibly shifted the other
+items — looked like "random items jumping" and took a few rounds to actually
+diagnose. The general lesson still applies even with italic gone: don't
+toggle width-affecting properties (font-style, font-weight, letter-spacing,
+font-family) on elements that share a flex row with siblings whose position
+matters — and per a later reversion attempt (see "Single font system"
+below), this isn't limited to horizontal rows either: the same class of
+bug hit a *vertically* stacked list too, as a height change from
+different text-wrapping instead of a width change. `transform` is always
+safe (it's post-layout, never triggers reflow) — that's why the
+rotate-on-hover doesn't have this problem.
 
 ### Gotcha: `.current`/`.open` styling must target the specific trigger, not the ribbon
 
@@ -141,7 +139,7 @@ ribbon item matches the page you're on (set by the `.current` class logic
 above) stays readable/upright the whole time you're on that page, not just on
 hover. Applies to all four ribbons, mobile and desktop.
 
-### Single font system with a hover-italic accent
+### Single font system: Space Grotesk everywhere, no italic
 
 The site used to mix two fonts — 'Newsreader' (an italic serif) for
 headings/titles/body text and 'Space Grotesk' (upright sans) for nav/meta
@@ -150,27 +148,35 @@ labels — with an italic-default/upright-on-hover toggle on ribbon triggers
 hover/open there). All of that was removed per explicit request ("simpler
 but still classy... fits a contemporary conceptual artist" + "the font of
 main texts and paragraphs I do not like"). The whole site — headings, body
-text, nav, everything — now uses 'Space Grotesk' only, upright by default,
-at weights 400/500/700 (only weights actually @font-face'd in
-`assets/css/fonts.css`; don't reach for other weights without adding the
-face first). Newsreader's `@font-face` rules were deleted from
-`fonts.css` entirely since nothing references it anymore — if it's ever
-needed again, the previous version is in git history.
+text, nav, everything — now uses 'Space Grotesk' only, upright, at weights
+400/500/700 (only weights actually @font-face'd in `assets/css/fonts.css`;
+don't reach for other weights without adding the face first). Newsreader's
+`@font-face` rules were deleted from `fonts.css` entirely since nothing
+references it anymore — if it's ever needed again, the previous version is
+in git history.
 
-That simplified away the italic-driven ribbon interaction entirely (the
-`body.home` reversed-italic rule, the `.ribbon.open [data-section]`
-italic toggle, etc.), leaving rotate-to-upright-on-hover/current-page as
-the only interactive typographic signal — until the user asked for the
-reactive italic feel back. Since Space Grotesk itself has no italic face,
-hover/focus on any `.ribbon-trigger`, `.ribbon-brand`, or
-`.ribbon-panel li a`/`button` now switches to **'Familjen Grotesk'**
-italic instead (only the italic 400/500 weights are loaded in
-`fonts.css` — upright state always stays Space Grotesk). Familjen
-Grotesk was picked specifically for being a close aesthetic cousin of
-Space Grotesk (same contemporary-grotesk character) that actually ships
-an italic, so the swap doesn't feel like a jarring font change, just a
-tilt. See the flex-siblings gotcha above for why this is safe now but
-wasn't before the "more" menu consolidation.
+This also simplified away the italic-driven ribbon interaction entirely
+(the `body.home` reversed-italic rule, the `.ribbon.open [data-section]`
+italic toggle, etc.) — the rotate-to-upright-on-hover/current-page behavior
+is untouched and is now the *only* interactive typographic signal on ribbon
+triggers, which is intentionally simpler than before.
+
+**Tried and reverted:** a hover/focus-triggered switch to 'Familjen
+Grotesk' italic (a close aesthetic cousin of Space Grotesk that actually
+ships an italic) was added to bring the reactive italic feel back, then
+reverted the same session — the user found the substitute font not
+actually similar enough and noticeably more compact, and worse, it
+introduced a real bug: hovering a `.ribbon-panel li a` could change how
+many lines its title wrapped to (different font metrics = different
+text width), which shifted every item below it in the vertically-stacked
+list — a harsh jitter when moving the mouse between adjacent titles in
+the projects/happenings panels. This is the same class of problem as the
+flex-siblings gotcha above (toggling a width/metrics-affecting property
+reflows neighbors), just manifesting as a *height* change in a vertical
+list instead of a *width* change in a horizontal row — don't reintroduce
+a font-family/font-style hover toggle on these elements without solving
+that first (e.g. reserving line-height-stable space, or only applying it
+to single-line-guaranteed elements).
 
 ## Homepage drift physics (`index.html` inline script)
 
