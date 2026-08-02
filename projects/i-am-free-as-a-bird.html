@@ -32,18 +32,25 @@
   </div>
 </div>
 
-<!-- Side-by-side video+text layout — test scoped to this page only. -->
+<!-- Side-by-side video+text layout — test scoped to this page only, and
+     only above the phone/tablet breakpoint. Below it, this collapses back
+     to the plain full-width-video-above-text layout every other project
+     page uses (order is flipped via the "order" property, not by moving
+     the video in the DOM, so the markup stays text-then-video throughout). -->
 <style>
   .afab-layout{ display:flex; align-items:flex-start; gap:3em; }
-  .afab-text{ flex:1 1 300px; min-width:0; }
-  .afab-video{ flex:2 1 460px; min-width:0; position:sticky; top:2em; height:auto; padding-top:0; aspect-ratio:16/9; }
+  .afab-text{ order:1; flex:1 1 300px; min-width:0; }
+  .afab-video{
+    order:2; flex:1.3 1 380px; min-width:0;
+    position:sticky; top:2em; height:auto; padding-top:0; aspect-ratio:16/9;
+  }
   .afab-video iframe{ position:absolute; inset:0; width:100%; height:100%; }
   @media (min-width:721px){
     .afab-layout{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
   }
   @media (max-width:900px){
-    .afab-layout{ flex-direction:column; gap:1.8em; }
-    .afab-video{ position:relative; top:auto; width:100%; flex:0 0 auto; }
+    .afab-layout{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
+    .afab-video{ order:-1; position:relative; top:auto; width:100%; flex:0 0 auto; }
   }
 </style>
 <main class="page">
