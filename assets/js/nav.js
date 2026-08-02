@@ -24,7 +24,7 @@
       { title: "carnisse in flux", href: "projects/carnisse-in-flux.html", year: "2024" },
       { title: "it's fine really, silly me!", href: "projects/its-fine-really-silly-me.html", year: "2025" },
       { title: "bingo machine", href: "projects/bingo-machine.html", year: "2024" },
-      { title: "belfast, oppressed", href: "projects/belfast-oppressed.html", year: "2023" },
+      { title: "belfast, oppressed", href: "projects/belfast-oppressed.html", year: "2022" },
       { title: "spend the night with me", href: "projects/spend-the-night-with-me.html", year: "2020" },
     ],
   };
@@ -503,7 +503,7 @@
     { slug: 'creative-course-at-dakendagen-festival-2023', ext: 'jpg', title: 'Creative Course at Dakendagen Festival 2023', when: '2023', body: [
       'One day performance workshop based on my two-week residency in Belfast, organized in collaboration with Dakendagen in two different locations in Rotterdam.'
     ] },
-    { slug: 'artist-residency-in-belfast', ext: 'png', title: 'Artist Residency in Belfast', when: '2023', body: [
+    { slug: 'artist-residency-in-belfast', ext: 'png', title: 'Artist Residency in Belfast', when: 'August 2022', body: [
       'I have been accepted to participate in the European Creative Rooftop Networks for exchange between Rotterdam, Belfast, and Nicosia for a two-week artist residency in Northern Ireland, a month of research, and to organize a creative workshop upon my return.'
     ] }
   ];
