@@ -79,3 +79,23 @@
   src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/* Space Grotesk has no italic face, so hover/focus on ribbon titles and
+   menu headings switches to Familjen Grotesk italic instead -- a close
+   aesthetic cousin (same contemporary-grotesk family, similar letterforms)
+   that actually ships an italic. Only italic weights are loaded since the
+   upright state always stays Space Grotesk. */
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw31ZR9ZHiDnImG6-NEMQ41wby8WbH8egZPOLG0oe9RBKsSueVw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/familjengrotesk/v11/Qw31ZR9ZHiDnImG6-NEMQ41wby8WbH8egZPOLG0oe9RBKvaueVw.ttf) format('truetype');
+}
