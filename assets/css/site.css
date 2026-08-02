@@ -169,9 +169,18 @@ body{
 @media (min-width:721px){
   .video-side{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
 }
+/* Below 900px the layout stacks (video full-width on top, text below),
+   but a narrow *desktop* window still keeps the video sticky while the
+   text scrolls under it — same behavior, just stacked instead of side by
+   side. Only a real touch device (pointer:coarse, below) drops sticky
+   entirely, since a phone/tablet's own scroll gestures don't suit a
+   pinned header video the way a mouse-driven scroll does. */
 @media (max-width:900px){
   .video-side{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
-  .video-side-media{ order:-1; position:relative; top:auto; width:100%; flex:0 0 auto; }
+  .video-side-media{ order:-1; width:100%; flex:0 0 auto; }
+}
+@media (pointer:coarse){
+  .video-side-media{ position:relative; top:auto; }
 }
 .project-sub{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
