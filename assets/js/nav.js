@@ -434,10 +434,10 @@
   // building nodes and setting textContent avoids having to hand-escape
   // quotes/apostrophes across that much text.
   var ANNOUNCEMENTS = [
-    { slug: 'kabk-guest-teacher', ext: 'jpg', title: 'Guest Teacher at Royal Academy of Art (KABK)', when: 'October 2025 – June 2026', body: [
+    { slug: 'kabk-guest-teacher', ext: 'jpg', title: 'Guest Teaching at Royal Academy of Art (KABK)', when: 'October 2025 – June 2026', body: [
       'I am happy to share that I am joining the Graphic Design Bachelor at the Royal Academy of Art (KABK) in The Hague as a guest teacher, leading a course on presentation skills as part of the Design Bundle for first-year students, running from October to December 2025 and again from May to June 2026.'
     ] },
-    { slug: 'rietveld-guest-teacher', ext: 'jpg', title: 'Guest Teacher at Gerrit Rietveld Academie', when: '2025–2026', body: [
+    { slug: 'rietveld-guest-teacher', ext: 'jpg', title: 'Guest Teaching at Gerrit Rietveld Academie', when: '2025–2026', body: [
       'I am teaching in the Fine Arts Bachelor at the Gerrit Rietveld Academie in Amsterdam, now in its third year running an intensive performance workshop for second-year students, focused on improvised, collective concept development. The next edition takes place in May 2026.'
     ] },
     { slug: 'tu-berlin-workshop', ext: 'png', title: 'Workshop Facilitator at TU Berlin', when: 'June 2026', body: [
