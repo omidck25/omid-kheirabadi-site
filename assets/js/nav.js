@@ -9,7 +9,7 @@
     // deliberately left out of this list — they live in the happenings
     // dropdown only, so the same project page isn't listed in both menus.
     projects: [
-      { title: "radical meditation", href: "projects/radical-meditation.html", year: "2024" },
+      { title: "radical meditation", href: "projects/radical-meditation.html", year: "2025" },
       { title: "inburgered", href: "projects/inburgered-integrated.html", year: "2023" },
       { title: "alive & unborn", href: "projects/alive-and-unborn.html", year: "2023" },
       { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html", year: "2021" },
@@ -459,7 +459,7 @@
     { slug: 'graw-2024', ext: 'jpg', title: 'GRAW 2024', when: '21–22 September, TimeWindow studio', body: [
       'I will be showing some test works for my upcoming exhibition at ART Rotterdam, in my studio space in TimeWindow. Join me and other 12 creatives from our community on the 21st and 22nd of September to experience it all. We are open from 11:00 to 22:15 on Saturday and from 11:00 to 17:00 on Sunday.'
     ] },
-    { slug: 'praktijk-bijdrage-grant-cbk-2024', ext: 'png', title: 'Praktijk Bijdrage GRANT CBK 2024', when: null, body: [
+    { slug: 'praktijk-bijdrage-grant-cbk-2024', ext: 'png', title: 'Praktijk Bijdrage GRANT CBK 2024', when: '2024', body: [
       'CBK has generously supported my current project "carnisse in Flux" with a one-time contribution of Praktijk Bijdrage. In collaboration with Shardenia Felicia, we are going to explore Rotterdam South, and specially the Carnisse neighborhood and the state of change it is going through due to the ongoing gentrification.'
     ] },
     { slug: 'artist-residency-in-switzerland', ext: 'png', title: 'Artist Residency in Switzerland', when: 'February–March 2024', body: [
@@ -480,19 +480,19 @@
     { slug: 'open-call', ext: 'jpg', title: 'Open Call', when: 'September 2023', body: [
       'I am looking for a few performance enthusiasts! For my project "Happening to One Another" I need some people who would like to be part of this artistic research and participate in four improvised performance sessions once a week in September 2023.'
     ] },
-    { slug: 'oo-grant-cbk-2023', ext: 'jpg', title: 'O&O Grant CBK 2023', when: null, body: [
+    { slug: 'oo-grant-cbk-2023', ext: 'jpg', title: 'O&O Grant CBK 2023', when: '2023', body: [
       'Honored to receive the Research and Deepening Grant from CBK Rotterdam for the research project "Happening to one another: a study of performance art as a form of resistance."'
     ] },
-    { slug: 'delft-fringe-festival-2023', ext: 'jpg', title: 'Delft Fringe Festival 2023', when: null, body: [
+    { slug: 'delft-fringe-festival-2023', ext: 'jpg', title: 'Delft Fringe Festival 2023', when: '2023', body: [
       '\'alive & unborn\' is a dark satirical performance reflecting on the injustices created by years of the racist capitalist system, colonialism and slavery, and the demons of credit and debt. What\'s hope and how much of it is left for us?'
     ] },
-    { slug: 'momo-festival-2023', ext: 'jpg', title: 'MOMO festival 2023', when: null, body: [
+    { slug: 'momo-festival-2023', ext: 'jpg', title: 'MOMO festival 2023', when: '2023', body: [
       'Inburgered (Integrated) is a performance about the struggles of outsiders who try to integrate as "Dutch" citizens. Omid turns his focus toward Dutch society from his perspective of living in the Netherlands as an artist, performer, and researcher based in Rotterdam in this performance.'
     ] },
-    { slug: 'creative-course-at-dakendagen-festival-2023', ext: 'jpg', title: 'Creative Course at Dakendagen Festival 2023', when: null, body: [
+    { slug: 'creative-course-at-dakendagen-festival-2023', ext: 'jpg', title: 'Creative Course at Dakendagen Festival 2023', when: '2023', body: [
       'One day performance workshop based on my two-week residency in Belfast, organized in collaboration with Dakendagen in two different locations in Rotterdam.'
     ] },
-    { slug: 'artist-residency-in-belfast', ext: 'png', title: 'Artist Residency in Belfast', when: null, body: [
+    { slug: 'artist-residency-in-belfast', ext: 'png', title: 'Artist Residency in Belfast', when: '2023', body: [
       'I have been accepted to participate in the European Creative Rooftop Networks for exchange between Rotterdam, Belfast, and Nicosia for a two-week artist residency in Northern Ireland, a month of research, and to organize a creative workshop upon my return.'
     ] }
   ];
