@@ -432,12 +432,13 @@ body{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.8em;
 }
-/* Each announcement is its own card — image on top, dark caption band
-   with the title and date, body text collapsed behind "read more" — so
-   items read as distinct posts rather than one continuous list. */
+/* Each announcement is its own card — image on top, caption band with
+   the title and date, body text collapsed behind "read more" — so items
+   read as distinct posts rather than one continuous list. */
 .announcements-modal .announcement{
   display:flex; flex-direction:column;
   background:#fff; align-self:start;
+  border:1px solid rgba(20,19,17,0.1);
 }
 .announcements-modal .announcement-figure{
   position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#eee;
@@ -448,25 +449,30 @@ body{
   transition:transform 0.4s ease;
 }
 .announcements-modal .announcement:hover .announcement-thumb{ transform:scale(1.04); }
+/* Sits over the bottom of the image so the semi-transparent white reads
+   as translucent — the photo stays faintly visible through it. */
 .announcements-modal .announcement-caption{
-  background:var(--ink); color:#fff;
-  padding:1.1em 1.2em 1.2em; text-align:center;
+  position:absolute; left:0; right:0; bottom:0; z-index:1;
+  background:rgba(255,255,255,0.82);
+  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+  color:var(--ink);
+  padding:0.9em 1.2em 1em; text-align:center;
 }
 .announcements-modal .announcement h3{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
-  font-size:0.98rem; line-height:1.3; margin-bottom:0.4em; color:#fff;
+  font-size:0.98rem; line-height:1.3; margin-bottom:0.35em; color:var(--ink);
 }
 .announcements-modal .announcement .when{
   font-family:'Space Grotesk',sans-serif; font-size:0.62rem; letter-spacing:0.06em;
-  text-transform:uppercase; color:rgba(255,255,255,0.62);
-  margin-bottom:0.9em; display:block;
+  text-transform:uppercase; color:var(--grey);
+  margin-bottom:0.75em; display:block;
 }
 .announcements-modal .announcement-more{
   background:none; border:none; cursor:pointer; padding:0.2em 0;
   font-family:'Space Grotesk',sans-serif; font-size:0.72rem; letter-spacing:0.04em;
-  color:#fff; border-bottom:1px solid rgba(255,255,255,0.55);
+  color:var(--ink); border-bottom:1px solid rgba(20,19,17,0.45);
 }
-.announcements-modal .announcement-more:hover{ border-bottom-color:#fff; }
+.announcements-modal .announcement-more:hover{ color:var(--rust); border-bottom-color:var(--rust); }
 /* collapsed by default; expands in place when "read more" is pressed */
 .announcements-modal .announcement-body{ display:none; padding:1.1em 0 0.2em; }
 .announcements-modal .announcement.open .announcement-body{ display:block; }

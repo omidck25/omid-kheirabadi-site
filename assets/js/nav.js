@@ -627,10 +627,10 @@
     var list = document.createElement('div');
     list.className = 'announcements-modal-list';
 
-    // Card per announcement: image on top, dark caption band with title +
-    // date, and the body text collapsed behind a "read more" toggle — so
-    // each item reads as its own piece instead of blurring into a long
-    // run-on list.
+    // Card per announcement: image with a translucent caption band over
+    // its lower edge carrying the title + date, and the body text
+    // collapsed behind a "read more" toggle — so each item reads as its
+    // own piece instead of blurring into a long run-on list.
     ANNOUNCEMENTS.forEach(function (item, i) {
       var article = document.createElement('article');
       article.className = 'announcement';
@@ -684,7 +684,10 @@
       });
       caption.appendChild(moreBtn);
 
-      article.appendChild(caption);
+      // the caption overlays the bottom of the image (see site.css), so it
+      // goes inside the figure when there is one
+      if (figure) figure.appendChild(caption);
+      else article.appendChild(caption);
       article.appendChild(body);
 
       list.appendChild(article);
