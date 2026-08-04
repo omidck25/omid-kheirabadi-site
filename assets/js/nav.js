@@ -626,6 +626,7 @@
 
     var list = document.createElement('div');
     list.className = 'announcements-modal-list';
+    var cards = [];
 
     // Card per announcement: image with a translucent caption band over
     // its lower edge carrying the title + date, and the body text
@@ -702,17 +703,56 @@
       else article.appendChild(caption);
       article.appendChild(body);
 
-      list.appendChild(article);
+      cards.push(article);
     });
+
+    // Masonry wall built from real columns (see site.css). Cards go in
+    // round-robin — 1st to the left column, 2nd to the middle, 3rd to the
+    // right, 4th back to the left — so reading across the top of the wall
+    // runs newest to oldest left to right, while each column below still
+    // packs tight against the card above it. CSS multi-column would fill
+    // one column top-to-bottom first, which runs the order down each
+    // column instead.
+    function layoutColumns() {
+      // a hidden modal measures 0 wide, which would lock the wall to a
+      // single column — bail and let the next call (on open) do the work
+      var w = list.clientWidth || modal.clientWidth;
+      if (!w) return;
+      var n = w >= 820 ? 3 : (w >= 520 ? 2 : 1);
+      if (list.dataset.cols === String(n)) return;
+      list.dataset.cols = String(n);
+      list.textContent = '';
+      var cols = [];
+      for (var c = 0; c < n; c++) {
+        var col = document.createElement('div');
+        col.className = 'announcement-column';
+        list.appendChild(col);
+        cols.push(col);
+      }
+      cards.forEach(function (card, idx) { cols[idx % n].appendChild(card); });
+    }
 
     modal.appendChild(list);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
+    layoutColumns();
+
+    // Watch the list itself rather than the window: it catches every way
+    // the available width can change (window resize, zoom, scrollbar
+    // appearing) and fires even when no window resize event is dispatched.
+    var relayoutTimer = null;
+    function scheduleRelayout() {
+      clearTimeout(relayoutTimer);
+      relayoutTimer = setTimeout(layoutColumns, 150);
+    }
+    if (window.ResizeObserver) new ResizeObserver(scheduleRelayout).observe(list);
+    else window.addEventListener('resize', scheduleRelayout);
 
     function openModal() {
       document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
+      layoutColumns(); // now that the modal has a width, build the wall
     }
     function closeModal() {
       overlay.classList.remove('open');
