@@ -767,24 +767,29 @@ body{
   }
   .project-nav a{
     font-size:0; /* hides the long title, not the pseudo-element labels */
-    display:flex; align-items:center; justify-content:center; gap:0.35em;
-    min-height:48px; padding:0 0.6em;
+    display:flex; align-items:center; justify-content:center;
+    /* No flex gap: the hidden title still counts as a (zero-width) flex
+       item, so a gap would add space beside it and push the label of a
+       single-label button — home — off its own centre. The chevrons carry
+       their own margin instead. */
+    gap:0;
+    min-height:44px; padding:0 0.5em;
     border:1px solid rgba(20,19,17,0.22); background:#fff;
+    text-decoration:none;
     transition:border-color 0.2s ease, color 0.2s ease;
   }
   .project-nav a:hover{ border-color:var(--rust); }
-  /* Previous and next share the leftover space equally, so they always
-     come out the same width and home lands exactly on the row's centre.
-     A fixed pixel width would do the same until it didn't fit — at 375px
-     there isn't room for two 120px buttons, and the overflow shoved home
-     off centre. */
+  /* Previous and next take the same fixed width, so they match each other
+     and home sits on the row's exact centre. Sized to their content
+     rather than stretched across the row — filling the leftover space
+     made them far larger than they need to be. */
   .project-nav a:nth-child(1),
-  .project-nav a:nth-child(3){ flex:1 1 0; }
+  .project-nav a:nth-child(3){ flex:0 0 92px; }
   .project-nav a:nth-child(2){ flex:0 0 auto; }
   /* the two chevrons */
   .project-nav a:nth-child(1)::before,
   .project-nav a:nth-child(3)::after{
-    content:''; display:block; width:18px; height:18px; flex:0 0 auto;
+    content:''; display:block; width:15px; height:15px; flex:0 0 auto;
     background:currentColor;
     -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
     -webkit-mask-position:center; mask-position:center;
@@ -798,26 +803,30 @@ body{
     -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
     mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
   }
-  /* the short words */
+  /* the short words, with the chevrons' spacing as their own margin */
   .project-nav a:nth-child(1)::after{ content:'previous'; }
   .project-nav a:nth-child(2)::before{ content:'home'; }
   .project-nav a:nth-child(3)::before{ content:'next'; }
+  .project-nav a:nth-child(1)::before{ margin-right:0.35em; }
+  .project-nav a:nth-child(3)::after{ margin-left:0.35em; }
   .project-nav a:nth-child(1)::after,
   .project-nav a:nth-child(2)::before,
   .project-nav a:nth-child(3)::before{
-    font-size:0.74rem; letter-spacing:0.06em; text-transform:uppercase;
+    font-size:0.62rem; letter-spacing:0.05em; text-transform:uppercase;
     line-height:1; white-space:nowrap;
   }
 }
-/* tablet has the room for slightly larger buttons */
+/* tablet has room for slightly larger buttons */
 @media (min-width:721px) and (max-width:1024px){
   .project-nav{ gap:1em; }
-  .project-nav a{ min-height:52px; padding:0 1em; }
+  .project-nav a{ min-height:48px; padding:0 0.7em; }
+  .project-nav a:nth-child(1),
+  .project-nav a:nth-child(3){ flex:0 0 116px; }
   .project-nav a:nth-child(1)::after,
   .project-nav a:nth-child(2)::before,
-  .project-nav a:nth-child(3)::before{ font-size:0.8rem; }
+  .project-nav a:nth-child(3)::before{ font-size:0.7rem; }
   .project-nav a:nth-child(1)::before,
-  .project-nav a:nth-child(3)::after{ width:20px; height:20px; }
+  .project-nav a:nth-child(3)::after{ width:17px; height:17px; }
 }
 
 /* The arrow buttons sit directly on top of the touch-scrollable image
