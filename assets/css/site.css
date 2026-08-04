@@ -775,26 +775,22 @@ body{
     gap:0;
     /* letter-spacing inherits as an absolute length, so the hidden title
        kept ~8px of width at font-size:0 (one space per character) and
-       shunted the visible label off the box's centre */
+       shunted the visible mark off the box's centre */
     letter-spacing:0; word-spacing:0;
-    min-height:44px; padding:0 0.5em;
-    border:1px solid rgba(20,19,17,0.22); background:#fff;
+    min-height:44px; padding:0;
+    border:none; background:none;
     text-decoration:none;
-    transition:border-color 0.2s ease, color 0.2s ease;
+    transition:color 0.2s ease, opacity 0.2s ease;
   }
-  .project-nav a:hover{ border-color:var(--rust); }
-  /* Previous and next take the same fixed width, so they match each other
-     and home sits on the row's exact centre. Sized to their content
-     rather than stretched across the row, and small enough that all
-     three plus their gaps fit at 375px — overflow would shove home off
-     the centre. */
+  .project-nav a:hover{ opacity:0.6; }
+  /* The arrows keep matching fixed widths so the house lands on the
+     row's exact centre; they're just tap area now that the boxes are
+     gone. Small enough that all three fit at 375px — overflow would
+     shove the house off centre. */
   .project-nav a:nth-child(1),
   .project-nav a:nth-child(3){ flex:0 0 64px; }
-  /* home is the bare house mark: no box, no label, just the sign */
-  .project-nav a:nth-child(2){
-    flex:0 0 auto; border:none; background:none; padding:0; min-width:44px;
-  }
-  /* the chevrons and the house */
+  .project-nav a:nth-child(2){ flex:0 0 auto; min-width:44px; }
+  /* the arrows and the house */
   .project-nav a:nth-child(1)::before,
   .project-nav a:nth-child(2)::before,
   .project-nav a:nth-child(3)::after{
@@ -808,10 +804,11 @@ body{
      https://phosphoricons.com — inlined as masks so they take their
      colour from the link. Drawn shapes rather than the hand-plotted
      strokes that were here before. */
+  /* ph-house (the one with the doorway), not ph-house-simple */
   .project-nav a:nth-child(2)::before{
     width:22px; height:22px;
-    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='currentColor'%3E%3Cpath d='M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H48V120l80-80,80,80Z'/%3E%3C/svg%3E");
-    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='currentColor'%3E%3Cpath d='M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H48V120l80-80,80,80Z'/%3E%3C/svg%3E");
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='currentColor'%3E%3Cpath d='M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='currentColor'%3E%3Cpath d='M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z'/%3E%3C/svg%3E");
   }
   .project-nav a:nth-child(1)::before{
     -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='currentColor'%3E%3Cpath d='M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z'/%3E%3C/svg%3E");
@@ -823,10 +820,10 @@ body{
   }
   /* arrows alone — no words */
 }
-/* tablet has room for slightly larger buttons */
+/* tablet has room for slightly larger marks */
 @media (min-width:721px) and (max-width:1024px){
   .project-nav{ gap:1em; }
-  .project-nav a{ min-height:52px; padding:0; }
+  .project-nav a{ min-height:52px; }
   .project-nav a:nth-child(1),
   .project-nav a:nth-child(3){ flex:0 0 76px; }
   .project-nav a:nth-child(2){ min-width:52px; }
