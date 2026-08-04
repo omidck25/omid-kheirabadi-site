@@ -444,20 +444,16 @@ body{
   background:#fff;
   border:1px solid rgba(20,19,17,0.1);
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
-  transition:transform 0.35s ease, box-shadow 0.35s ease;
+  transition:box-shadow 0.35s ease;
 }
-/* Cards are nudged off-axis by varying amounts so the wall reads as a
-   pinned-up pile rather than a tidy stack of columns; hovering pulls the
-   one under the pointer straight and lifts it clear of its neighbours. */
-.announcements-modal .announcement:nth-child(4n+1){ transform:rotate(-0.7deg) translateX(-3px); }
-.announcements-modal .announcement:nth-child(4n+2){ transform:rotate(0.5deg) translateX(4px); }
-.announcements-modal .announcement:nth-child(4n+3){ transform:rotate(0.8deg) translateX(-2px); }
-.announcements-modal .announcement:nth-child(4n+4){ transform:rotate(-0.45deg) translateX(3px); }
+/* Cards sit straight and square. The staggered feel comes from the
+   masonry packing and the uneven bottom margins below, not from tilting
+   them off-axis. Hovering (or opening) lifts a card clear of its
+   neighbours with a deeper shadow. */
 .announcements-modal .announcement:nth-child(3n+2){ margin-bottom:2.4em; }
 .announcements-modal .announcement:nth-child(5n+3){ margin-bottom:1em; }
 .announcements-modal .announcement:hover,
 .announcements-modal .announcement.open{
-  transform:rotate(0deg) translateX(0);
   box-shadow:0 14px 34px rgba(0,0,0,0.2);
   position:relative; z-index:2;
 }
@@ -543,7 +539,8 @@ body{
   color:var(--rust); border-bottom-color:transparent;
 }
 /* collapsed by default; expands in place when "read more" is pressed */
-.announcements-modal .announcement-body{ display:none; padding:1.1em 0 0.2em; }
+/* inset from the card's edges — the text ran flush against the border */
+.announcements-modal .announcement-body{ display:none; padding:1.2em 1.3em 1.4em; }
 .announcements-modal .announcement.open .announcement-body{ display:block; }
 .announcements-modal .announcement p{
   font-size:0.9rem; line-height:1.55; margin-bottom:0.7em; text-transform:lowercase;
