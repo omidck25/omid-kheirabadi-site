@@ -458,6 +458,13 @@ body{
   -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
   color:var(--ink);
   text-align:center;
+  transition:background-color 0.35s ease, backdrop-filter 0.35s ease;
+}
+/* hovering thins the veil so the photo comes forward for a moment, then
+   settles back when the pointer leaves */
+.announcements-modal .announcement:hover .announcement-caption{
+  background:rgba(255,255,255,0.28);
+  -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px);
 }
 /* The title block sits centred on a closed card and slides down to the
    foot of the image when the card is opened. Driven by top/transform
@@ -466,7 +473,12 @@ body{
 .announcements-modal .announcement-caption-inner{
   position:absolute; left:0; right:0; padding:0 1.2em;
   top:50%; transform:translateY(-50%);
-  transition:top 0.38s ease, transform 0.38s ease;
+  transition:top 0.38s ease, transform 0.38s ease, text-shadow 0.35s ease;
+}
+/* with the veil thinned on hover the text sits closer to the photo, so
+   it gets a soft white halo to stay readable */
+.announcements-modal .announcement:hover .announcement-caption-inner{
+  text-shadow:0 0 10px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.9);
 }
 .announcements-modal .announcement.open .announcement-caption-inner{
   top:calc(100% - 1em); transform:translateY(-100%);
