@@ -403,8 +403,14 @@ body{
    below is there to cut how much scrolling is needed, not eliminate it. */
 @media (min-width:721px){
   .announcements-modal{ width:92vw; max-width:1100px; max-height:90vh; }
-  .announcements-modal-list{ columns:2; column-gap:2.6em; }
-  .announcements-modal .announcement{ break-inside:avoid; }
+  /* Grid rather than CSS multi-column: multi-column fills top-to-bottom
+     down the left column first, so the reading order ran 1-10 on the
+     left then 11-20 on the right. Grid fills row by row, giving
+     1 left / 2 right / 3 left / 4 right ... */
+  .announcements-modal-list{
+    display:grid; grid-template-columns:1fr 1fr;
+    column-gap:2.6em; align-items:start;
+  }
 }
 .announcements-modal-overlay.open .announcements-modal{ transform:translateY(0); }
 .announcements-modal-close{
