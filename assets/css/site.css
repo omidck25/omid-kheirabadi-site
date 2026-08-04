@@ -732,35 +732,59 @@ body{
   .store-grid{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:24px; }
   .blog-post-figures{ flex-direction:column; }
   .blog-post-figures img{ max-height:none; }
-  /* Project titles are long, so spelling out "← previous title / all
-     projects / next title →" on a phone was a wall of small text however
-     it was arranged. Instead: a chevron with a short word beside it each
-     side, and "home" in the middle. The real labels stay in the markup
-     for screen readers, hidden visually with font-size:0, and these
-     short ones are drawn as pseudo-elements. The chevrons are masked
-     SVG, so they take their colour from the link and stay crisp at any
-     zoom. Reading order is mirrored per side — chevron then "previous"
-     on the left, "next" then chevron on the right — so each arrow sits
-     on the outside, pointing the way it goes. */
+  .gallery{ margin:2.5em -6vw 0; }
+  .filmstrip{ padding:16px 6vw 26px; gap:14px; }
+  .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
+  .contact-modal{ padding:2em 1.4em 1.6em; }
+}
+
+@media (min-width:721px) and (max-width:1024px){
+  :root{ --ribbon-w:46px; --ribbon-h:48px; }
+  .store-grid{ grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+}
+
+/* ===== project nav on phone and tablet =====
+   Project titles are long, so spelling out "← previous title / all
+   projects / next title →" was a wall of small text however it was
+   arranged. Instead: three bordered buttons — a chevron with a short
+   word each side, "home" in the middle. The real titles stay in the
+   markup for screen readers, hidden visually with font-size:0, and
+   these short labels are drawn as pseudo-elements. The chevrons are
+   masked SVG, so they take their colour from the link and stay crisp at
+   any zoom. Each arrow sits on the outside of its word — chevron then
+   "previous" on the left, "next" then chevron on the right — pointing
+   the way it goes.
+
+   Previous and next are given the same fixed width, which is what puts
+   home exactly in the centre: with equal side buttons the middle one's
+   centre always lands on the row's centre, whatever the labels measure.
+   Sharing the row in equal thirds did not, since "previous" is wider
+   than a third and pushed home a couple of pixels off. */
+@media (max-width:1024px){
   .project-nav{
     flex-direction:row; align-items:center; justify-content:space-between;
-    gap:0; padding-top:1.1em;
+    gap:0.5em; padding-top:1.2em;
   }
   .project-nav a{
     font-size:0; /* hides the long title, not the pseudo-element labels */
-    display:flex; align-items:center; gap:0.4em;
-    min-height:52px;
-    /* equal thirds: with the three labels being different lengths,
-       space-between alone left "home" off-centre */
-    flex:1 1 0;
+    display:flex; align-items:center; justify-content:center; gap:0.35em;
+    min-height:48px; padding:0 0.6em;
+    border:1px solid rgba(20,19,17,0.22); background:#fff;
+    transition:border-color 0.2s ease, color 0.2s ease;
   }
-  .project-nav a:nth-child(1){ justify-content:flex-start; }
-  .project-nav a:nth-child(2){ justify-content:center; }
-  .project-nav a:nth-child(3){ justify-content:flex-end; }
+  .project-nav a:hover{ border-color:var(--rust); }
+  /* Previous and next share the leftover space equally, so they always
+     come out the same width and home lands exactly on the row's centre.
+     A fixed pixel width would do the same until it didn't fit — at 375px
+     there isn't room for two 120px buttons, and the overflow shoved home
+     off centre. */
+  .project-nav a:nth-child(1),
+  .project-nav a:nth-child(3){ flex:1 1 0; }
+  .project-nav a:nth-child(2){ flex:0 0 auto; }
   /* the two chevrons */
   .project-nav a:nth-child(1)::before,
   .project-nav a:nth-child(3)::after{
-    content:''; display:block; width:20px; height:20px; flex:0 0 auto;
+    content:''; display:block; width:18px; height:18px; flex:0 0 auto;
     background:currentColor;
     -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
     -webkit-mask-position:center; mask-position:center;
@@ -784,15 +808,16 @@ body{
     font-size:0.74rem; letter-spacing:0.06em; text-transform:uppercase;
     line-height:1; white-space:nowrap;
   }
-  .gallery{ margin:2.5em -6vw 0; }
-  .filmstrip{ padding:16px 6vw 26px; gap:14px; }
-  .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
-  .contact-modal{ padding:2em 1.4em 1.6em; }
 }
-
+/* tablet has the room for slightly larger buttons */
 @media (min-width:721px) and (max-width:1024px){
-  :root{ --ribbon-w:46px; --ribbon-h:48px; }
-  .store-grid{ grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+  .project-nav{ gap:1em; }
+  .project-nav a{ min-height:52px; padding:0 1em; }
+  .project-nav a:nth-child(1)::after,
+  .project-nav a:nth-child(2)::before,
+  .project-nav a:nth-child(3)::before{ font-size:0.8rem; }
+  .project-nav a:nth-child(1)::before,
+  .project-nav a:nth-child(3)::after{ width:20px; height:20px; }
 }
 
 /* The arrow buttons sit directly on top of the touch-scrollable image
