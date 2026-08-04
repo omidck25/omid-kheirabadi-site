@@ -721,6 +721,7 @@
       var n = w >= 820 ? 3 : (w >= 520 ? 2 : 1);
       if (list.dataset.cols === String(n)) return;
       list.dataset.cols = String(n);
+      list.style.setProperty('--cols', n); // column width maths lives in site.css
       list.textContent = '';
       var cols = [];
       for (var c = 0; c < n; c++) {

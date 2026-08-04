@@ -416,9 +416,16 @@ body{
    round-robin, rather than CSS multi-column: multi-column fills one
    column top-to-bottom before starting the next, which would run the
    order down each column instead of left to right across the wall. */
-.announcements-modal-list{ display:flex; align-items:flex-start; gap:1.6em; }
+.announcements-modal-list{
+  display:flex; align-items:flex-start; justify-content:center; gap:1.6em;
+}
+/* Columns are held at 85% of the width they'd otherwise fill, shrinking
+   every tile by 15% while its contents keep their proportions; the wall
+   is centred so the freed space falls evenly either side. --cols is set
+   by nav.js, which owns the column count. */
 .announcements-modal .announcement-column{
-  flex:1 1 0; min-width:0; display:flex; flex-direction:column;
+  flex:0 0 calc((100% - (var(--cols, 3) - 1) * 1.6em) / var(--cols, 3) * 0.85);
+  min-width:0; display:flex; flex-direction:column;
 }
 .announcements-modal .announcement{ margin-bottom:1.6em; }
 @media (min-width:721px){
