@@ -627,35 +627,65 @@
     var list = document.createElement('div');
     list.className = 'announcements-modal-list';
 
-    ANNOUNCEMENTS.forEach(function (item) {
+    // Card per announcement: image on top, dark caption band with title +
+    // date, and the body text collapsed behind a "read more" toggle — so
+    // each item reads as its own piece instead of blurring into a long
+    // run-on list.
+    ANNOUNCEMENTS.forEach(function (item, i) {
       var article = document.createElement('article');
       article.className = 'announcement';
 
       if (item.slug) {
+        var figure = document.createElement('div');
+        figure.className = 'announcement-figure';
         var img = document.createElement('img');
         img.className = 'announcement-thumb';
         img.src = BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext;
         img.alt = '';
         img.loading = 'lazy';
-        article.appendChild(img);
+        figure.appendChild(img);
+        article.appendChild(figure);
       }
+
+      var caption = document.createElement('div');
+      caption.className = 'announcement-caption';
 
       var h3 = document.createElement('h3');
       h3.textContent = item.title;
-      article.appendChild(h3);
+      caption.appendChild(h3);
 
       if (item.when) {
         var when = document.createElement('span');
         when.className = 'when';
         when.textContent = item.when;
-        article.appendChild(when);
+        caption.appendChild(when);
       }
 
+      var bodyId = 'announcementBody' + i;
+      var body = document.createElement('div');
+      body.className = 'announcement-body';
+      body.id = bodyId;
       item.body.forEach(function (para) {
         var p = document.createElement('p');
         p.textContent = para;
-        article.appendChild(p);
+        body.appendChild(p);
       });
+
+      var moreBtn = document.createElement('button');
+      moreBtn.type = 'button';
+      moreBtn.className = 'announcement-more';
+      moreBtn.textContent = 'Read More';
+      moreBtn.setAttribute('aria-expanded', 'false');
+      moreBtn.setAttribute('aria-controls', bodyId);
+      moreBtn.addEventListener('click', function () {
+        var open = article.classList.toggle('open');
+        moreBtn.textContent = open ? 'Close' : 'Read More';
+        moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      caption.appendChild(moreBtn);
+
+      article.appendChild(caption);
+      article.appendChild(body);
 
       list.appendChild(article);
     });

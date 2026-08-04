@@ -409,16 +409,16 @@ body{
    more content than the bio though, so unlike the info popup this
    realistically still scrolls on most screens -- the 2-column layout
    below is there to cut how much scrolling is needed, not eliminate it. */
+/* Card grid. auto-fill keeps the cards a readable size and lets the
+   column count follow the modal's width (3 across on a wide laptop,
+   2 on a narrow window). Grid fills row by row, so the reading order
+   runs left to right: 1 / 2 / 3, then 4 / 5 / 6 beneath. */
+.announcements-modal-list{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+  gap:2em; align-items:start;
+}
 @media (min-width:721px){
   .announcements-modal{ width:92vw; max-width:1100px; max-height:90vh; }
-  /* Grid rather than CSS multi-column: multi-column fills top-to-bottom
-     down the left column first, so the reading order ran 1-10 on the
-     left then 11-20 on the right. Grid fills row by row, giving
-     1 left / 2 right / 3 left / 4 right ... */
-  .announcements-modal-list{
-    display:grid; grid-template-columns:1fr 1fr;
-    column-gap:2.6em; align-items:start;
-  }
 }
 .announcements-modal-overlay.open .announcements-modal{ transform:translateY(0); }
 .announcements-modal-close{
@@ -432,39 +432,59 @@ body{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.8em;
 }
+/* Each announcement is its own card — image on top, dark caption band
+   with the title and date, body text collapsed behind "read more" — so
+   items read as distinct posts rather than one continuous list. */
 .announcements-modal .announcement{
-  padding-bottom:1em; margin-bottom:1em;
-  border-bottom:1px solid rgba(20,19,17,0.1);
+  display:flex; flex-direction:column;
+  background:#fff; align-self:start;
 }
-.announcements-modal .announcement::after{ content:""; display:table; clear:both; }
-.announcements-modal .announcement:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.announcements-modal .announcement-figure{
+  position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#eee;
+}
+.announcements-modal .announcement-thumb{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:grayscale(20%) contrast(1.05);
+  transition:transform 0.4s ease;
+}
+.announcements-modal .announcement:hover .announcement-thumb{ transform:scale(1.04); }
+.announcements-modal .announcement-caption{
+  background:var(--ink); color:#fff;
+  padding:1.1em 1.2em 1.2em; text-align:center;
+}
 .announcements-modal .announcement h3{
-  font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:0.92rem; margin-bottom:0.15em;
+  font-family:'Space Grotesk',sans-serif; font-weight:500;
+  font-size:0.98rem; line-height:1.3; margin-bottom:0.4em; color:#fff;
 }
 .announcements-modal .announcement .when{
-  font-family:'Space Grotesk',sans-serif; font-size:0.6rem; letter-spacing:0.06em;
-  text-transform:uppercase; color:var(--grey); margin-bottom:0.35em; display:block;
+  font-family:'Space Grotesk',sans-serif; font-size:0.62rem; letter-spacing:0.06em;
+  text-transform:uppercase; color:rgba(255,255,255,0.62);
+  margin-bottom:0.9em; display:block;
 }
+.announcements-modal .announcement-more{
+  background:none; border:none; cursor:pointer; padding:0.2em 0;
+  font-family:'Space Grotesk',sans-serif; font-size:0.72rem; letter-spacing:0.04em;
+  color:#fff; border-bottom:1px solid rgba(255,255,255,0.55);
+}
+.announcements-modal .announcement-more:hover{ border-bottom-color:#fff; }
+/* collapsed by default; expands in place when "read more" is pressed */
+.announcements-modal .announcement-body{ display:none; padding:1.1em 0 0.2em; }
+.announcements-modal .announcement.open .announcement-body{ display:block; }
 .announcements-modal .announcement p{
-  font-size:0.76rem; line-height:1.42; margin-bottom:0.5em; text-transform:lowercase;
+  font-size:0.78rem; line-height:1.5; margin-bottom:0.6em; text-transform:lowercase;
 }
 .announcements-modal .announcement p:last-child{ margin-bottom:0; }
-.announcements-modal .announcement-thumb{
-  float:left; width:60px; height:60px; object-fit:cover;
-  margin:0.1em 0.85em 0.5em 0;
-  box-shadow:0 6px 16px rgba(0,0,0,0.16);
-  filter:grayscale(20%) contrast(1.05);
-  background:#eee;
-}
 
 @media (max-width:720px){
   .announcements-modal-overlay{ padding:10px; }
   .announcements-modal{ padding:1.6em 1.2em 1.4em; max-height:92vh; }
   .announcements-modal h2{ font-size:1.15rem; margin-bottom:0.6em; }
-  .announcements-modal .announcement{ padding-bottom:0.8em; margin-bottom:0.8em; }
-  .announcements-modal .announcement h3{ font-size:0.86rem; }
-  .announcements-modal .announcement p{ font-size:0.72rem; }
-  .announcements-modal .announcement-thumb{ width:52px; height:52px; margin-right:0.65em; }
+  /* one card per row on a phone — two would leave the images too small
+     to carry the post on their own */
+  .announcements-modal-list{ grid-template-columns:1fr; gap:1.6em; }
+  .announcements-modal .announcement h3{ font-size:0.9rem; }
+  .announcements-modal .announcement p{ font-size:0.75rem; }
+  .announcements-modal .announcement-caption{ padding:1em 1em 1.1em; }
 }
 
 /* ===== store ===== */
