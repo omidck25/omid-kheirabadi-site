@@ -449,14 +449,16 @@ body{
   transition:transform 0.4s ease;
 }
 .announcements-modal .announcement:hover .announcement-thumb{ transform:scale(1.04); }
-/* Sits over the bottom of the image so the semi-transparent white reads
-   as translucent — the photo stays faintly visible through it. */
+/* A translucent white veil over the whole image, with the title and date
+   centred on it — the photo reads through the wash rather than being
+   boxed off behind a band. */
 .announcements-modal .announcement-caption{
-  position:absolute; left:0; right:0; bottom:0; z-index:1;
-  background:rgba(255,255,255,0.82);
-  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+  position:absolute; inset:0; z-index:1;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  background:rgba(255,255,255,0.62);
+  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
   color:var(--ink);
-  padding:0.9em 1.2em 1em; text-align:center;
+  padding:1em 1.2em; text-align:center;
 }
 .announcements-modal .announcement h3{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
