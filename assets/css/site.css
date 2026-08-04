@@ -188,6 +188,12 @@ body{
 @media (max-width:900px){
   .video-side{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
   .video-side-media{ order:-1; width:100%; flex:0 0 auto; }
+  /* Stacked, the text scrolls up behind the video, so the last lines need
+     a video's worth of trailing room to travel fully past it — without
+     this the text runs out of scroll first and its final line sits
+     clipped in half against the video's bottom edge. Matching the video's
+     own 16/9 box makes the spacer exactly as tall as the video. */
+  .video-side-text::after{ content:''; display:block; width:100%; aspect-ratio:16/9; }
 }
 @media (pointer:coarse){
   .video-side-media{ position:relative; top:auto; }
