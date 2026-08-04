@@ -171,8 +171,8 @@ body{
    covers the page's full width; the fixed ribbons sit at a higher
    z-index and stay above it. */
 .video-side-media::before{
-  content:''; position:absolute; bottom:100%; left:-100vw; right:-100vw;
-  height:calc(var(--ribbon-h) + 40px); background:var(--bg);
+  content:''; position:absolute; bottom:calc(100% - 1px); left:-100vw; right:-100vw;
+  height:100vh; background:var(--bg);
 }
 .video-side-media iframe{ position:absolute; inset:0; width:100%; height:100%; }
 .video-side-text{ order:2; flex:1 1 300px; min-width:0; }
