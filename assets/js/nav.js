@@ -767,7 +767,20 @@
     });
   }
 
+  // Publishes the scrollbar's width as --sb. The full-bleed blocks (the
+  // gallery, the project nav) size themselves off 100vw, which counts the
+  // scrollbar, while the fixed ribbons are placed with left/right, which
+  // don't — so without this they run a scrollbar wider than the ribbons'
+  // span and their centre drifts half a scrollbar to the right of the
+  // "more" trigger.
+  function measureScrollbar() {
+    var w = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--sb', (w > 0 ? w : 0) + 'px');
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    measureScrollbar();
+    window.addEventListener('resize', measureScrollbar);
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
     initGalleryLightbox();

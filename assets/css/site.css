@@ -9,6 +9,12 @@
   --c-happenings:#ffffff;
   --c-info:#ffffff;
   --c-announcements:#ffffff;
+  /* Width of the vertical scrollbar. Set from JS (nav.js) because CSS
+     can't measure it here: custom properties substitute as text, so a
+     calc(100vw - 100%) would resolve its 100% against whichever element
+     uses the variable rather than the viewport. Defaults to 0 for the
+     no-scrollbar case. */
+  --sb:0px;
 }
 *{ margin:0; padding:0; box-sizing:border-box; }
 html{ height:100%; }
@@ -898,9 +904,13 @@ body{
    column's width. Left off mobile on purpose — at that width .page is
    already close to the full available width anyway. */
 @media (min-width:721px){
-  .gallery{ width:calc(100vw - 2 * var(--ribbon-w)); }
+  /* --sb subtracts the scrollbar: 100vw counts it but the fixed ribbons
+     are placed with left/right, which don't, so a plain 100vw width runs
+     a scrollbar's width wider than the ribbons' span and lands its centre
+     half a scrollbar to the right of the "more" trigger. */
+  .gallery{ width:calc(100vw - 2 * var(--ribbon-w) - var(--sb)); }
   .project-nav{
-    width:calc(100vw - 2 * var(--ribbon-w));
+    width:calc(100vw - 2 * var(--ribbon-w) - var(--sb));
     margin-left:-8vw;
     padding-left:8vw; padding-right:8vw;
   }
