@@ -173,8 +173,14 @@ body{
    in that gap. Stretched far past the text column horizontally so it
    covers the page's full width; the fixed ribbons sit at a higher
    z-index and stay above it. */
+/* Spans the media's own width only. It used to reach 100vw past each
+   side to be sure of covering the page, but that made the document far
+   wider than the viewport — on a phone you could pinch out and find a
+   band of empty white to the right. The text it needs to hide is either
+   directly below the media (stacked) or beside it in its own column
+   (side by side), so the media's width is all the cover required. */
 .video-side-media::before{
-  content:''; position:absolute; bottom:calc(100% - 1px); left:-100vw; right:-100vw;
+  content:''; position:absolute; bottom:calc(100% - 1px); left:0; right:0;
   height:100vh; background:var(--bg);
 }
 .video-side-media iframe{ position:absolute; inset:0; width:100%; height:100%; }
