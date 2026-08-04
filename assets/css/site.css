@@ -729,8 +729,22 @@ body{
   .blog-post-figures{ flex-direction:column; }
   .blog-post-figures img{ max-height:none; }
   /* prev/all-projects/next in one row got crammed together on narrow
-     screens (titles can be long) — stack them instead, each full-width */
-  .project-nav{ flex-direction:column; align-items:flex-start; gap:0.9em; }
+     screens (titles can be long) — stack them instead, each full-width.
+     Stacked and all left-aligned they read as one indistinct list, so
+     each takes the position its arrow implies: previous hard left, all
+     projects centred, next hard right. Bigger type, wider spacing and
+     full-width tap targets (44px min, the usual touch minimum) make them
+     easier to read and hit. */
+  .project-nav{
+    flex-direction:column; align-items:stretch; gap:0.4em;
+    font-size:0.82rem; letter-spacing:0.05em;
+  }
+  .project-nav a{
+    display:flex; align-items:center; min-height:44px; padding:0.2em 0;
+  }
+  .project-nav a:nth-child(1){ justify-content:flex-start; }
+  .project-nav a:nth-child(2){ justify-content:center; }
+  .project-nav a:nth-child(3){ justify-content:flex-end; }
   .gallery{ margin:2.5em -6vw 0; }
   .filmstrip{ padding:16px 6vw 26px; gap:14px; }
   .filmstrip img{ height:200px !important; margin-bottom:0 !important; }
