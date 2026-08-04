@@ -682,12 +682,19 @@
       moreBtn.textContent = 'Read More';
       moreBtn.setAttribute('aria-expanded', 'false');
       moreBtn.setAttribute('aria-controls', bodyId);
-      moreBtn.addEventListener('click', function () {
+      capInner.appendChild(moreBtn);
+
+      function toggle() {
         var open = article.classList.toggle('open');
         moreBtn.textContent = open ? 'Close' : 'Read More';
         moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      capInner.appendChild(moreBtn);
+      }
+      // The whole tile is clickable/tappable, not just the button. The
+      // listener sits on the caption (which covers the image) rather than
+      // the article, so clicks in the expanded text below don't collapse
+      // the card mid-read. The button lives inside the caption, so its
+      // clicks bubble here — one handler covers both, no double toggle.
+      caption.addEventListener('click', toggle);
 
       // the caption overlays the bottom of the image (see site.css), so it
       // goes inside the figure when there is one

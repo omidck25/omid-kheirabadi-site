@@ -457,12 +457,14 @@ body{
   background:rgba(255,255,255,0.62);
   -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
   color:var(--ink);
-  text-align:center;
+  text-align:center; cursor:pointer;
   transition:background-color 0.35s ease, backdrop-filter 0.35s ease;
 }
-/* hovering thins the veil so the photo comes forward for a moment, then
-   settles back when the pointer leaves */
-.announcements-modal .announcement:hover .announcement-caption{
+/* Hovering thins the veil so the photo comes forward, then settles back
+   when the pointer leaves. Only while the card is closed — once it's
+   open the full wash returns and stays, hovered or not, so the title
+   sitting at the foot of the image stays legible. */
+.announcements-modal .announcement:not(.open):hover .announcement-caption{
   background:rgba(255,255,255,0.28);
   -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px);
 }
@@ -475,11 +477,15 @@ body{
   top:50%; transform:translateY(-50%);
   transition:top 0.38s ease, transform 0.38s ease, text-shadow 0.35s ease;
 }
-/* with the veil thinned on hover the text sits closer to the photo, so
-   it gets a soft white halo to stay readable */
-.announcements-modal .announcement:hover .announcement-caption-inner{
-  text-shadow:0 0 10px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.9);
-}
+/* With the veil thinned there isn't enough contrast for a full title over
+   a photo, so on hover the title and date fade out and only "read more"
+   remains — carried by a solid chip so it stays clearly legible. Fading
+   (rather than display:none) keeps the block's height fixed, so the
+   button doesn't jump as they go. */
+.announcements-modal .announcement h3,
+.announcements-modal .announcement .when{ transition:opacity 0.3s ease; }
+.announcements-modal .announcement:not(.open):hover h3,
+.announcements-modal .announcement:not(.open):hover .when{ opacity:0; }
 .announcements-modal .announcement.open .announcement-caption-inner{
   top:calc(100% - 1em); transform:translateY(-100%);
 }
@@ -496,8 +502,21 @@ body{
   background:none; border:none; cursor:pointer; padding:0.25em 0;
   font-family:'Space Grotesk',sans-serif; font-size:0.86rem; letter-spacing:0.04em;
   color:var(--ink); border-bottom:1px solid rgba(20,19,17,0.45);
+  transition:background-color 0.3s ease, padding 0.3s ease, font-size 0.3s ease,
+             box-shadow 0.3s ease, border-color 0.3s ease;
+}
+/* stands alone on the bare photo once the title fades, so it takes a
+   solid chip to read cleanly against whatever is behind it */
+.announcements-modal .announcement:not(.open):hover .announcement-more{
+  background:#fff; color:var(--ink);
+  padding:0.6em 1.3em; font-size:0.95rem; font-weight:500;
+  border-bottom-color:transparent;
+  box-shadow:0 6px 18px rgba(0,0,0,0.22);
 }
 .announcements-modal .announcement-more:hover{ color:var(--rust); border-bottom-color:var(--rust); }
+.announcements-modal .announcement:not(.open):hover .announcement-more:hover{
+  color:var(--rust); border-bottom-color:transparent;
+}
 /* collapsed by default; expands in place when "read more" is pressed */
 .announcements-modal .announcement-body{ display:none; padding:1.1em 0 0.2em; }
 .announcements-modal .announcement.open .announcement-body{ display:block; }
