@@ -60,25 +60,23 @@
     .frag{ transition:none; }
   }
 
-  /* Touch tiles are small (phones especially), and the cap is bottom-anchored
-     (justify-content:flex-end) — with title + description + link all
-     stacked, total content height could exceed the tile and the group
-     still anchors to the bottom, pushing the title (the first/topmost
-     item) up and out through the tile's own overflow:hidden. Dropping the
-     description on touch is the fix: title + link alone comfortably fit,
-     so the title is never clipped. The "view project" link also gets
-     bigger text and real padding so it's an easy target to tap, not just
-     read. */
+  /* On touch the caption carries the title alone: the description and the
+     "view project" link are dropped, since the whole tile is the target —
+     one tap reveals the title, a second opens the project (see the
+     pointerup handler). That also removes the old clipping risk, where
+     title + description + link stacked taller than the tile and pushed
+     the title out through its overflow:hidden. With the title on its own,
+     it centres in the tile and can run bigger. */
   @media (pointer: coarse){
-    .frag .cap .d{ display:none; }
-    .frag .cap{ padding:calc(var(--sz, 220) * 0.05px); }
-    .frag .cap .t{
-      font-size:clamp(0.68rem, calc(var(--sz, 220) * 0.085px), 0.95rem);
-      line-height:1.15; margin-bottom:0.2em;
+    .frag .cap .d,
+    .frag .cap a{ display:none; }
+    .frag .cap{
+      padding:calc(var(--sz, 220) * 0.06px);
+      justify-content:center; text-align:center;
     }
-    .frag .cap a{
-      font-size:clamp(0.66rem, calc(var(--sz, 220) * 0.08px), 0.85rem);
-      font-weight:500; margin-top:0.35em; padding:0.3em 0; display:inline-block;
+    .frag .cap .t{
+      font-size:clamp(0.72rem, calc(var(--sz, 220) * 0.095px), 1.05rem);
+      line-height:1.2; margin-bottom:0;
     }
   }
 </style>
@@ -256,8 +254,17 @@ function makeNode(el, w, h){
     node.dragging = false;
     node.el.classList.remove('dragging');
     if (e.pointerType !== 'mouse') {
-      // tap (no drag) toggles the freeze; a drag always releases it on drop
-      node.tapped = moved ? false : !node.tapped;
+      // Two-stage tap: the first tap freezes the tile and reveals its
+      // title, a second tap anywhere on it opens the project. A drag
+      // always just releases the tile on drop.
+      if (moved) {
+        node.tapped = false;
+      } else if (node.tapped) {
+        var href = node.el.dataset.href;
+        if (href) { window.location.href = href; return; }
+      } else {
+        node.tapped = true;
+      }
     }
     syncState();
   });
@@ -272,6 +279,7 @@ images.forEach((data) => {
   el.style.width = SIZE + 'px';
   el.style.height = SIZE + 'px';
   el.style.setProperty('--sz', SIZE);
+  el.dataset.href = data.href; // used by the two-tap open on touch devices
   el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project &rarr;</a></div>`;
   makeNode(el, SIZE, SIZE);
 });
