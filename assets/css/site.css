@@ -225,6 +225,10 @@ body{
 }
 @media (pointer:coarse){
   .video-side-media{ position:relative; top:auto; }
+  /* Nothing sticks on touch, so nothing needs room to scroll behind the
+     media — the trailing spacer above would just be a screen-tall blank
+     band between the text and the gallery. */
+  .video-side-text::after{ display:none; }
 }
 .project-sub{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
