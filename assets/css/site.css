@@ -149,15 +149,18 @@ body{
   position:absolute; top:0; left:0; width:100%; height:100%; border:none;
 }
 
-/* ===== video-beside-text layout, for project pages whose hero video
-   sits next to the text instead of full-width above it. The video
-   sticks (from the very first pixel of scroll — top matches .page's
-   own padding-top, and the video's own margin-top is zeroed, so there's
-   no gap before it engages) while the text scrolls past it. Its sticky
-   containing block (.video-side) ends right where the text ends, just
-   before the gallery starts, so it naturally un-sticks there instead of
-   scrolling over the gallery below. Phone/tablet collapses back to the
-   plain stacked video-above-text layout every other project page uses. ===== */
+/* ===== media-beside-text layout, used by every project page: the hero
+   media (a video on the pages that have one, otherwise the hero image)
+   sits next to the text instead of full-width above it. It sticks (from
+   the very first pixel of scroll — top matches .page's own padding-top,
+   and its margin-top is zeroed, so there's no gap before it engages)
+   while the text scrolls past it. Its sticky containing block
+   (.video-side) ends right where the text ends, just before the gallery
+   starts, so it naturally un-sticks there instead of scrolling over the
+   gallery below. Phone/tablet collapses back to the plain stacked
+   media-above-text layout.
+   (Class names kept as .video-side* since the pattern started with the
+   video pages; they apply to hero images identically.) ===== */
 .video-side{ display:flex; align-items:flex-start; gap:3em; }
 .video-side-media{
   order:1; flex:1.3 1 380px; min-width:0;
@@ -175,6 +178,12 @@ body{
   height:100vh; background:var(--bg);
 }
 .video-side-media iframe{ position:absolute; inset:0; width:100%; height:100%; }
+/* hero-image variant: fills the same 16/9 box the video occupies, so
+   both kinds of page share one layout and one sticky behavior */
+.video-side-media > img{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; display:block; margin:0; max-height:none;
+}
 .video-side-text{ order:2; flex:1 1 300px; min-width:0; }
 @media (min-width:721px){
   .video-side{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
@@ -188,12 +197,17 @@ body{
 @media (max-width:900px){
   .video-side{ flex-direction:column; gap:0; width:auto; margin-left:0; padding-left:0; padding-right:0; }
   .video-side-media{ order:-1; width:100%; flex:0 0 auto; }
-  /* Stacked, the text scrolls up behind the video, so the last lines need
-     a video's worth of trailing room to travel fully past it — without
-     this the text runs out of scroll first and its final line sits
-     clipped in half against the video's bottom edge. Matching the video's
-     own 16/9 box makes the spacer exactly as tall as the video. */
-  .video-side-text::after{ content:''; display:block; width:100%; aspect-ratio:16/9; }
+  /* Stacked, the text scrolls up behind the media, so the last lines need
+     trailing room to travel fully past it — without this the text runs
+     out of scroll first and its final line sits clipped in half against
+     the media's bottom edge. Sized from the viewport (not the media's own
+     height, which isn't enough on tall windows): at the end of the sticky
+     range the container's bottom meets the viewport's, so this much
+     trailing space puts the last line at or above the media's top. */
+  .video-side-text::after{
+    content:''; display:block; width:100%;
+    height:calc(100vh - var(--ribbon-h) - 40px);
+  }
 }
 @media (pointer:coarse){
   .video-side-media{ position:relative; top:auto; }
