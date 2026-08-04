@@ -649,16 +649,21 @@
 
       var caption = document.createElement('div');
       caption.className = 'announcement-caption';
+      // inner wrapper so the whole title block can be slid from the middle
+      // of the image to its foot as one piece when the card opens
+      var capInner = document.createElement('div');
+      capInner.className = 'announcement-caption-inner';
+      caption.appendChild(capInner);
 
       var h3 = document.createElement('h3');
       h3.textContent = item.title;
-      caption.appendChild(h3);
+      capInner.appendChild(h3);
 
       if (item.when) {
         var when = document.createElement('span');
         when.className = 'when';
         when.textContent = item.when;
-        caption.appendChild(when);
+        capInner.appendChild(when);
       }
 
       var bodyId = 'announcementBody' + i;
@@ -682,7 +687,7 @@
         moreBtn.textContent = open ? 'Close' : 'Read More';
         moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
-      caption.appendChild(moreBtn);
+      capInner.appendChild(moreBtn);
 
       // the caption overlays the bottom of the image (see site.css), so it
       // goes inside the figure when there is one

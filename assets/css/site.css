@@ -454,11 +454,22 @@ body{
    boxed off behind a band. */
 .announcements-modal .announcement-caption{
   position:absolute; inset:0; z-index:1;
-  display:flex; flex-direction:column; justify-content:center; align-items:center;
   background:rgba(255,255,255,0.62);
   -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
   color:var(--ink);
-  padding:1em 1.2em; text-align:center;
+  text-align:center;
+}
+/* The title block sits centred on a closed card and slides down to the
+   foot of the image when the card is opened. Driven by top/transform
+   rather than flex alignment, because those animate — switching
+   justify-content would snap straight to the bottom with no motion. */
+.announcements-modal .announcement-caption-inner{
+  position:absolute; left:0; right:0; padding:0 1.2em;
+  top:50%; transform:translateY(-50%);
+  transition:top 0.38s ease, transform 0.38s ease;
+}
+.announcements-modal .announcement.open .announcement-caption-inner{
+  top:calc(100% - 1em); transform:translateY(-100%);
 }
 .announcements-modal .announcement h3{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
