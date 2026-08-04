@@ -440,15 +440,19 @@ body{
   background:#fff; align-self:start;
   border:1px solid rgba(20,19,17,0.1);
 }
+/* No fixed ratio: each image keeps its own proportions and is shown
+   whole, so the cards come out at different heights and the grid reads
+   as a puzzle rather than a row of identical boxes. min-height reserves
+   room for the caption on very wide, short images. The hover zoom is
+   off here — scaling up inside the frame would crop the edges, which is
+   the thing this layout is meant to avoid. */
 .announcements-modal .announcement-figure{
-  position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#eee;
+  position:relative; width:100%; min-height:132px; background:#fff;
 }
 .announcements-modal .announcement-thumb{
-  width:100%; height:100%; object-fit:cover; display:block;
+  width:100%; height:auto; display:block;
   filter:grayscale(20%) contrast(1.05);
-  transition:transform 0.4s ease;
 }
-.announcements-modal .announcement:hover .announcement-thumb{ transform:scale(1.04); }
 /* A translucent white veil over the whole image, with the title and date
    centred on it — the photo reads through the wash rather than being
    boxed off behind a band. */
