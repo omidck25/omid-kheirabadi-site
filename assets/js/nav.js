@@ -13,7 +13,7 @@
       { title: "inburgered", href: "projects/inburgered-integrated.html", year: "2023" },
       { title: "alive & unborn", href: "projects/alive-and-unborn.html", year: "2023" },
       { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html", year: "2021" },
-      { title: "one day is too short...", href: "projects/one-day-is-too-short.html", year: "2022" },
+      { title: "one day is too short, three days are too long", href: "projects/one-day-is-too-short.html", year: "2022" },
       { title: "making art", href: "projects/making-art.html", year: "2020" },
       { title: "i'm free as a bird", href: "projects/i-am-free-as-a-bird.html", year: "2020" },
       { title: "a tough soldier", href: "projects/a-tough-soldier.html", year: "2019" },
