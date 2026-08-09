@@ -25,12 +25,12 @@
      held (.dragging), never while it's just bouncing around on its own. */
   .frag.dragging{ cursor:grabbing; }
   .frag img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(15%) contrast(1.05); pointer-events:none; }
-  /* Title and description sit in the middle of the tile, with the link
-     pushed to the foot — bottom-anchored they all crowded together in
-     the lower corner. */
+  /* The caption is the project title alone, centred in the tile, and the
+     title itself is the link — no description, no separate button. */
   .frag .cap{
     position:absolute; inset:0; z-index:2;
-    display:flex; flex-direction:column; justify-content:center;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
     padding:calc(var(--sz, 220) * 0.06px); background:rgba(17,16,15,0.72); color:#fff;
     opacity:0; transition:opacity 0.28s; pointer-events:none;
   }
@@ -39,54 +39,32 @@
      value, so it scales down with the tile on small screens instead of
      staying full-size and overflowing a much smaller box */
   .frag .cap .t{
+    pointer-events:auto; color:#fff; text-decoration:none;
     font-family:'Space Grotesk',sans-serif; font-weight:500;
-    font-size:clamp(0.62rem, calc(var(--sz, 220) * 0.075px), 0.9rem);
-    line-height:1.25; margin-bottom:0.35em;
+    font-size:clamp(0.68rem, calc(var(--sz, 220) * 0.085px), 1rem);
+    line-height:1.25;
+    border-bottom:1px solid rgba(255,255,255,0.45); padding-bottom:0.12em;
   }
-  .frag .cap .d{
-    font-family:'Space Grotesk',sans-serif; font-weight:400;
-    font-size:clamp(0.52rem, calc(var(--sz, 220) * 0.06px), 0.74rem);
-    line-height:1.35;
-    color:rgba(255,255,255,0.72);
-    text-transform:lowercase;
-  }
+  .frag .cap .t:hover{ border-bottom-color:#fff; }
   .frag.active .cap{ opacity:1; }
   .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
   .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
-  /* A fixed gap rather than margin-top:auto — auto eats the free space,
-     which pins the group to the top and undoes the centring. Bigger and
-     white so it reads as the action. */
-  .frag .cap a{
-    pointer-events:auto; color:#fff; font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(0.62rem, calc(var(--sz, 220) * 0.072px), 0.86rem);
-    font-weight:500; letter-spacing:0.04em; text-transform:uppercase;
-    margin-top:1.6em; display:inline-block;
-    text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.5);
-    align-self:center; padding-bottom:0.15em;
-  }
-  .frag .cap a:hover{ border-bottom-color:#fff; }
 
   @media (prefers-reduced-motion: reduce){
     .frag{ transition:none; }
   }
 
-  /* On touch the caption carries the title alone: the description and the
-     "view project" link are dropped, since the whole tile is the target —
-     one tap reveals the title, a second opens the project (see the
-     pointerup handler). That also removes the old clipping risk, where
-     title + description + link stacked taller than the tile and pushed
-     the title out through its overflow:hidden. With the title on its own,
-     it centres in the tile and can run bigger. */
+  /* On touch the whole tile is the target: one tap reveals the title, a
+     second opens the project (see the pointerup handler). The title is a
+     link now, so it has to stop swallowing taps — otherwise the first tap
+     would land on it and navigate straight away, skipping the reveal.
+     pointer-events:none lets the tap fall through to the tile. */
   @media (pointer: coarse){
-    .frag .cap .d,
-    .frag .cap a{ display:none; }
-    .frag .cap{
-      padding:calc(var(--sz, 220) * 0.06px);
-      justify-content:center; text-align:center;
-    }
     .frag .cap .t{
+      pointer-events:none;
+      border-bottom:none; padding-bottom:0;
       font-size:clamp(0.72rem, calc(var(--sz, 220) * 0.095px), 1.05rem);
-      line-height:1.2; margin-bottom:0;
+      line-height:1.2;
     }
   }
 </style>
@@ -290,7 +268,7 @@ images.forEach((data) => {
   el.style.height = SIZE + 'px';
   el.style.setProperty('--sz', SIZE);
   el.dataset.href = data.href; // used by the two-tap open on touch devices
-  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project</a></div>`;
+  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><a class="t" href="${data.href}">${data.cap}</a></div>`;
   makeNode(el, SIZE, SIZE);
 });
 
