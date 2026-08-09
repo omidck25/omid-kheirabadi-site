@@ -385,8 +385,8 @@
           '<div class="qc-row"><span class="qc-label">To:</span><span class="qc-value">Omid Kheirabadi</span></div>' +
           '<div class="qc-row"><label class="qc-label" for="qc-email">From:</label>' +
             '<input class="qc-input" type="email" id="qc-email" name="email" placeholder="your email address" required></div>' +
-          '<label class="qc-message-label" for="qc-message">Message:</label>' +
-          '<textarea id="qc-message" name="message" required placeholder="your message"></textarea>' +
+          '<label class="qc-message-label" for="qc-message">your message:</label>' +
+          '<textarea id="qc-message" name="message" required></textarea>' +
           '<p class="form-note" id="qcFormNote" style="display:none;"></p>' +
           '<div class="qc-actions">' +
             '<button type="submit" class="qc-send">Send Email</button>' +
