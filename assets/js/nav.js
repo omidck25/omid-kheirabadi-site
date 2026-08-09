@@ -546,9 +546,6 @@
       'How do we begin a conversation with someone we don\'t know? Can a brief encounter become a space of real connection? In this participatory performance session, Omid Kheirabadi invites you to explore the quality of dialogue through movement, presence, and collective creation. You won\'t be watching from the sidelines, as this is a shared experiment in performing together, with all the openness, awkwardness, and unexpected intimacy that can bring.',
       'Through movement, improvisation, and conversation, we\'ll explore the dynamics of attention, presence, and connection. Omid\'s practice creates temporary spaces where people come together to move, speak, and improvise. These collective actions serve as a way to investigate how we relate to one another with the hope that something meaningful will arise among strangers.'
     ] },
-    { slug: 'iv-grant-cbk-2025', ext: 'png', title: 'I&V GRANT CBK 2025', when: 'September–November 2025', body: [
-      'I am grateful to receive the "Impulse en Verdieping" grant from CBK Rotterdam for the upcoming video project "Whose street is this? decolonization of an ordinary neighborhood as common space" taking place from September till November 2025.'
-    ] },
     { slug: 'art-rotterdam-exhibition', ext: 'png', title: 'ART Rotterdam Exhibition', when: '28–30 March', body: [
       'I will be showing "Carnisse in Flux" at ART Rotterdam from 28th to 30th of March. This show is part of Prospects 2025 group exhibition organized by Mondriaan Fonds.'
     ] },
@@ -560,9 +557,6 @@
     ] },
     { slug: 'graw-2024', ext: 'jpg', title: 'GRAW 2024', when: '21–22 September, TimeWindow studio', body: [
       'I will be showing some test works for my upcoming exhibition at ART Rotterdam, in my studio space in TimeWindow. Join me and other 12 creatives from our community on the 21st and 22nd of September to experience it all. We are open from 11:00 to 22:15 on Saturday and from 11:00 to 17:00 on Sunday.'
-    ] },
-    { slug: 'praktijk-bijdrage-grant-cbk-2024', ext: 'png', title: 'Praktijk Bijdrage GRANT CBK 2024', when: '2024', body: [
-      'CBK has generously supported my current project "carnisse in Flux" with a one-time contribution of Praktijk Bijdrage. In collaboration with Shardenia Felicia, we are going to explore Rotterdam South, and specially the Carnisse neighborhood and the state of change it is going through due to the ongoing gentrification.'
     ] },
     { slug: 'artist-residency-in-switzerland', ext: 'png', title: 'Artist Residency in Switzerland', when: 'February–March 2024', body: [
       'It\'s an honor to announce that I have been selected for a six-week artist residency at Fondation du Château Mercier in Sierre, Switzerland in February and March 2024.'
@@ -581,9 +575,6 @@
     ] },
     { slug: 'open-call', ext: 'jpg', title: 'Open Call', when: 'September 2023', body: [
       'I am looking for a few performance enthusiasts! For my project "Happening to One Another" I need some people who would like to be part of this artistic research and participate in four improvised performance sessions once a week in September 2023.'
-    ] },
-    { slug: 'oo-grant-cbk-2023', ext: 'jpg', title: 'O&O Grant CBK 2023', when: '2023', body: [
-      'Honored to receive the Research and Deepening Grant from CBK Rotterdam for the research project "Happening to one another: a study of performance art as a form of resistance."'
     ] },
     { slug: 'delft-fringe-festival-2023', ext: 'jpg', title: 'Delft Fringe Festival 2023', when: '2023', body: [
       '\'alive & unborn\' is a dark satirical performance reflecting on the injustices created by years of the racist capitalist system, colonialism and slavery, and the demons of credit and debt. What\'s hope and how much of it is left for us?'
