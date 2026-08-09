@@ -25,9 +25,12 @@
      held (.dragging), never while it's just bouncing around on its own. */
   .frag.dragging{ cursor:grabbing; }
   .frag img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(15%) contrast(1.05); pointer-events:none; }
+  /* Title and description sit in the middle of the tile, with the link
+     pushed to the foot — bottom-anchored they all crowded together in
+     the lower corner. */
   .frag .cap{
     position:absolute; inset:0; z-index:2;
-    display:flex; flex-direction:column; justify-content:flex-end;
+    display:flex; flex-direction:column; justify-content:center;
     padding:calc(var(--sz, 220) * 0.06px); background:rgba(17,16,15,0.72); color:#fff;
     opacity:0; transition:opacity 0.28s; pointer-events:none;
   }
@@ -50,11 +53,18 @@
   .frag.active .cap{ opacity:1; }
   .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
   .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
+  /* A fixed gap rather than margin-top:auto — auto eats the free space,
+     which pins the group to the top and undoes the centring. Bigger and
+     white so it reads as the action. */
   .frag .cap a{
-    pointer-events:auto; color:#e8a690; font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(0.5rem, calc(var(--sz, 220) * 0.052px), 0.66rem);
-    letter-spacing:0.03em; margin-top:0.5em; display:inline-block;
+    pointer-events:auto; color:#fff; font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(0.62rem, calc(var(--sz, 220) * 0.072px), 0.86rem);
+    font-weight:500; letter-spacing:0.04em; text-transform:uppercase;
+    margin-top:1.6em; display:inline-block;
+    text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.5);
+    align-self:flex-start; padding-bottom:0.15em;
   }
+  .frag .cap a:hover{ border-bottom-color:#fff; }
 
   @media (prefers-reduced-motion: reduce){
     .frag{ transition:none; }
@@ -280,7 +290,7 @@ images.forEach((data) => {
   el.style.height = SIZE + 'px';
   el.style.setProperty('--sz', SIZE);
   el.dataset.href = data.href; // used by the two-tap open on touch devices
-  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project &rarr;</a></div>`;
+  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><div class="t">${data.cap}</div><div class="d">${data.desc}</div><a href="${data.href}">view project</a></div>`;
   makeNode(el, SIZE, SIZE);
 });
 
