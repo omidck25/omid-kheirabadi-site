@@ -313,6 +313,12 @@ const MARGIN = OVERLAP_ALLOWED;
 // than being set outright, for the same reason.
 const PUSH_FACTOR = 0.25;
 const VEL_BLEND = 0.15;
+// A tile touching two or three others at once used to receive a separate
+// velocity response for each pair in the same frame, and they stacked — a
+// single frame could change its velocity by nearly its whole speed, which is
+// what made clusters feel like they were grinding. The total change per tile
+// per frame is capped instead.
+const MAX_CONTACT_DV = 0.04;
 
 // applyVelocity is only true on the first relaxation pass: the later passes
 // still separate overlapping tiles, but re-blending velocity on every pass
@@ -334,6 +340,11 @@ function resolveCollisions(ins, w, h, applyVelocity){
       const aFixed = isFixed(a), bFixed = isFixed(b);
       if (aFixed && bFixed) continue;
 
+      // scale the response by how far in they actually are, so a graze
+      // nudges and only a real overlap shoves
+      const depth = Math.min(overlapX, overlapY) / MARGIN;
+      const blend = VEL_BLEND * Math.min(1, Math.max(0.25, depth));
+
       if (overlapX < overlapY) {
         const sign = (a.x + a.w / 2 < b.x + b.w / 2) ? -1 : 1;
         const push = overlapX * PUSH_FACTOR;
@@ -341,15 +352,15 @@ function resolveCollisions(ins, w, h, applyVelocity){
           a.x += sign * push / 2;
           b.x -= sign * push / 2;
           if (applyVelocity) {
-            a.vx += (Math.abs(a.vx) * sign - a.vx) * VEL_BLEND;
-            b.vx += (Math.abs(b.vx) * -sign - b.vx) * VEL_BLEND;
+            a.vx += (Math.abs(a.vx) * sign - a.vx) * blend;
+            b.vx += (Math.abs(b.vx) * -sign - b.vx) * blend;
           }
         } else if (!aFixed) {
           a.x += sign * push;
-          if (applyVelocity) a.vx += (Math.abs(a.vx) * sign - a.vx) * VEL_BLEND;
+          if (applyVelocity) a.vx += (Math.abs(a.vx) * sign - a.vx) * blend;
         } else {
           b.x -= sign * push;
-          if (applyVelocity) b.vx += (Math.abs(b.vx) * -sign - b.vx) * VEL_BLEND;
+          if (applyVelocity) b.vx += (Math.abs(b.vx) * -sign - b.vx) * blend;
         }
       } else {
         const sign = (a.y + a.h / 2 < b.y + b.h / 2) ? -1 : 1;
@@ -358,15 +369,15 @@ function resolveCollisions(ins, w, h, applyVelocity){
           a.y += sign * push / 2;
           b.y -= sign * push / 2;
           if (applyVelocity) {
-            a.vy += (Math.abs(a.vy) * sign - a.vy) * VEL_BLEND;
-            b.vy += (Math.abs(b.vy) * -sign - b.vy) * VEL_BLEND;
+            a.vy += (Math.abs(a.vy) * sign - a.vy) * blend;
+            b.vy += (Math.abs(b.vy) * -sign - b.vy) * blend;
           }
         } else if (!aFixed) {
           a.y += sign * push;
-          if (applyVelocity) a.vy += (Math.abs(a.vy) * sign - a.vy) * VEL_BLEND;
+          if (applyVelocity) a.vy += (Math.abs(a.vy) * sign - a.vy) * blend;
         } else {
           b.y -= sign * push;
-          if (applyVelocity) b.vy += (Math.abs(b.vy) * -sign - b.vy) * VEL_BLEND;
+          if (applyVelocity) b.vy += (Math.abs(b.vy) * -sign - b.vy) * blend;
         }
       }
 
@@ -436,9 +447,20 @@ function tick(){
 
   // multiple passes per frame so clusters of 3+ overlapping tiles converge
   // quickly instead of fighting each other across many separate frames
+  const preV = nodes.map(n => [n.vx, n.vy]);
   for (let iter = 0; iter < 4; iter++) {
     resolveCollisions(ins, w, h, iter === 0);
   }
+  nodes.forEach((n, i) => {
+    const [pvx, pvy] = preV[i];
+    const dvx = n.vx - pvx, dvy = n.vy - pvy;
+    const dv = Math.hypot(dvx, dvy);
+    if (dv > MAX_CONTACT_DV) {
+      const k = MAX_CONTACT_DV / dv;
+      n.vx = pvx + dvx * k;
+      n.vy = pvy + dvy * k;
+    }
+  });
 
   nodes.forEach(n => {
     const scale = n.dragging ? 1.08 : 1 + 0.08 * (1 - n.speed);
