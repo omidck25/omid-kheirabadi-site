@@ -179,8 +179,8 @@ function makeNode(el, w, h){
     x: ins.left + Math.random() * Math.max(1, W - ins.left - ins.right - w),
     y: ins.top + Math.random() * Math.max(1, H - ins.top - ins.bottom - h),
     w, h,
-    vx: (Math.random() - 0.5) * 0.28,
-    vy: (Math.random() - 0.5) * 0.28,
+    vx: (Math.random() - 0.5) * 0.14,
+    vy: (Math.random() - 0.5) * 0.14,
     // each tile carries its own slow wander phases, so no two drift alike —
     // straight lines at a fixed speed read as machinery rather than
     // something floating. Tiles stay upright; no rotation.
@@ -311,10 +311,14 @@ const MARGIN = OVERLAP_ALLOWED;
 // ease apart over a couple of frames instead of visibly snapping/teleporting
 // the instant they touch. Velocity is blended toward the outward push rather
 // than being set outright, for the same reason.
-const PUSH_FACTOR = 0.35;
-const VEL_BLEND = 0.25;
+const PUSH_FACTOR = 0.25;
+const VEL_BLEND = 0.15;
 
-function resolveCollisions(ins, w, h){
+// applyVelocity is only true on the first relaxation pass: the later passes
+// still separate overlapping tiles, but re-blending velocity on every pass
+// meant a single touch could redirect a tile four times in one frame, which
+// is what read as jitter.
+function resolveCollisions(ins, w, h, applyVelocity){
   for (let i = 0; i < nodes.length; i++) {
     const a = nodes[i];
     for (let j = i + 1; j < nodes.length; j++) {
@@ -336,14 +340,16 @@ function resolveCollisions(ins, w, h){
         if (!aFixed && !bFixed) {
           a.x += sign * push / 2;
           b.x -= sign * push / 2;
-          a.vx += (Math.max(Math.abs(a.vx), 0.05) * sign - a.vx) * VEL_BLEND;
-          b.vx += (Math.max(Math.abs(b.vx), 0.05) * -sign - b.vx) * VEL_BLEND;
+          if (applyVelocity) {
+            a.vx += (Math.abs(a.vx) * sign - a.vx) * VEL_BLEND;
+            b.vx += (Math.abs(b.vx) * -sign - b.vx) * VEL_BLEND;
+          }
         } else if (!aFixed) {
           a.x += sign * push;
-          a.vx += (Math.max(Math.abs(a.vx), 0.05) * sign - a.vx) * VEL_BLEND;
+          if (applyVelocity) a.vx += (Math.abs(a.vx) * sign - a.vx) * VEL_BLEND;
         } else {
           b.x -= sign * push;
-          b.vx += (Math.max(Math.abs(b.vx), 0.05) * -sign - b.vx) * VEL_BLEND;
+          if (applyVelocity) b.vx += (Math.abs(b.vx) * -sign - b.vx) * VEL_BLEND;
         }
       } else {
         const sign = (a.y + a.h / 2 < b.y + b.h / 2) ? -1 : 1;
@@ -351,14 +357,16 @@ function resolveCollisions(ins, w, h){
         if (!aFixed && !bFixed) {
           a.y += sign * push / 2;
           b.y -= sign * push / 2;
-          a.vy += (Math.max(Math.abs(a.vy), 0.05) * sign - a.vy) * VEL_BLEND;
-          b.vy += (Math.max(Math.abs(b.vy), 0.05) * -sign - b.vy) * VEL_BLEND;
+          if (applyVelocity) {
+            a.vy += (Math.abs(a.vy) * sign - a.vy) * VEL_BLEND;
+            b.vy += (Math.abs(b.vy) * -sign - b.vy) * VEL_BLEND;
+          }
         } else if (!aFixed) {
           a.y += sign * push;
-          a.vy += (Math.max(Math.abs(a.vy), 0.05) * sign - a.vy) * VEL_BLEND;
+          if (applyVelocity) a.vy += (Math.abs(a.vy) * sign - a.vy) * VEL_BLEND;
         } else {
           b.y -= sign * push;
-          b.vy += (Math.max(Math.abs(b.vy), 0.05) * -sign - b.vy) * VEL_BLEND;
+          if (applyVelocity) b.vy += (Math.abs(b.vy) * -sign - b.vy) * VEL_BLEND;
         }
       }
 
@@ -395,14 +403,14 @@ function tick(){
 
     if (n.speed > 0.001) {
       // curve the heading a little each frame instead of holding a fixed one
-      n.vx += Math.sin(n.wobA) * 0.0018;
-      n.vy += Math.cos(n.wobB) * 0.0018;
+      n.vx += Math.sin(n.wobA) * 0.0009;
+      n.vy += Math.cos(n.wobB) * 0.0009;
 
       // ...then pull the speed back into a narrow band, otherwise the nudges
       // above would gradually accelerate or stall the tile
       const sp = Math.hypot(n.vx, n.vy);
       if (sp > 0) {
-        const capped = Math.min(0.34, Math.max(0.15, sp));
+        const capped = Math.min(0.17, Math.max(0.07, sp));
         n.vx = (n.vx / sp) * capped;
         n.vy = (n.vy / sp) * capped;
       }
@@ -414,11 +422,11 @@ function tick(){
       // their own path back and forth like a screensaver
       if (n.x <= ins.left || n.x + n.w >= w - ins.right) {
         n.vx *= -1;
-        n.vy += (Math.random() - 0.5) * 0.05;
+        n.vy += (Math.random() - 0.5) * 0.025;
       }
       if (n.y <= ins.top || n.y + n.h >= h - ins.bottom) {
         n.vy *= -1;
-        n.vx += (Math.random() - 0.5) * 0.05;
+        n.vx += (Math.random() - 0.5) * 0.025;
       }
       n.x = Math.max(ins.left, Math.min(w - ins.right - n.w, n.x));
       n.y = Math.max(ins.top, Math.min(h - ins.bottom - n.h, n.y));
@@ -429,7 +437,7 @@ function tick(){
   // multiple passes per frame so clusters of 3+ overlapping tiles converge
   // quickly instead of fighting each other across many separate frames
   for (let iter = 0; iter < 4; iter++) {
-    resolveCollisions(ins, w, h);
+    resolveCollisions(ins, w, h, iter === 0);
   }
 
   nodes.forEach(n => {
