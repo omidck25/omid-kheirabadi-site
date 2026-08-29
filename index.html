@@ -180,7 +180,15 @@ function makeNode(el, w, h){
     vx: (Math.random() - 0.5) * 0.28,
     vy: (Math.random() - 0.5) * 0.28,
     rot: 0,
-    vrot: 0,
+    // each tile carries its own slow wander phases and a resting tilt, so no
+    // two drift or sway alike — straight lines at a fixed speed read as
+    // machinery rather than something floating
+    wobA: Math.random() * Math.PI * 2,
+    wobB: Math.random() * Math.PI * 2,
+    wobSpeedA: 0.005 + Math.random() * 0.004,
+    wobSpeedB: 0.004 + Math.random() * 0.003,
+    tilt: (Math.random() - 0.5) * 3.4,
+    sway: 0.8 + Math.random() * 1.2,
     speed: 1,
     stopped: false,
     active: false,
@@ -381,16 +389,45 @@ function tick(){
     const target = n.engaged ? 0 : 1;
     n.speed += (target - n.speed) * 0.12;
 
+    // the wander phases advance whether or not the tile is moving, so a tile
+    // released after a hover doesn't resume mid-lurch
+    n.wobA += n.wobSpeedA;
+    n.wobB += n.wobSpeedB;
+
     if (n.speed > 0.001) {
+      // curve the heading a little each frame instead of holding a fixed one
+      n.vx += Math.sin(n.wobA) * 0.0018;
+      n.vy += Math.cos(n.wobB) * 0.0018;
+
+      // ...then pull the speed back into a narrow band, otherwise the nudges
+      // above would gradually accelerate or stall the tile
+      const sp = Math.hypot(n.vx, n.vy);
+      if (sp > 0) {
+        const capped = Math.min(0.34, Math.max(0.15, sp));
+        n.vx = (n.vx / sp) * capped;
+        n.vy = (n.vy / sp) * capped;
+      }
+
       n.x += n.vx * n.speed;
       n.y += n.vy * n.speed;
-      n.rot += n.vrot * n.speed;
 
-      if (n.x <= ins.left || n.x + n.w >= w - ins.right) n.vx *= -1;
-      if (n.y <= ins.top || n.y + n.h >= h - ins.bottom) n.vy *= -1;
+      // bounce with a slight kick across the wall, so tiles don't retrace
+      // their own path back and forth like a screensaver
+      if (n.x <= ins.left || n.x + n.w >= w - ins.right) {
+        n.vx *= -1;
+        n.vy += (Math.random() - 0.5) * 0.05;
+      }
+      if (n.y <= ins.top || n.y + n.h >= h - ins.bottom) {
+        n.vy *= -1;
+        n.vx += (Math.random() - 0.5) * 0.05;
+      }
       n.x = Math.max(ins.left, Math.min(w - ins.right - n.w, n.x));
       n.y = Math.max(ins.top, Math.min(h - ins.bottom - n.h, n.y));
     }
+
+    // a bounded sway rather than a running spin: tiles breathe around their
+    // resting tilt instead of slowly revolving through 360 degrees
+    n.rot = n.tilt + Math.sin(n.wobA * 0.6) * n.sway * n.speed;
   });
 
   // multiple passes per frame so clusters of 3+ overlapping tiles converge
