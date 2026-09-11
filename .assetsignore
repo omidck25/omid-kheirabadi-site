@@ -1,0 +1,21 @@
+# Files in this folder that are not part of the website. wrangler.jsonc
+# deploys the whole folder ("assets": { "directory": "." }), so without this
+# list Cloudflare also published the git history (/.git/), these notes,
+# the raw scraped text in content/, and the deploy config.
+.git
+.gitignore
+.assetsignore
+.claude
+.wrangler
+.dev.vars*
+.env*
+node_modules
+wrangler.jsonc
+CLAUDE.md
+content
+# the original single-file draft from before the rebuild (backup only)
+omid kheirabadi*
+# drafts that aren't ready to be public: placeholder products and example
+# posts. They stay here in the repo; delete a line to publish that page.
+store.html
+blog.html

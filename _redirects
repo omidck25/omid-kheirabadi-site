@@ -1,0 +1,21 @@
+# Addresses from the old Wix site, which kept every page at the top level.
+# The new site keeps project pages under /projects/, so without these rules
+# every old link (search results, festival and press pages, CVs) came back
+# "not found". 301 = permanent, which also tells search engines to update.
+/a-tough-soldier                              /projects/a-tough-soldier            301
+/alive-and-unborn                             /projects/alive-and-unborn           301
+/belfast-oppressed                            /projects/belfast-oppressed          301
+/bingo-machine                                /projects/bingo-machine              301
+/carnisse-in-flux                             /projects/carnisse-in-flux           301
+/happening-to-one-another                     /projects/happening-to-one-another   301
+/i-am-free-as-a-bird                          /projects/i-am-free-as-a-bird        301
+/inburgered-integrated                        /projects/inburgered-integrated      301
+/its-fine-really-silly-me                     /projects/its-fine-really-silly-me   301
+/making-art                                   /projects/making-art                 301
+/one-day-is-too-short-three-days-are-too-long /projects/one-day-is-too-short       301
+/spend-the-night-with-me                      /projects/spend-the-night-with-me    301
+/you-only-exist-on-paper                      /projects/you-only-exist-on-paper    301
+# The bio and announcements are popups now; nav.js opens the right one
+# when the homepage is reached with these hashes.
+/bio                                          /#info                               301
+/announcements                                /#announcements                      301
