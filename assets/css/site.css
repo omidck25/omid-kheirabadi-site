@@ -206,7 +206,8 @@ body{
 }
 .video-side-text{ order:2; flex:1 1 300px; min-width:0; }
 @media (min-width:721px){
-  .video-side{ width:calc(100vw - 2 * var(--ribbon-w)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
+  /* - var(--sb): same scrollbar correction as the gallery and nav below */
+  .video-side{ width:calc(100vw - 2 * var(--ribbon-w) - var(--sb)); margin-left:-8vw; padding-left:8vw; padding-right:8vw; }
 }
 /* Below 900px the layout stacks (video full-width on top, text below),
    but a narrow *desktop* window still keeps the video sticky while the
@@ -608,12 +609,8 @@ body{
   .announcements-modal-overlay{ padding:10px; }
   .announcements-modal{ padding:1.6em 1.2em 1.4em; max-height:92vh; }
   .announcements-modal h2{ font-size:1.15rem; margin-bottom:0.6em; }
-  /* one card per row on a phone — two would leave the images too small
-     to carry the post on their own */
-  .announcements-modal-list{ grid-template-columns:1fr; gap:1.6em; }
   .announcements-modal .announcement h3{ font-size:1.1rem; }
   .announcements-modal .announcement p{ font-size:0.88rem; }
-  .announcements-modal .announcement-caption{ padding:1em 1em 1.1em; }
 }
 
 /* ===== store ===== */
@@ -697,13 +694,16 @@ body{
   background:#eee;
   animation:floaty 6.5s ease-in-out infinite;
 }
-.filmstrip .frame:nth-child(3n+1) img{ height:320px; }
-.filmstrip .frame:nth-child(3n+2) img{ height:240px; margin-bottom:18px; }
-.filmstrip .frame:nth-child(3n)   img{ height:290px; margin-bottom:6px; }
-.filmstrip .frame:nth-child(2n) img{ animation-duration:8s; animation-delay:-2.5s; }
-.filmstrip .frame:nth-child(3n) img{ animation-duration:5.5s; animation-delay:-4s; }
-.filmstrip .frame:nth-child(4n) img{ animation-duration:7.2s; animation-delay:-1s; }
-.filmstrip .frame:nth-child(5n) img{ animation-duration:9s; animation-delay:-3.5s; }
+/* height and bob rhythm: classes stamped by nav.js (stampFramePattern)
+   rather than :nth-child, so a looped strip's copies match the photos they
+   stand in for — see the note there */
+.filmstrip .frame.fs-h1 img{ height:320px; }
+.filmstrip .frame.fs-h2 img{ height:240px; margin-bottom:18px; }
+.filmstrip .frame.fs-h0 img{ height:290px; margin-bottom:6px; }
+.filmstrip .frame.fs-a2 img{ animation-duration:8s; animation-delay:-2.5s; }
+.filmstrip .frame.fs-a3 img{ animation-duration:5.5s; animation-delay:-4s; }
+.filmstrip .frame.fs-a4 img{ animation-duration:7.2s; animation-delay:-1s; }
+.filmstrip .frame.fs-a5 img{ animation-duration:9s; animation-delay:-3.5s; }
 .filmstrip .frame{ flex-shrink:0; transition:transform 0.25s ease; }
 .filmstrip .frame:hover{ transform:translateY(-6px); }
 .filmstrip .frame:hover img{ animation-play-state:paused; }

@@ -10,6 +10,7 @@
     // dropdown only, so the same project page isn't listed in both menus.
     projects: [
       { title: "radical meditation", href: "projects/radical-meditation.html", year: "2025" },
+      { title: "happening to one another", href: "projects/happening-to-one-another.html", year: "2023" },
       { title: "inburgered", href: "projects/inburgered-integrated.html", year: "2023" },
       { title: "alive & unborn", href: "projects/alive-and-unborn.html", year: "2023" },
       { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html", year: "2021" },
@@ -17,7 +18,6 @@
       { title: "making art", href: "projects/making-art.html", year: "2020" },
       { title: "i'm free as a bird", href: "projects/i-am-free-as-a-bird.html", year: "2020" },
       { title: "a tough soldier", href: "projects/a-tough-soldier.html", year: "2019" },
-      { title: "happening to one another", href: "projects/happening-to-one-another.html", year: "2023" },
     ],
     happenings: [
       { title: "[wrong order]", href: "projects/wrong-order.html", year: "2025" },
@@ -137,12 +137,31 @@
   // to fight there either, but no reason to add it back) and uses a
   // smaller clone buffer, since it only needs to cover a single swipe's
   // worth of distance rather than a continuously-running auto-drift.
+  // Each photo's height and bob timing, from its place in the strip. This
+  // used to be :nth-child rules in the CSS, which follow DOM position — but
+  // a looped strip's copies never sit at the same position as the photo they
+  // copy (a gallery's length is rarely a multiple of the 3-step height
+  // pattern), so every copy came out a different size from its original and
+  // each loop jump landed visibly off. Stamped onto the originals as classes
+  // before they're copied, each copy gets exactly its original's size.
+  // `offset` is how many copies will sit in front, so the originals keep the
+  // rhythm they had under the old rules.
+  function stampFramePattern(frames, offset) {
+    frames.forEach(function (f, i) {
+      var pos = i + 1 + offset;
+      f.classList.add('fs-h' + (pos % 3));
+      var bob = pos % 5 === 0 ? 5 : pos % 4 === 0 ? 4 : pos % 3 === 0 ? 3 : pos % 2 === 0 ? 2 : 0;
+      if (bob) f.classList.add('fs-a' + bob);
+    });
+  }
+
   function loopifyFilmstrip(strip) {
     var frames = Array.prototype.slice.call(strip.children);
     var n = frames.length;
-    if (n < 3) return;
-
     var coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    var bufferCount = n < 3 ? 0 : (coarsePointer ? Math.min(n, 4) : Math.min(n, 8));
+    stampFramePattern(frames, bufferCount);
+    if (n < 3) return;
 
     function widthOf(nodes) {
       var gap = parseFloat(getComputedStyle(strip).gap) || 0;
@@ -188,10 +207,12 @@
       resumeTimer = setTimeout(function () { paused = false; }, ms);
     }
 
-    // step by ~1.5 images per click, not a big page-sized jump
+    // step by ~1.5 images per click, not a big page-sized jump. Averaged
+    // over the head copies, which always load eagerly — most originals are
+    // lazy and measure zero wide until they're scrolled near, which made
+    // the step far shorter than intended.
     function stepWidth() {
-      var avg = widthOf(frames) / frames.length;
-      return avg * 1.5;
+      return widthOf(headClones) / headClones.length * 1.5;
     }
     prevBtn.addEventListener('click', function () {
       pauseFor(1200);
@@ -202,29 +223,49 @@
       strip.scrollBy({ left: stepWidth(), behavior: 'smooth' });
     });
 
-    var bufferCount = coarsePointer ? Math.min(n, 4) : Math.min(n, 8);
     var tailClones = frames.slice(-bufferCount).map(makeClone);
     var headClones = frames.slice(0, bufferCount).map(makeClone);
-    tailClones.forEach(function (c) { strip.insertBefore(c, strip.firstChild); });
+    // Each copy goes in front of the first original, keeping the copies in
+    // order. Inserting each one at the very start instead reversed them, so
+    // scrolling left from photo 1 ran 33, 34, 35... instead of 40, 39, 38.
+    tailClones.forEach(function (c) { strip.insertBefore(c, frames[0]); });
     headClones.forEach(function (c) { strip.appendChild(c); });
 
+    // Both measured live from where the frames actually sit, never summed
+    // once up front. Most of a gallery's photos are lazy-loaded and still
+    // zero wide when init() runs, so a width taken then came out far too
+    // short (5,400px against a real 13,300px on the 40-photo gallery) —
+    // the loop wrapped at the wrong point and threw visitors from the
+    // middle of the gallery back to its first photo.
+    //   period: one full pass, from the first photo to its first repeat
+    //   lead:   the run of copies placed in front of the first photo
+    function period() {
+      return headClones[0].getBoundingClientRect().left - frames[0].getBoundingClientRect().left;
+    }
+    function lead() {
+      return frames[0].getBoundingClientRect().left - tailClones[0].getBoundingClientRect().left;
+    }
+
     function init() {
-      var leadWidth = widthOf(tailClones);
-      var originalWidth = widthOf(frames);
-      if (!originalWidth) return;
+      if (!period()) return;
 
-      strip.scrollLeft = leadWidth;
+      strip.scrollLeft = lead();
 
-      // Looping (instead of a single if/else if) fully normalizes the
-      // position in one pass no matter how far out of range a single
-      // scroll step landed.
+      // Keeps the scroll position inside a window exactly one period wide,
+      // starting halfway into the copies in front. Crossing either edge
+      // jumps by one period, which lands on identical content, so the jump
+      // can't be seen, and starting the window inside the front copies
+      // leaves room to keep scrolling both ways. (The old window began
+      // below zero whenever a gallery had more photos than copies, so
+      // scrolling left simply hit a wall.) Computed in one step rather
+      // than a while loop: at the edge of the scroll range the browser
+      // clamps scrollLeft, and a loop waiting for it to move would spin.
       function correct() {
-        while (strip.scrollLeft < leadWidth - originalWidth + 8) {
-          strip.scrollLeft += originalWidth;
-        }
-        while (strip.scrollLeft > leadWidth + originalWidth - 8) {
-          strip.scrollLeft -= originalWidth;
-        }
+        var p = period();
+        if (p <= 0) return;
+        var start = lead() / 2, pos = strip.scrollLeft;
+        if (pos < start) strip.scrollLeft = pos + p * Math.ceil((start - pos) / p);
+        else if (pos >= start + p) strip.scrollLeft = pos - p * Math.floor((pos - start) / p);
       }
 
       if (coarsePointer) {
@@ -259,16 +300,19 @@
       .filter(Boolean);
     var remaining = toWaitFor.length;
     if (remaining === 0) { init(); return; }
+    function settled() {
+      remaining--;
+      if (remaining === 0) init();
+    }
     toWaitFor.forEach(function (img) {
-      if (img.complete) {
-        remaining--;
-        if (remaining === 0) init();
-      } else {
-        img.addEventListener('load', function () {
-          remaining--;
-          if (remaining === 0) init();
-        }, { once: true });
-      }
+      if (img.complete) { settled(); return; }
+      // a failed load counts as settled too — waiting on 'load' alone meant
+      // one photo that didn't arrive left the strip never looping or
+      // drifting at all
+      var counted = false;
+      function done() { if (!counted) { counted = true; settled(); } }
+      img.addEventListener('load', done);
+      img.addEventListener('error', done);
     });
   }
 
@@ -766,17 +810,33 @@
   // "more" trigger.
   function measureScrollbar() {
     var w = window.innerWidth - document.documentElement.clientWidth;
-    document.documentElement.style.setProperty('--sb', (w > 0 ? w : 0) + 'px');
+    var value = (w > 0 ? w : 0) + 'px';
+    if (document.documentElement.style.getPropertyValue('--sb') !== value) {
+      document.documentElement.style.setProperty('--sb', value);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     measureScrollbar();
     window.addEventListener('resize', measureScrollbar);
+    // The scrollbar can also appear after load without any resize — the
+    // page grows past the window as lazy photos arrive, or a popup hides
+    // it — and a stale --sb puts the gallery and nav off the ribbons'
+    // centre again. Watching the root's size catches those too.
+    if (window.ResizeObserver) new ResizeObserver(measureScrollbar).observe(document.documentElement);
     populateRibbons();
     document.querySelectorAll('.filmstrip').forEach(loopifyFilmstrip);
     initGalleryLightbox();
     initContactModal();
     initInfoModal();
     initAnnouncementsModal();
+
+    // The old Wix site had its bio and announcements at /bio and
+    // /announcements. Those now redirect to /#info and /#announcements
+    // (see _redirects), so a visitor following an old link lands on the
+    // matching popup instead of a bare homepage.
+    var popupFor = { '#info': 'data-info-trigger', '#announcements': 'data-announcements-trigger', '#contact': 'data-contact-trigger' };
+    var opener = popupFor[location.hash] && document.querySelector('[' + popupFor[location.hash] + ']');
+    if (opener) opener.click();
   });
 })();

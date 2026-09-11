@@ -9,11 +9,15 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 - `index.html` — homepage. "Drift" concept: photo tiles float/bounce around the
   screen, freeze on hover/tap to show a caption, draggable. One random image per
   project per pageload (see "Image pools" below).
-- `happenings.html` — a content page. `info.html` and `announcements.html`
+- `happenings.html` — a grid of the 6 happenings, not linked from the nav
+  (the right-hand dropdown replaced it) but kept because `/happenings` was an
+  address on the old Wix site. Mirrors `SECTIONS.happenings` in `nav.js` by
+  hand — update both together. `info.html` and `announcements.html`
   used to be pages too, but were both removed — see "Info modal" and
   "Announcements modal" below.
 - `store.html`, `blog.html` — **drafts**, not real yet (see "Open items").
-- `projects/*.html` — 14 individual project pages, each with a hero image, the
+  Kept out of the deploy by `.assetsignore` until they're ready.
+- `projects/*.html` — 15 individual project pages, each with a hero image, the
   full write-up, and a filmstrip gallery of that project's photos at the bottom.
   13 of these came from the original Wix scrape; `radical-meditation.html`
   (2024) was added later directly from the user's own photos/text (not on the
@@ -23,6 +27,23 @@ step, no framework, no dependencies. Deployable as-is to any static host.
 - `assets/css/site.css` — the only stylesheet, shared by every page.
 - `assets/js/nav.js` — builds the ribbon nav + dropdown panels on every page
   (via `DOMContentLoaded`), and makes project galleries scroll infinitely.
+  The gallery loop measures its period live from element positions (most
+  photos are lazy and zero-wide at init, so a width summed up front was far
+  too short), and photo sizes come from classes stamped on each original
+  before copying (`stampFramePattern`), not `:nth-child` — position-based
+  sizes made every copy a different size from its original.
+- `assets/fonts/` — Space Grotesk, self-hosted (OFL, licence alongside).
+  Previously loaded from Google's servers, which sends visitors' IPs to
+  Google (a GDPR problem in the EU).
+- `_redirects` — 301s from the old Wix addresses (every page lived at the
+  top level there, e.g. `/carnisse-in-flux`) to `/projects/...`, plus
+  `/bio` → `/#info` and `/announcements` → `/#announcements` (nav.js opens
+  the matching popup for those hashes). Don't drop these: old links from
+  search results, festival pages and CVs depend on them.
+- `.assetsignore` — `wrangler.jsonc` deploys the whole folder
+  (`"directory": "."`), so this lists what must NOT be published: `.git`,
+  this file, `content/`, config, the legacy draft, and the draft pages.
+  Before it existed, `/.git/` and `/CLAUDE.md` were publicly served.
 - `assets/images/projects/<slug>/` — 221 images downloaded from the original Wix
   site, self-hosted (not hotlinked), plus 14 more for `radical-meditation`
   supplied directly by the user. Numbered `01.jpg`, `02.jpg`, ...
@@ -195,6 +216,22 @@ to single-line-guaranteed elements).
   running synchronously at parse time.
 - Each project has a small **pool** of 4 candidate image indices; one is picked
   at random per pageload, so the homepage composition differs across visits.
+  Never the one shown last time (tracked per project in localStorage) — and a
+  `pageshow` handler re-picks when the Back button restores the page from the
+  back-forward cache, which would otherwise show the same photos again.
+- Motion: each tile has its own slow wander phases (heading curves a little
+  each frame, speed pulled back into a 0.07–0.17 px/frame band). No rotation
+  — a tilt/sway was tried and explicitly rejected.
+- Contact softening, all measured against a port of the loop: the velocity
+  response is scaled by overlap depth (a graze nudges, a real overlap
+  shoves), applied only on the first of the 4 passes, and the total velocity
+  change per tile per frame is capped (`MAX_CONTACT_DV`) — per-pair responses
+  used to stack in clusters and read as grinding. An inelastic "slide past"
+  response was tried and rejected: it glued tiles together for seconds.
+- Touch: first tap freezes a tile and shows its title, second tap opens it.
+  The release-other-tiles listener is registered in the capture phase (each
+  tile's pointerdown stops propagation, so a bubbling one never heard taps
+  on other tiles), and `pointercancel` ends a drag the OS cuts off.
 
 ## Content & images
 
@@ -274,10 +311,12 @@ last-resort fallback.
   the user is ready.
 - **`blog.html`**: two placeholder posts showing the format (title, date, 1-2
   images, short text). Needs real posts.
-- **Hosting**: live on Cloudflare Workers static assets at
-  `omid-kheirabadi-site.omid-ck25.workers.dev`, auto-deploys on push to `main`.
-  Custom domain `omidkheirabadi.com` (owned via Namecheap) intentionally not
-  connected yet — user wants to wait until the site is finalized.
+- **Hosting**: Cloudflare Workers static assets, auto-deploys on push to
+  `main`. Live at `omidkheirabadi.com` (connected Sep 2026; registrar is still
+  Namecheap, DNS moved from Wix to Cloudflare). `www` 301s to the bare domain
+  via a Cloudflare redirect rule plus a proxied placeholder `www` record. The
+  domain's MX record (Namecheap email forwarding) was carried over — keep it.
+  Also still reachable at `omid-kheirabadi-site.omid-ck25.workers.dev`.
 - Some project years are missing — see above.
 
 ## A note on this dev environment's preview tool

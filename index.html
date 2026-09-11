@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>omid kheirabadi — projects</title>
-<link rel="preconnect" href="https://fonts.googleapis.com/">
 <link href="./assets/css/fonts.css" rel="stylesheet">
 <link href="./assets/css/site.css" rel="stylesheet">
 <style>
@@ -49,6 +48,9 @@
   }
   .frag .cap .t:hover{ border-bottom-color:#fff; }
   .frag.active .cap{ opacity:1; }
+  /* tabbing to a tile's title link otherwise focused an invisible link —
+     the caption only showed on hover/tap */
+  .frag:focus-within .cap{ opacity:1; }
   .frag.stopped{ box-shadow:0 14px 30px rgba(0,0,0,0.28); z-index:10 !important; }
   .frag.dragging{ box-shadow:0 20px 40px rgba(0,0,0,0.35); z-index:20 !important; }
 
@@ -245,6 +247,16 @@ function makeNode(el, w, h){
     node.y = Math.max(i.top, Math.min(vh - i.bottom - node.h, node.y));
   });
 
+  // A touch drag can be cut off by the browser or the OS (a second finger,
+  // a system gesture, a notification) — that sends pointercancel, never
+  // pointerup, and without this the tile stayed enlarged and frozen for
+  // the rest of the visit.
+  el.addEventListener('pointercancel', () => {
+    node.dragging = false;
+    node.el.classList.remove('dragging');
+    syncState();
+  });
+
   el.addEventListener('pointerup', (e) => {
     node.dragging = false;
     node.el.classList.remove('dragging');
@@ -279,8 +291,11 @@ images.forEach((data) => {
   makeNode(el, SIZE, SIZE);
 });
 
-document.body.addEventListener('pointerdown', (e) => {
-  if (e.pointerType === 'touch') {
+// Runs in the capture phase: each tile's own pointerdown stops propagation,
+// so a bubbling listener never heard taps that landed on another tile — the
+// first tile stayed frozen with its title showing.
+document.addEventListener('pointerdown', (e) => {
+  if (e.pointerType !== 'mouse') {
     nodes.forEach(n => {
       if (n.el !== e.target && !n.el.contains(e.target) && n.tapped) {
         n.tapped = false;
@@ -290,6 +305,20 @@ document.body.addEventListener('pointerdown', (e) => {
       }
     });
   }
+}, true);
+
+// Coming back with the Back button restores this page from the browser's
+// back-forward cache exactly as it was left — same photos, and the tile
+// that was tapped to leave still frozen — which breaks the rule that no
+// tile repeats what it showed last time. Re-pick and let everything go.
+window.addEventListener('pageshow', (e) => {
+  if (!e.persisted) return;
+  nodes.forEach((n, i) => {
+    const p = projectPool[i];
+    n.el.querySelector('img').src = `assets/images/projects/${p.slug}/${pickImage(p)}.jpg`;
+    n.tapped = n.hovering = n.dragging = n.engaged = false;
+    n.el.classList.remove('dragging', 'stopped', 'active');
+  });
 });
 
 // Nodes that are dragging, hovered or tapped-frozen act as solid obstacles:
