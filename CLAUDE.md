@@ -41,6 +41,11 @@ step, no framework, no dependencies. Deployable as-is to any static host.
   the matching popup for those hashes). Don't drop these: old links from
   search results, festival pages and CVs depend on them.
 - `robots.txt`, `sitemap.xml`, `llms.txt` — see "Search engines and AI tools".
+- `google3c774a406ac45c59.html.html` — Google Search Console ownership file.
+  **Never delete it** (Google re-checks and drops verification if it's gone).
+  The double extension is deliberate: Search Console won't follow redirects,
+  and Cloudflare redirects any `x.html` request to `/x`, so the file is stored
+  as `x.html.html`, which Cloudflare serves at `/x.html` with a plain 200.
 - `.assetsignore` — `wrangler.jsonc` deploys the whole folder
   (`"directory": "."`), so this lists what must NOT be published: `.git`,
   this file, `content/`, config, the legacy draft, and the draft pages.
