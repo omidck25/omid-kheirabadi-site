@@ -11,7 +11,7 @@
     projects: [
       { title: "radical meditation", href: "projects/radical-meditation.html", year: "2025" },
       { title: "happening to one another", href: "projects/happening-to-one-another.html", year: "2023" },
-      { title: "inburgered", href: "projects/inburgered-integrated.html", year: "2023" },
+      { title: "inburgered / integrated", href: "projects/inburgered-integrated.html", year: "2023" },
       { title: "alive & unborn", href: "projects/alive-and-unborn.html", year: "2023" },
       { title: "you only exist on paper", href: "projects/you-only-exist-on-paper.html", year: "2021" },
       { title: "one day is too short, three days are too long", href: "projects/one-day-is-too-short.html", year: "2022" },
@@ -119,24 +119,6 @@
     });
   }
 
-  // Makes a .filmstrip gallery loop infinitely by cloning a small buffer
-  // of frames at each end and jumping scrollLeft by one gallery-width
-  // once the user scrolls into that buffer. Desktop/mouse also gets a
-  // slow ambient auto-drift.
-  //
-  // Touch (phone and tablet) gets the same loop, but the correction is
-  // debounced to only run once scrolling has fully settled — no active
-  // finger, no momentum still coasting — instead of on every 'scroll'
-  // event. That timing is the whole fix for the jitter reported earlier:
-  // while a finger is dragging, or the browser is still running
-  // momentum/inertia after release, it owns an internal touch-tracking
-  // state tied to scrollLeft, and ANY programmatic scrollLeft change
-  // during that window fights it, no matter how carefully timed.
-  // Waiting until scrolling is provably idle sidesteps that entirely —
-  // there's nothing left to fight. Touch also skips autoplay (nothing
-  // to fight there either, but no reason to add it back) and uses a
-  // smaller clone buffer, since it only needs to cover a single swipe's
-  // worth of distance rather than a continuously-running auto-drift.
   // Each photo's height and bob timing, from its place in the strip. This
   // used to be :nth-child rules in the CSS, which follow DOM position — but
   // a looped strip's copies never sit at the same position as the photo they
@@ -155,6 +137,24 @@
     });
   }
 
+  // Makes a .filmstrip gallery loop infinitely by cloning a small buffer
+  // of frames at each end and jumping scrollLeft by one gallery-width
+  // once the user scrolls into that buffer. Desktop/mouse also gets a
+  // slow ambient auto-drift.
+  //
+  // Touch (phone and tablet) gets the same loop, but the correction is
+  // debounced to only run once scrolling has fully settled — no active
+  // finger, no momentum still coasting — instead of on every 'scroll'
+  // event. That timing is the whole fix for the jitter reported earlier:
+  // while a finger is dragging, or the browser is still running
+  // momentum/inertia after release, it owns an internal touch-tracking
+  // state tied to scrollLeft, and ANY programmatic scrollLeft change
+  // during that window fights it, no matter how carefully timed.
+  // Waiting until scrolling is provably idle sidesteps that entirely —
+  // there's nothing left to fight. Touch also skips autoplay (nothing
+  // to fight there either, but no reason to add it back) and uses a
+  // smaller clone buffer, since it only needs to cover a single swipe's
+  // worth of distance rather than a continuously-running auto-drift.
   function loopifyFilmstrip(strip) {
     var frames = Array.prototype.slice.call(strip.children);
     var n = frames.length;
@@ -624,7 +624,7 @@
       '\'alive & unborn\' is a dark satirical performance reflecting on the injustices created by years of the racist capitalist system, colonialism and slavery, and the demons of credit and debt. What\'s hope and how much of it is left for us?'
     ] },
     { slug: 'momo-festival-2023', ext: 'jpg', title: 'MOMO festival 2023', when: '2023', body: [
-      'Inburgered (Integrated) is a performance about the struggles of outsiders who try to integrate as "Dutch" citizens. Omid turns his focus toward Dutch society from his perspective of living in the Netherlands as an artist, performer, and researcher based in Rotterdam in this performance.'
+      'Inburgered / Integrated is a performance about the struggles of outsiders who try to integrate as "Dutch" citizens. Omid turns his focus toward Dutch society from his perspective of living in the Netherlands as an artist, performer, and researcher based in Rotterdam in this performance.'
     ] },
     { slug: 'creative-course-at-dakendagen-festival-2023', ext: 'jpg', title: 'Creative Course at Dakendagen Festival 2023', when: '2023', body: [
       'One day performance workshop based on my two-week residency in Belfast, organized in collaboration with Dakendagen in two different locations in Rotterdam.'
