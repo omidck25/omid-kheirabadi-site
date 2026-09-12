@@ -1,0 +1,5 @@
+# Search engines and AI search tools may read the whole site.
+# Cloudflare adds its own section above these lines (Cloudflare dashboard >
+# AI Crawl Control), which currently opts out of AI model training.
+
+Sitemap: https://omidkheirabadi.com/sitemap.xml

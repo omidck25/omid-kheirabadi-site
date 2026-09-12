@@ -40,6 +40,7 @@ step, no framework, no dependencies. Deployable as-is to any static host.
   `/bio` → `/#info` and `/announcements` → `/#announcements` (nav.js opens
   the matching popup for those hashes). Don't drop these: old links from
   search results, festival pages and CVs depend on them.
+- `robots.txt`, `sitemap.xml`, `llms.txt` — see "Search engines and AI tools".
 - `.assetsignore` — `wrangler.jsonc` deploys the whole folder
   (`"directory": "."`), so this lists what must NOT be published: `.git`,
   this file, `content/`, config, the legacy draft, and the draft pages.
@@ -232,6 +233,39 @@ to single-line-guaranteed elements).
   The release-other-tiles listener is registered in the capture phase (each
   tile's pointerdown stops propagation, so a bubbling one never heard taps
   on other tiles), and `pointercancel` ends a drag the OS cuts off.
+
+## Search engines and AI tools
+
+Most AI crawlers (ChatGPT, Claude, Perplexity) read raw HTML and never run
+JavaScript, and the homepage is built almost entirely by scripts — before
+this, a no-JS crawler found 9 words and no links there. So:
+
+- **Homepage `#about`** — a visually hidden block (h1, the full bio, a list
+  of all works with years). Hidden on screen, read by screen readers and
+  crawlers; its links are `tabindex="-1"` so keyboard focus never lands on
+  something invisible. **The tiles are built from this list**
+  (`data-slug`, `data-pool`), so it is the homepage's single list of works.
+  The bio in it duplicates `initInfoModal()` in nav.js — keep them in sync.
+- **Every page's `<head>`**: `<title>` (page first, then "Omid
+  Kheirabadi"), `meta description` (~160 chars max), `link rel=canonical`
+  on the clean URL (`https://omidkheirabadi.com/projects/<slug>` — this also
+  stops the workers.dev copy counting as a duplicate), Open Graph/Twitter
+  preview tags, and JSON-LD: `WebSite` + `Person` (@id `/#omid`, with
+  `sameAs` profile links) on the homepage, `CreativeWork` with
+  `creator` → `/#omid` on project pages.
+- **`sitemap.xml`** lists the 17 public pages; **`robots.txt`** only adds
+  the Sitemap line. Cloudflare's *managed* robots.txt is prepended above it
+  (dashboard setting, AI Crawl Control): search and AI *search* bots are
+  allowed; AI *training* bots (GPTBot, ClaudeBot, Google-Extended, CCBot…)
+  are disallowed — that's the user's call, don't change it in code.
+- **`llms.txt`** — plain-Markdown summary + list of works for AI tools. A
+  proposed convention; no major AI search engine has committed to reading
+  it, so treat it as cheap and optional.
+
+**Adding a project** touches: the page itself (incl. its head tags and
+JSON-LD), `SECTIONS` in nav.js, the homepage `#about` list, the prev/next
+links on its two neighbours, `sitemap.xml`, `llms.txt`, and — if it's a
+happening — `happenings.html`.
 
 ## Content & images
 
