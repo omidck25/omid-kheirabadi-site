@@ -262,6 +262,23 @@ body{
      band between the text and the gallery. */
   .video-side-text::after{ display:none; }
 }
+/* ===== experiment: .video-wide (silly me page only) =====
+   The media runs the full width between the side ribbons, flush under the
+   top ribbon, with the text below it instead of beside it. Not sticky: at
+   this size the text would scroll behind it for the whole page. Height is
+   capped to the visible area so the video never needs scrolling to see. */
+.video-side.video-wide{ flex-direction:column; gap:2.2em; }
+.video-wide .video-side-media{
+  position:relative; top:auto; order:-1; flex:0 0 auto;
+  width:calc(100% + 16vw); margin:-40px -8vw 0;
+  aspect-ratio:16/9; max-height:calc(100vh - 2 * var(--ribbon-h));
+}
+.video-wide .video-side-media::before,
+.video-wide .video-side-text::after{ display:none; }
+.video-wide .video-side-text{ flex:0 0 auto; max-width:760px; }
+@media (max-width:720px){
+  .video-wide .video-side-media{ width:calc(100% + 12vw); margin:-24px -6vw 0; }
+}
 .project-sub{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.25rem; margin:2.2em 0 0.6em;
