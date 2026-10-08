@@ -825,7 +825,8 @@
       btn.type = 'button';
       btn.className = 'video-sound';
       function sync() {
-        btn.textContent = video.muted ? 'sound on' : 'sound off';
+        btn.textContent = video.muted ? 'turn sound on' : 'turn sound off';
+        btn.title = btn.textContent;
         btn.setAttribute('aria-pressed', video.muted ? 'false' : 'true');
       }
       function toggle() {
