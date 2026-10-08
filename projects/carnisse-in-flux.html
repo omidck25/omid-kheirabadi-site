@@ -62,7 +62,9 @@
 <main class="page">
   <div class="video-side">
     <div class="video-embed video-side-media">
-      <img class="project-hero" src="../assets/images/projects/carnisse-in-flux/01.jpg" alt="carnisse in flux">
+      <!-- self-hosted video: starts muted (browsers block sound on page open);
+           nav.js adds the sound button and click-to-unmute -->
+      <video class="hero-video" src="../assets/video/carnisse-in-flux.mp4" poster="../assets/images/projects/carnisse-in-flux/01.jpg" autoplay muted loop playsinline preload="metadata" aria-label="carnisse in flux — video"></video>
     </div>
     <div class="video-side-text">
       <h1>carnisse in flux</h1>
