@@ -62,7 +62,9 @@
 <main class="page">
   <div class="video-side">
     <div class="video-embed video-side-media">
-      <img class="project-hero" src="../assets/images/projects/its-fine-really-silly-me/01.jpg" alt="it's fine really, silly me!">
+      <!-- self-hosted video: starts muted (browsers block sound on page open);
+           nav.js adds the sound button and click-to-unmute -->
+      <video class="hero-video" src="../assets/video/its-fine-really-silly-me.mp4" poster="../assets/images/projects/its-fine-really-silly-me/01.jpg" autoplay muted loop playsinline preload="metadata" aria-label="it's fine really, silly me! — video"></video>
     </div>
     <div class="video-side-text">
       <h1>it's fine really, silly me!</h1>

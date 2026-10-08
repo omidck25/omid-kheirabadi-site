@@ -816,7 +816,32 @@
     }
   }
 
+  // Self-hosted hero videos autoplay muted — browsers refuse to start sound
+  // without a click. A button on the video, or a click on the video itself,
+  // switches the sound on and off.
+  function initHeroVideos() {
+    document.querySelectorAll('video.hero-video').forEach(function (video) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'video-sound';
+      function sync() {
+        btn.textContent = video.muted ? 'sound on' : 'sound off';
+        btn.setAttribute('aria-pressed', video.muted ? 'false' : 'true');
+      }
+      function toggle() {
+        video.muted = !video.muted;
+        if (video.paused) video.play();
+        sync();
+      }
+      btn.addEventListener('click', toggle);
+      video.addEventListener('click', toggle);
+      video.parentNode.appendChild(btn);
+      sync();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    initHeroVideos();
     measureScrollbar();
     window.addEventListener('resize', measureScrollbar);
     // The scrollbar can also appear after load without any resize — the
