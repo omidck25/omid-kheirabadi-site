@@ -660,7 +660,12 @@
       var article = document.createElement('article');
       article.className = 'announcement';
       var bodyId = 'announcementBody' + i;
-      var src = item.slug ? BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext : null;
+      // WebP copies (tools/make-webp.py): the thumbnail takes the 480px one,
+      // the opened entry whichever suits the screen. The GIF is animated and
+      // has no copies.
+      var stem = item.slug ? BASE + 'assets/images/announcements/' + item.slug : null;
+      var still = stem && item.ext !== 'gif';
+      var src = stem ? stem + (still ? '.webp' : '.' + item.ext) : null;
 
       var head = document.createElement('div');
       head.className = 'announcement-head';
@@ -671,7 +676,7 @@
       if (src) {
         var thumb = document.createElement('img');
         thumb.className = 'announcement-thumb';
-        thumb.src = src;
+        thumb.src = still ? stem + '-480.webp' : src;
         thumb.alt = '';
         thumb.loading = 'lazy';
         head.appendChild(thumb);
@@ -695,6 +700,11 @@
       if (src) {
         var full = document.createElement('img');
         full.src = src;
+        if (still) {
+          // the full copy's real width varies; 1600 is the most it can be
+          full.srcset = stem + '-480.webp 480w, ' + stem + '-720.webp 720w, ' + src + ' 1600w';
+          full.sizes = '(max-width: 720px) 90vw, 300px';
+        }
         full.alt = item.title;
         full.loading = 'lazy';
         body.appendChild(full);

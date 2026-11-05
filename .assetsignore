@@ -22,3 +22,6 @@ blog.html
 
 # local-only files, see .gitignore
 exports
+
+# maintenance scripts, not part of the site
+tools

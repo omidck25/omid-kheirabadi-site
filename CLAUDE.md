@@ -290,6 +290,24 @@ happening — `happenings.html`.
   Ask the user to confirm/fill in the blanks if precision matters.
 - Images were downloaded directly from Wix's CDN at their already-served
   resolution (not the huge originals) — no re-compression needed.
+- **Pages show WebP copies, not the JPGs** (Nov 2026, for phones: a phone
+  now downloads roughly a third of what it used to on project pages).
+  `tools/make-webp.py` writes `NN.webp` (long side capped at 1600px),
+  `NN-720.webp` and `NN-480.webp` next to every JPG/PNG in
+  `assets/images`; narrower photos keep their own width in the small
+  copies so every photo has all three names (the homepage tiles rely on
+  that). Project-page `<img>`s carry `srcset`/`sizes`: gallery photos are
+  sized from their aspect ratio (200px tall on phones, up to 320px
+  otherwise, `object-fit:cover` so the rendered width is height × ratio),
+  heroes `100vw`/`50vw`. Homepage tiles use the 480/720 copies
+  (`setTileImage` in index.html), announcements the 480 copy as the
+  thumbnail, and the video `poster`s the full WebP. The JPG originals stay
+  in place: `og:image` and JSON-LD still point at them for link previews.
+  The animated GIF announcement has no copies.
+  **After adding or replacing photos, run `python tools/make-webp.py`**
+  (skips photos whose copies are newer) and give new `<img>`s the same
+  `srcset`/`sizes` pattern as their neighbours. `tools/` is in
+  `.assetsignore`.
 
 ## Contact modal (`assets/js/nav.js`, `initContactModal`)
 

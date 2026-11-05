@@ -230,14 +230,7 @@ function pickImage(p) {
   return p.pool[idx];
 }
 
-const images = projectPool.map((p) => {
-  const pick = pickImage(p);
-  return {
-    src: `assets/images/projects/${p.slug}/${pick}.jpg`,
-    cap: p.cap,
-    href: p.href,
-  };
-});
+const images = projectPool.map((p) => ({ p, pick: pickImage(p), cap: p.cap, href: p.href }));
 
 // Everything below reads layout (ribbon widths) to size and place tiles, so
 // it waits for DOMContentLoaded — running it inline/synchronously risked
@@ -261,6 +254,17 @@ function insets(){
 const W = window.innerWidth, H = window.innerHeight;
 function sizeFor(ins){ return Math.min(240, (window.innerWidth - ins.left - ins.right) * 0.32) * 0.9; }
 let SIZE = sizeFor(insets());
+
+// Tiles are small (at most 240px), so they load the 480px and 720px WebP
+// copies (tools/make-webp.py) rather than the full photo. The browser
+// takes whichever suits the screen; a tile crops its photo to a square, so
+// a wide photo is shown taller than the tile is wide, hence the 1.5.
+function setTileImage(img, p, pick){
+  const stem = `assets/images/projects/${p.slug}/${pick}`;
+  img.srcset = `${stem}-480.webp 480w, ${stem}-720.webp 720w`;
+  img.sizes = Math.round(SIZE * 1.5) + 'px';
+  img.src = `${stem}-720.webp`;
+}
 
 const nodes = [];
 
@@ -379,7 +383,8 @@ images.forEach((data) => {
   el.style.height = SIZE + 'px';
   el.style.setProperty('--sz', SIZE);
   el.dataset.href = data.href; // used by the two-tap open on touch devices
-  el.innerHTML = `<img src="${data.src}" alt="" loading="lazy"><div class="cap"><a class="t" href="${data.href}"></a></div>`;
+  el.innerHTML = `<img alt="" loading="lazy"><div class="cap"><a class="t" href="${data.href}"></a></div>`;
+  setTileImage(el.querySelector('img'), data.p, data.pick);
   el.querySelector('.t').textContent = data.cap;
   makeNode(el, SIZE, SIZE);
 });
@@ -408,7 +413,7 @@ window.addEventListener('pageshow', (e) => {
   if (!e.persisted) return;
   nodes.forEach((n, i) => {
     const p = projectPool[i];
-    n.el.querySelector('img').src = `assets/images/projects/${p.slug}/${pickImage(p)}.jpg`;
+    setTileImage(n.el.querySelector('img'), p, pickImage(p));
     n.tapped = n.hovering = n.dragging = n.engaged = false;
     n.el.classList.remove('dragging', 'stopped', 'active');
   });
