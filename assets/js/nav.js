@@ -450,6 +450,12 @@
       // trigger lives inside the "more" ribbon-bottom dropdown now — close
       // it so it's not still visibly open behind the modal
       document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
+      // a note from the last send ("thank you..." or the error) would
+      // otherwise still sit above the fresh, empty form
+      if (!form.querySelector('.qc-send').disabled) {
+        formNote.style.display = 'none';
+        formNote.classList.remove('show', 'success', 'error');
+      }
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
       setTimeout(function () { emailField.focus(); }, 260);
@@ -479,6 +485,7 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = form.querySelector('.qc-send');
+      if (btn.disabled) return; // already sending: never send the same message twice
       var payload = Object.fromEntries(new FormData(form));
 
       btn.disabled = true;
@@ -644,10 +651,6 @@
     list.className = 'announcements-modal-list';
     var cards = [];
 
-    // Card per announcement: image with a translucent caption band over
-    // its lower edge carrying the title + date, and the body text
-    // collapsed until the card is clicked — so each item reads as its
-    // own piece instead of blurring into a long run-on list.
     // Each announcement is a quiet list entry in the side menus' language:
     // a small thumbnail, the title, the date. Clicking the entry opens it:
     // the full image and the text appear below, and the entry is marked
@@ -872,7 +875,8 @@
       }
       function toggle() {
         video.muted = !video.muted;
-        if (video.paused) video.play();
+        // play() is refused if the file can't load; nothing to do then
+        if (video.paused) video.play().catch(function () {});
         sync();
       }
       btn.addEventListener('click', toggle);
