@@ -723,6 +723,10 @@ body{
 .filmstrip .frame{ flex-shrink:0; transition:transform 0.25s ease; }
 .filmstrip .frame:hover{ transform:translateY(-6px); }
 .filmstrip .frame:hover img{ animation-play-state:paused; }
+/* keyboard focus on a photo (nav.js makes the real ones Tab-able); drawn
+   inside the edge since the strip clips anything outside it */
+.filmstrip img:focus{ outline:none; }
+.filmstrip img:focus-visible{ outline:2px solid var(--rust); outline-offset:-2px; animation-play-state:paused; }
 
 /* ===== gallery lightbox — click/tap any filmstrip image to view it
    enlarged, with prev/next (desktop) or swipe (touch) to browse ===== */

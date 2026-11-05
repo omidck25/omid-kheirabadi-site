@@ -172,6 +172,9 @@
 
     function makeClone(el) {
       var clone = el.cloneNode(true);
+      // copies are for the eye only: screen readers and Tab skip them
+      clone.classList.add('frame-copy');
+      clone.setAttribute('aria-hidden', 'true');
       var img = clone.querySelector('img');
       if (img) img.removeAttribute('loading'); // load buffer clones eagerly for accurate widths
       return clone;
@@ -289,7 +292,8 @@
         strip.addEventListener('pointerleave', function () { hovering = false; });
         var AUTO_SPEED = 0.35; // px per animation frame — a slow, ambient drift
         (function tick() {
-          if (!paused && !hovering) strip.scrollLeft += AUTO_SPEED;
+          // also holds still while a photo has keyboard focus
+          if (!paused && !hovering && !strip.contains(document.activeElement)) strip.scrollLeft += AUTO_SPEED;
           requestAnimationFrame(tick);
         })();
       }
@@ -316,6 +320,43 @@
     });
   }
 
+  // Keyboard handling shared by the photo viewer and the contact form: while
+  // one is open, Tab and Shift+Tab cycle through its own buttons and fields
+  // instead of wandering off to the page hidden behind it, and closing it
+  // puts focus back where it was. If that spot has been folded away (the
+  // contact item sits in the "more" band, which closes), "more" gets it.
+  function keepFocusInside(box, isOpen) {
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab' || !isOpen()) return;
+      var items = Array.prototype.filter.call(
+        box.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])'),
+        function (el) { return !el.disabled && el.type !== 'hidden' && el.getClientRects().length; }
+      );
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+  // Only after keyboard use: a focused "more" turns upright (site.css), which
+  // a mouse visitor would just see as "more" stuck the right way up.
+  var usingKeyboard = false;
+  document.addEventListener('keydown', function () { usingKeyboard = true; }, true);
+  document.addEventListener('pointerdown', function () { usingKeyboard = false; }, true);
+  function giveFocusBack(el) {
+    if (!usingKeyboard) {
+      // don't leave focus on a button inside the dialog that just closed
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      return;
+    }
+    // an item in a folded ribbon panel still has a box, just clipped away
+    var folded = el && el.closest && el.closest('.ribbon-panel') && !el.closest('.ribbon.open');
+    if (el && el.focus && document.contains(el) && el.getClientRects().length && !folded) { el.focus(); return; }
+    var more = document.querySelector('[data-section="more"]');
+    if (more) more.focus();
+  }
+
   // Click/tap any gallery image to view it enlarged, with prev/next
   // (desktop) or swipe (touch) to browse the rest of that project's photos.
   // Uses event delegation on the filmstrip rather than binding per-image
@@ -327,21 +368,29 @@
     var filmstrips = document.querySelectorAll('.gallery .filmstrip');
     if (!filmstrips.length) return;
 
+    // In gallery order, from the real photos only: the loop's copies of the
+    // last photos sit in front of the first one, and counting from them
+    // numbered photo 3 as "11 of 19" and started browsing at the wrong photo.
+    // A click on a copy still finds its photo, by the shared src.
     var uniqueSrcs = [];
     filmstrips.forEach(function (strip) {
-      Array.prototype.forEach.call(strip.querySelectorAll('img'), function (img) {
+      Array.prototype.forEach.call(strip.querySelectorAll('.frame:not(.frame-copy) img'), function (img) {
         if (uniqueSrcs.indexOf(img.src) === -1) uniqueSrcs.push(img.src);
       });
     });
     if (!uniqueSrcs.length) return;
 
+    // the viewer's <img> gets its src when it opens (an empty src="" is
+    // invalid HTML)
     var overlay = document.createElement('div');
     overlay.className = 'lightbox-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'photo viewer');
     overlay.innerHTML =
       '<button type="button" class="lightbox-close" aria-label="Close">&times;</button>' +
       '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Previous image">&larr;</button>' +
-      '<img alt="">' + // src is set on open; an empty src="" is invalid HTML
-
+      '<img alt="">' +
       '<button type="button" class="lightbox-arrow lightbox-next" aria-label="Next image">&rarr;</button>';
     document.body.appendChild(overlay);
 
@@ -350,28 +399,49 @@
     var prevBtn = overlay.querySelector('.lightbox-prev');
     var nextBtn = overlay.querySelector('.lightbox-next');
     var current = 0;
+    var returnTo = null;
 
     function show(i) {
       current = (i + uniqueSrcs.length) % uniqueSrcs.length;
       imgEl.src = uniqueSrcs[current];
+      imgEl.alt = 'photo ' + (current + 1) + ' of ' + uniqueSrcs.length;
     }
     function openAt(i) {
+      returnTo = document.activeElement;
       show(i);
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
+      closeBtn.focus();
     }
     function closeLightbox() {
       overlay.classList.remove('open');
       document.body.style.overflow = '';
+      giveFocusBack(returnTo);
     }
+    keepFocusInside(overlay, function () { return overlay.classList.contains('open'); });
 
+    // The real photos (not the loop's copies) can be reached with Tab and
+    // opened with Enter or Space, the same as clicking them.
     filmstrips.forEach(function (strip) {
+      var originals = strip.querySelectorAll('.frame:not(.frame-copy) img');
+      Array.prototype.forEach.call(originals, function (img, i) {
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('role', 'button');
+        img.setAttribute('aria-label', 'open photo ' + (i + 1) + ' of ' + originals.length);
+      });
       strip.addEventListener('click', function (e) {
         var img = e.target.closest('img');
         if (!img) return;
         var idx = uniqueSrcs.indexOf(img.src);
         if (idx === -1) return;
         openAt(idx);
+      });
+      strip.addEventListener('keydown', function (e) {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('img[role="button"]')) {
+          e.preventDefault();
+          var idx = uniqueSrcs.indexOf(e.target.src);
+          if (idx !== -1) openAt(idx);
+        }
       });
     });
     closeBtn.addEventListener('click', closeLightbox);
@@ -447,7 +517,9 @@
     var form = overlay.querySelector('#quickContactForm');
     var formNote = overlay.querySelector('#qcFormNote');
 
+    var returnTo = null;
     function openModal() {
+      returnTo = document.activeElement;
       // trigger lives inside the "more" ribbon-bottom dropdown now — close
       // it so it's not still visibly open behind the modal
       document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
@@ -462,9 +534,12 @@
       setTimeout(function () { emailField.focus(); }, 260);
     }
     function closeModal() {
+      if (!overlay.classList.contains('open')) return;
       overlay.classList.remove('open');
       document.body.style.overflow = '';
+      giveFocusBack(returnTo);
     }
+    keepFocusInside(overlay, function () { return overlay.classList.contains('open'); });
 
     trigger.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
