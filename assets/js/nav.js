@@ -615,33 +615,6 @@
     ] }
   ];
 
-  // Where the "read more" chip sits on each announcement's image, as the
-  // chip's centre in % of the image [left, top]. Chosen card by card so it
-  // lands on an empty or unimportant part of the picture, never on the
-  // poster's own words. Cards not listed get bottom-centre.
-  var MORE_SPOT = {
-    'kabk-guest-teacher': [80, 10],
-    'rietveld-guest-teacher': [77, 14],
-    'tu-berlin-workshop': [20, 88],
-    'summer-residency-in-istanbul': [80, 88],
-    'eendracht-festival': [22, 86],
-    'performance-session-at-dokhuis': [80, 10],
-    'art-rotterdam-exhibition': [20, 6],
-    'the-end-has-no-end-performance-festival': [20, 50],
-    'marie-louise-artist-residency': [22, 70],
-    'graw-2024': [52, 7],
-    'artist-residency-in-switzerland': [80, 88],
-    'performance-at-cafe-theater-festival-2024': [20, 10],
-    'new-resident-of-timewindow': [20, 10],
-    'artist-residency-at-goethe-institute': [80, 22],
-    'artist-start-grant': [50, 45],
-    'open-call': [78, 90],
-    'delft-fringe-festival-2023': [75, 55],
-    'momo-festival-2023': [50, 8],
-    'creative-course-at-dakendagen-festival-2023': [50, 88],
-    'artist-residency-in-belfast': [50, 96]
-  };
-
   function initAnnouncementsModal() {
     var trigger = document.querySelector('[data-announcements-trigger]');
     if (!trigger) return;
@@ -673,7 +646,7 @@
 
     // Card per announcement: image with a translucent caption band over
     // its lower edge carrying the title + date, and the body text
-    // collapsed behind a "read more" toggle — so each item reads as its
+    // collapsed until the card is clicked — so each item reads as its
     // own piece instead of blurring into a long run-on list.
     ANNOUNCEMENTS.forEach(function (item, i) {
       var article = document.createElement('article');
@@ -720,35 +693,23 @@
         body.appendChild(p);
       });
 
-      var moreBtn = document.createElement('button');
-      moreBtn.type = 'button';
-      moreBtn.className = 'announcement-more';
-      moreBtn.textContent = 'read more';
-      moreBtn.setAttribute('aria-expanded', 'false');
-      moreBtn.setAttribute('aria-controls', bodyId);
-      capInner.appendChild(moreBtn);
-
+      // No separate button: clicking or tapping the card's image opens and
+      // closes its text. The image area acts as the button, for keyboards
+      // and screen readers too. The listener sits on the caption (which
+      // covers the image) rather than the article, so clicks in the opened
+      // text below don't fold the card mid-read.
+      caption.setAttribute('role', 'button');
+      caption.setAttribute('tabindex', '0');
+      caption.setAttribute('aria-expanded', 'false');
+      caption.setAttribute('aria-controls', bodyId);
       function toggle() {
         var open = article.classList.toggle('open');
-        moreBtn.textContent = open ? 'close' : 'read more';
-        moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        caption.setAttribute('aria-expanded', open ? 'true' : 'false');
       }
-      // The whole tile is clickable/tappable, not just the button. The
-      // listener sits on the caption (which covers the image) rather than
-      // the article, so clicks in the expanded text below don't collapse
-      // the card mid-read. The button lives inside the caption, so its
-      // clicks bubble here — one handler covers both, no double toggle.
       caption.addEventListener('click', toggle);
-
-      // hover chip, placed per image so it never covers the poster's text
-      var spot = MORE_SPOT[item.slug] || [50, 88];
-      var chip = document.createElement('span');
-      chip.className = 'announcement-hover-more';
-      chip.setAttribute('aria-hidden', 'true');
-      chip.textContent = 'read more';
-      chip.style.setProperty('--cx', spot[0] + '%');
-      chip.style.setProperty('--cy', spot[1] + '%');
-      caption.appendChild(chip);
+      caption.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
 
       // the caption overlays the bottom of the image (see site.css), so it
       // goes inside the figure when there is one

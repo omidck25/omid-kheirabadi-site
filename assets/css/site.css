@@ -575,7 +575,7 @@ body{
   font-size:1.3rem; margin-bottom:0.8em;
 }
 /* Each announcement is its own card — image on top, caption band with
-   the title and date, body text collapsed behind "read more" — so items
+   the title and date, body text collapsed until the card is clicked — so items
    read as distinct posts rather than one continuous list. */
 .announcements-modal .announcement{
   display:flex; flex-direction:column;
@@ -636,11 +636,9 @@ body{
   top:50%; transform:translateY(-50%);
   transition:top 0.38s ease, transform 0.38s ease, text-shadow 0.35s ease;
 }
-/* With the veil thinned there isn't enough contrast for a full title over
-   a photo, so on hover the title and date fade out and only "read more"
-   remains — carried by a solid chip so it stays clearly legible. Fading
-   (rather than display:none) keeps the block's height fixed, so the
-   button doesn't jump as they go. */
+/* With the veil thinned on hover there isn't enough contrast for the
+   title over a photo, so the title and date fade out and the picture shows
+   on its own; clicking it opens the card. */
 .announcements-modal .announcement h3,
 .announcements-modal .announcement .when{ transition:opacity 0.3s ease; }
 .announcements-modal .announcement:not(.open):hover h3,
@@ -655,35 +653,13 @@ body{
 .announcements-modal .announcement .when{
   font-family:'Space Grotesk',sans-serif; font-size:0.74rem; letter-spacing:0.06em;
   text-transform:uppercase; color:rgba(20,19,17,0.66);
-  margin-bottom:0.9em; display:block;
+  margin-bottom:0; display:block;
 }
-.announcements-modal .announcement-more{
-  background:none; border:none; cursor:pointer; padding:0.25em 0;
-  font-family:'Space Grotesk',sans-serif; font-size:0.86rem; letter-spacing:0.04em;
-  color:var(--ink); border-bottom:1px solid rgba(20,19,17,0.45);
-  transition:background-color 0.3s ease, padding 0.3s ease, font-size 0.3s ease,
-             box-shadow 0.3s ease, border-color 0.3s ease;
-}
-/* On hover the title fades and a white "read more" chip appears on the
-   bare photo. Its spot is chosen per image (MORE_SPOT in nav.js) so it
-   never covers the poster's own text: --cx / --cy are the chip's centre as
-   a share of the image, clamped so it always stays inside the card. The
-   real button underneath fades with the title. */
-.announcements-modal .announcement:not(.open):hover .announcement-more{ opacity:0; }
-.announcements-modal .announcement-more:hover{ color:var(--rust); border-bottom-color:var(--rust); }
-.announcements-modal .announcement-hover-more{
-  position:absolute; z-index:2;
-  left:clamp(50px, var(--cx, 50%), calc(100% - 50px));
-  top:clamp(20px, var(--cy, 88%), calc(100% - 20px));
-  transform:translate(-50%, -50%);
-  background:#fff; color:var(--ink); white-space:nowrap;
-  font-family:'Space Grotesk',sans-serif; font-size:0.86rem; font-weight:500;
-  padding:0.42em 0.9em; box-shadow:0 6px 18px rgba(0,0,0,0.22);
-  opacity:0; pointer-events:none; transition:opacity 0.3s ease;
-}
-.announcements-modal .announcement:not(.open):hover .announcement-hover-more{ opacity:1; }
-.announcements-modal .announcement:not(.open) .announcement-caption:hover .announcement-hover-more{ color:var(--rust); }
-/* collapsed by default; expands in place when "read more" is pressed */
+/* no separate button: the whole image opens the card. Keyboard users get a
+   visible focus ring on it. */
+.announcements-modal .announcement-caption:focus{ outline:none; }
+.announcements-modal .announcement-caption:focus-visible{ outline:1px solid var(--rust); outline-offset:-4px; }
+/* collapsed by default; expands in place when the card is clicked */
 /* inset from the card's edges — the text ran flush against the border */
 .announcements-modal .announcement-body{ display:none; padding:1.2em 1.3em 1.4em; }
 .announcements-modal .announcement.open .announcement-body{ display:block; }
