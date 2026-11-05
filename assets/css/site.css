@@ -101,12 +101,18 @@ body{
 .ribbon-top .ribbon-panel ul, .ribbon-bottom .ribbon-panel ul{
   width:auto; columns:220px; column-gap:2.4em;
 }
-/* just 3 short items (info/announcements/contact) — the multi-column
-   layout above is meant for long lists (20 announcements, etc.) and
-   would otherwise spread these across separate columns instead of
-   stacking them in one small list */
-#panel-more ul{ columns:1; width:200px; margin:0 auto; text-align:center; }
-#panel-more li a, #panel-more li button{ padding:3px 0; padding-left:0; border-left:none; text-align:center; }
+/* "more" opens the way the side ribbons do, turned on its side: a white
+   band across the whole width that grows up out of the bottom ribbon
+   (max-height animates like the side panels' max-width), with its three
+   items spread along it. Item styling is the side lists' own: grey type,
+   ink plus the rust hairline on hover. */
+.ribbon-bottom.open #panel-more{ max-height:64px; }
+#panel-more{ box-shadow:0 -10px 30px rgba(0,0,0,0.12); }
+#panel-more ul{
+  display:flex; justify-content:space-evenly; align-items:center;
+  columns:auto; width:auto; max-width:none; margin:0; padding:18px 26px;
+}
+#panel-more li a, #panel-more li button{ width:auto; white-space:nowrap; }
 .ribbon-panel li a, .ribbon-panel li button{
   display:block; width:100%; padding:6px 0; font:inherit; font-family:'Space Grotesk',sans-serif;
   font-weight:400; font-size:0.85rem; line-height:1.35; text-align:left;
@@ -945,16 +951,5 @@ body{
     padding-left:8vw; padding-right:8vw;
   }
 
-  /* the "more" panel inherited the old full-width/edge-to-edge layout
-     built for a long announcements list — for 3 short centered words
-     that reads as a needlessly massive white box on a wide screen.
-     Shrink it to a small popup that hugs its own content, floating
-     centered above the trigger (the ribbon-bottom's single item already
-     sits at the horizontal center of the viewport). Left alone on
-     phone/tablet, where the narrower viewport already keeps this in
-     proportion. */
-  #panel-more{
-    left:50%; right:auto; width:auto;
-    transform:translateX(-50%);
-  }
+
 }

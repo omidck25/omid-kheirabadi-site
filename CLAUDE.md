@@ -86,14 +86,12 @@ data object (projects / happenings / announcements) plus a few plain links
   "Announcements modal" below — used to be a real page, `announcements.html`
   was removed the same way `info.html` was), "contact" (see "Contact modal"
   below). Merged into one menu per explicit request ("not sure what to call
-  it" — went with "more"; open to relabeling). On desktop the panel shrinks
-  to a small popup that hugs its own content and floats centered above the
-  trigger (`#panel-more{ left:50%; right:auto; width:auto;
-  transform:translateX(-50%); }` inside the `min-width:721px` media query)
-  — it inherited full edge-to-edge width from the old long-announcements-list
-  layout, which read as an oversized white box for 3 short centered words on
-  a wide screen. Phone/tablet untouched, already in reasonable proportion at
-  that width. "Art store" and "blog" are temporarily removed from navigation
+  it" — went with "more"; open to relabeling). The panel is a full-width
+  white band that grows up out of the bottom ribbon (max-height 0 → 64px,
+  the side panels' max-width animation turned sideways), with the three
+  items spread evenly along it and styled like the side lists. It was
+  briefly a small centred popup on desktop; replaced per request because
+  it didn't read as the same design language as the side ribbons. "Art store" and "blog" are temporarily removed from navigation
   entirely (not deleted — `store.html` and `blog.html` still exist as draft
   pages) until there's real content for them; `nav.js`'s `PLAIN_LINKS`
   entries for them are left in place since the code already no-ops
