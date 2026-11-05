@@ -11,3 +11,7 @@ omid kheirabadi — drift_files/
 !.dev.vars.example
 .env*
 !.env.example
+
+# Files made for Omid (portfolio PDFs, exports, backups). Kept here on the
+# laptop only: never committed, never published.
+exports/

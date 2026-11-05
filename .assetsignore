@@ -19,3 +19,6 @@ omid kheirabadi*
 # posts. They stay here in the repo; delete a line to publish that page.
 store.html
 blog.html
+
+# local-only files, see .gitignore
+exports
