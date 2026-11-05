@@ -371,7 +371,15 @@ often keeps serving the stale version even after a "force" navigate. Workaround
 that was needed repeatedly: open a genuinely new tab, or swap the
 `<link>`/`<script>` src via a cache-busting query string through
 `javascript_exec` to confirm a fix actually landed. This is a tool-only quirk,
-not a real production caching issue — real visitors won't hit it.
+not a real production caching issue — real visitors won't hit it. The
+reliable fix: serve the folder with a tiny Python server that sends
+`Cache-Control: no-store` (a `SimpleHTTPRequestHandler` subclass adding that
+header in `end_headers`) instead of plain `python -m http.server`.
+
+Cloudflare's build is triggered by a GitHub webhook, which has at least
+once silently not fired for a push (no "Workers Builds" check on that
+commit). If a push never goes live, check the commit's check runs on
+GitHub; another push re-triggers the build.
 
 Also: the ribbon panels animate `max-width` on open (CSS `transition`). Reading
 `getComputedStyle(panel).maxWidth` via `javascript_exec` *synchronously right
