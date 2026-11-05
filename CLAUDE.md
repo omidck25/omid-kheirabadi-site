@@ -91,7 +91,13 @@ data object (projects / happenings / announcements) plus a few plain links
   the side panels' max-width animation turned sideways), with the three
   items spread evenly along it and styled like the side lists. It was
   briefly a small centred popup on desktop; replaced per request because
-  it didn't read as the same design language as the side ribbons. "Art store" and "blog" are temporarily removed from navigation
+  it didn't read as the same design language as the side ribbons. Info and
+  announcements are no longer popup windows: clicking either grows the band
+  up to the top ribbon and shows that section inside it (nav.js
+  `mountMoreSection`); clicking it again, "more", outside, or Escape folds
+  it away. The bio runs in CSS columns across the band; announcements get
+  up to 4 masonry columns. Contact is still a popup. The old
+  `.info-modal-overlay` / `.announcements-modal-overlay` CSS is now unused. "Art store" and "blog" are temporarily removed from navigation
   entirely (not deleted — `store.html` and `blog.html` still exist as draft
   pages) until there's real content for them; `nav.js`'s `PLAIN_LINKS`
   entries for them are left in place since the code already no-ops

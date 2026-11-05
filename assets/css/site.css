@@ -113,6 +113,26 @@ body{
   columns:auto; width:auto; max-width:none; margin:0; padding:18px 26px;
 }
 #panel-more li a, #panel-more li button{ width:auto; white-space:nowrap; }
+/* Info and announcements open inside the band (nav.js mountMoreSection):
+   it grows up to the top ribbon, the chosen section scrolls inside it,
+   and the row of items stays at its foot, next to "more". */
+#panel-more{ display:flex; flex-direction:column; justify-content:flex-end; }
+.ribbon-bottom.open #panel-more.has-section{ max-height:calc(100vh - 2 * var(--ribbon-h)); }
+#panel-more ul{ flex:0 0 auto; max-height:none; overflow:visible; }
+.more-stage{ flex:0 1 auto; min-height:0; overflow-y:auto; }
+#panel-more.has-section .more-stage{ border-bottom:1px solid rgba(20,19,17,0.08); }
+.more-section[hidden]{ display:none !important; }
+#panel-more .more-section{
+  position:static; width:auto; max-width:none; max-height:none; overflow:visible;
+  background:none; box-shadow:none; transform:none; margin:0;
+  padding:30px calc(var(--ribbon-w) + 26px) 26px;
+}
+#panel-more .more-section h2,
+#panel-more .info-modal-close,
+#panel-more .announcements-modal-close{ display:none; }
+/* the bio runs in columns across the band so its lines stay readable */
+#panel-more .info-modal{ column-width:320px; column-gap:2.6em; }
+#panel-more li button[aria-expanded="true"]{ color:var(--ink); border-left-color:var(--rust); }
 .ribbon-panel li a, .ribbon-panel li button{
   display:block; width:100%; padding:6px 0; font:inherit; font-family:'Space Grotesk',sans-serif;
   font-weight:400; font-size:0.85rem; line-height:1.35; text-align:left;

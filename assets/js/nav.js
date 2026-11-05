@@ -540,28 +540,9 @@
         '<p>My background in architecture continues to influence how I think about performance. During my MA in Interior Architecture at the Maastricht Academy of Architecture (2017&ndash;2019), I became interested in architecture and its representation as instruments of power, and in how spaces quietly instruct our behaviours. In my performance sessions, I often work against these invisible instructions, exploring how even small shifts in the use of a space can produce different relationships between people.</p>' +
         '<p>My work has been presented through festivals, exhibitions, residencies, and public spaces in Amsterdam, Berlin, Istanbul, Utrecht, Leuven, Belfast, The Hague, Maastricht, Sierre, and Rotterdam. I am currently based at <a href="https://timewindow.nl/" target="_blank" rel="noopener">TimeWindow</a> in Rotterdam, continuing to work between performance, spatial practice, and participation. Through these practices, I create situations where people can question what feels inevitable, rehearse other possibilities, and experience what I have come to call "rehearsals of resistance."</p>' +
       '</div>';
-    document.body.appendChild(overlay);
-
-    var closeBtn = overlay.querySelector('.info-modal-close');
-
-    function openModal() {
-      // trigger lives inside the "more" ribbon-bottom dropdown — close it
-      // so it's not still visibly open behind the modal
-      document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    trigger.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
-    });
+    var section = overlay.querySelector('.info-modal');
+    section.removeAttribute('role'); section.removeAttribute('aria-modal');
+    mountMoreSection(trigger, section);
   }
 
   // announcements.html was removed the same way info.html was — the list
@@ -753,7 +734,7 @@
       // single column — bail and let the next call (on open) do the work
       var w = list.clientWidth || modal.clientWidth;
       if (!w) return;
-      var n = w >= 820 ? 3 : (w >= 520 ? 2 : 1);
+      var n = w >= 1180 ? 4 : (w >= 820 ? 3 : (w >= 520 ? 2 : 1));
       if (list.dataset.cols === String(n)) return;
       list.dataset.cols = String(n);
       list.textContent = '';
@@ -768,9 +749,8 @@
     }
 
     modal.appendChild(list);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-    layoutColumns();
+    modal.removeAttribute('role'); modal.removeAttribute('aria-modal');
+    mountMoreSection(trigger, modal, layoutColumns);   // build the wall once it has a width
 
     // Watch the list itself rather than the window: it catches every way
     // the available width can change (window resize, zoom, scrollbar
@@ -782,23 +762,54 @@
     }
     if (window.ResizeObserver) new ResizeObserver(scheduleRelayout).observe(list);
     else window.addEventListener('resize', scheduleRelayout);
+  }
 
-    function openModal() {
-      document.querySelectorAll('.ribbon.open').forEach(function (r) { r.classList.remove('open'); });
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      layoutColumns(); // now that the modal has a width, build the wall
+  // Info and announcements open inside the "more" band rather than as
+  // separate windows. The band grows upward to hold the chosen one, its
+  // item stays marked while open, and clicking it again, clicking "more",
+  // clicking anywhere outside or pressing Escape folds it away again: the
+  // same open/close behaviour as the side ribbons.
+  var moreSections = [];
+  function showMoreSection(entry) {
+    var panel = document.getElementById('panel-more');
+    moreSections.forEach(function (m) {
+      var on = m === entry;
+      m.section.hidden = !on;
+      m.trigger.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+    if (!panel) return;
+    panel.classList.toggle('has-section', !!entry);
+    if (entry) {
+      panel.querySelector('.more-stage').scrollTop = 0;
+      if (entry.onOpen) entry.onOpen();
     }
-    function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
+  }
+  function mountMoreSection(trigger, section, onOpen) {
+    var panel = document.getElementById('panel-more');
+    if (!panel) return;
+    var ribbon = panel.closest('.ribbon');
+    var stage = panel.querySelector('.more-stage');
+    if (!stage) {
+      stage = document.createElement('div');
+      stage.className = 'more-stage';
+      panel.insertBefore(stage, panel.firstChild);
+      // however the band gets closed, fold the open section with it
+      new MutationObserver(function () {
+        if (!ribbon.classList.contains('open')) showMoreSection(null);
+      }).observe(ribbon, { attributes: true, attributeFilter: ['class'] });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && ribbon.classList.contains('open')) ribbon.classList.remove('open');
+      });
     }
-
-    trigger.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    section.classList.add('more-section');
+    section.hidden = true;
+    stage.appendChild(section);
+    trigger.setAttribute('aria-expanded', 'false');
+    var entry = { trigger: trigger, section: section, onOpen: onOpen };
+    moreSections.push(entry);
+    trigger.addEventListener('click', function () {
+      ribbon.classList.add('open');
+      showMoreSection(section.hidden ? entry : null);
     });
   }
 
