@@ -615,6 +615,33 @@
     ] }
   ];
 
+  // Where the "read more" chip sits on each announcement's image, as the
+  // chip's centre in % of the image [left, top]. Chosen card by card so it
+  // lands on an empty or unimportant part of the picture, never on the
+  // poster's own words. Cards not listed get bottom-centre.
+  var MORE_SPOT = {
+    'kabk-guest-teacher': [80, 10],
+    'rietveld-guest-teacher': [77, 14],
+    'tu-berlin-workshop': [20, 88],
+    'summer-residency-in-istanbul': [80, 88],
+    'eendracht-festival': [22, 86],
+    'performance-session-at-dokhuis': [80, 10],
+    'art-rotterdam-exhibition': [20, 6],
+    'the-end-has-no-end-performance-festival': [20, 50],
+    'marie-louise-artist-residency': [22, 70],
+    'graw-2024': [52, 7],
+    'artist-residency-in-switzerland': [80, 88],
+    'performance-at-cafe-theater-festival-2024': [20, 10],
+    'new-resident-of-timewindow': [20, 10],
+    'artist-residency-at-goethe-institute': [80, 22],
+    'artist-start-grant': [50, 45],
+    'open-call': [78, 90],
+    'delft-fringe-festival-2023': [75, 55],
+    'momo-festival-2023': [50, 8],
+    'creative-course-at-dakendagen-festival-2023': [50, 88],
+    'artist-residency-in-belfast': [50, 96]
+  };
+
   function initAnnouncementsModal() {
     var trigger = document.querySelector('[data-announcements-trigger]');
     if (!trigger) return;
@@ -713,6 +740,16 @@
       // clicks bubble here — one handler covers both, no double toggle.
       caption.addEventListener('click', toggle);
 
+      // hover chip, placed per image so it never covers the poster's text
+      var spot = MORE_SPOT[item.slug] || [50, 88];
+      var chip = document.createElement('span');
+      chip.className = 'announcement-hover-more';
+      chip.setAttribute('aria-hidden', 'true');
+      chip.textContent = 'read more';
+      chip.style.setProperty('--cx', spot[0] + '%');
+      chip.style.setProperty('--cy', spot[1] + '%');
+      caption.appendChild(chip);
+
       // the caption overlays the bottom of the image (see site.css), so it
       // goes inside the figure when there is one
       if (figure) figure.appendChild(caption);
@@ -793,6 +830,13 @@
       stage = document.createElement('div');
       stage.className = 'more-stage';
       panel.insertBefore(stage, panel.firstChild);
+      var closeX = document.createElement('button');
+      closeX.type = 'button';
+      closeX.className = 'more-close';
+      closeX.setAttribute('aria-label', 'close');
+      closeX.innerHTML = '&times;';
+      closeX.addEventListener('click', function () { ribbon.classList.remove('open'); });
+      panel.appendChild(closeX);
       // however the band gets closed, fold the open section with it
       new MutationObserver(function () {
         if (!ribbon.classList.contains('open')) showMoreSection(null);
@@ -868,7 +912,7 @@
     initInfoModal();
     initAnnouncementsModal();
 
-    // The old Wix site had its bio and announcements at /bio and
+    // The previous site had its bio and announcements at /bio and
     // /announcements. Those now redirect to /#info and /#announcements
     // (see _redirects), so a visitor following an old link lands on the
     // matching popup instead of a bare homepage.

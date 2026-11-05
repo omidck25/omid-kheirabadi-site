@@ -1,4 +1,4 @@
-# Addresses from the old Wix site, which kept every page at the top level.
+# Addresses from the previous site, which kept every page at the top level.
 # The new site keeps project pages under /projects/, so without these rules
 # every old link (search results, festival and press pages, CVs) came back
 # "not found". 301 = permanent, which also tells search engines to update.

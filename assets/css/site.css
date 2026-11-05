@@ -133,6 +133,24 @@ body{
 /* the bio runs in columns across the band so its lines stay readable */
 #panel-more .info-modal{ column-width:320px; column-gap:2.6em; }
 #panel-more li button[aria-expanded="true"]{ color:var(--ink); border-left-color:var(--rust); }
+/* an open section always fills the visible area between the ribbons */
+.ribbon-bottom.open #panel-more.has-section{ height:calc(100vh - 2 * var(--ribbon-h)); }
+#panel-more.has-section .more-stage{ flex:1 1 auto; }
+#panel-more .more-section{ padding-top:52px; }
+.more-close{
+  display:none; position:absolute; z-index:3; top:10px; right:calc(var(--ribbon-w) + 14px);
+  background:none; border:none; cursor:pointer; padding:6px;
+  font-family:'Space Grotesk',sans-serif; font-size:1.6rem; line-height:1;
+  color:#b8b3a9; opacity:0.5;
+}
+.more-close:hover{ color:var(--rust); opacity:1; }
+#panel-more.has-section .more-close{ display:block; }
+/* info is see-through: the page shows underneath, softly blurred so the
+   bio stays readable */
+#panel-more:has(.info-modal:not([hidden])){
+  background:rgba(255,255,255,0.78);
+  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+}
 .ribbon-panel li a, .ribbon-panel li button{
   display:block; width:100%; padding:6px 0; font:inherit; font-family:'Space Grotesk',sans-serif;
   font-weight:400; font-size:0.85rem; line-height:1.35; text-align:left;
@@ -640,18 +658,25 @@ body{
   transition:background-color 0.3s ease, padding 0.3s ease, font-size 0.3s ease,
              box-shadow 0.3s ease, border-color 0.3s ease;
 }
-/* stands alone on the bare photo once the title fades, so it takes a
-   solid chip to read cleanly against whatever is behind it */
-.announcements-modal .announcement:not(.open):hover .announcement-more{
-  background:#fff; color:var(--ink);
-  padding:0.6em 1.3em; font-size:0.95rem; font-weight:500;
-  border-bottom-color:transparent;
-  box-shadow:0 6px 18px rgba(0,0,0,0.22);
-}
+/* On hover the title fades and a white "read more" chip appears on the
+   bare photo. Its spot is chosen per image (MORE_SPOT in nav.js) so it
+   never covers the poster's own text: --cx / --cy are the chip's centre as
+   a share of the image, clamped so it always stays inside the card. The
+   real button underneath fades with the title. */
+.announcements-modal .announcement:not(.open):hover .announcement-more{ opacity:0; }
 .announcements-modal .announcement-more:hover{ color:var(--rust); border-bottom-color:var(--rust); }
-.announcements-modal .announcement:not(.open):hover .announcement-more:hover{
-  color:var(--rust); border-bottom-color:transparent;
+.announcements-modal .announcement-hover-more{
+  position:absolute; z-index:2;
+  left:clamp(50px, var(--cx, 50%), calc(100% - 50px));
+  top:clamp(20px, var(--cy, 88%), calc(100% - 20px));
+  transform:translate(-50%, -50%);
+  background:#fff; color:var(--ink); white-space:nowrap;
+  font-family:'Space Grotesk',sans-serif; font-size:0.86rem; font-weight:500;
+  padding:0.42em 0.9em; box-shadow:0 6px 18px rgba(0,0,0,0.22);
+  opacity:0; pointer-events:none; transition:opacity 0.3s ease;
 }
+.announcements-modal .announcement:not(.open):hover .announcement-hover-more{ opacity:1; }
+.announcements-modal .announcement:not(.open) .announcement-caption:hover .announcement-hover-more{ color:var(--rust); }
 /* collapsed by default; expands in place when "read more" is pressed */
 /* inset from the card's edges — the text ran flush against the border */
 .announcements-modal .announcement-body{ display:none; padding:1.2em 1.3em 1.4em; }
