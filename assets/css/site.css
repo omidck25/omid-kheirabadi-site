@@ -549,14 +549,13 @@ body{
    round-robin, rather than CSS multi-column: multi-column fills one
    column top-to-bottom before starting the next, which would run the
    order down each column instead of left to right across the wall. */
-.announcements-modal-list{ display:flex; align-items:flex-start; gap:1.6em; }
+.announcements-modal-list{ display:flex; align-items:flex-start; gap:2.6em; }
 /* Columns share the full width again — the 15% reduction now comes from
    the modal itself being narrower (below), so the wall fills its box
    instead of floating with dead space either side. */
 .announcements-modal .announcement-column{
   flex:1 1 0; min-width:0; display:flex; flex-direction:column;
 }
-.announcements-modal .announcement{ margin-bottom:1.6em; }
 @media (min-width:721px){
   /* 935px is the old 1100px less 15%, so the box hugs the smaller tiles
      rather than leaving a margin of empty modal around them */
@@ -574,106 +573,51 @@ body{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
   font-size:1.3rem; margin-bottom:0.8em;
 }
-/* Each announcement is its own card — image on top, caption band with
-   the title and date, body text collapsed until the card is clicked — so items
-   read as distinct posts rather than one continuous list. */
+/* Announcements read like the side menus and the info text: small
+   lowercase Space Grotesk, grey titles that turn ink on hover, the date in
+   rust like the years in the menus, a small thumbnail, no boxes. An open
+   entry is marked with the menus' rust hairline; its full image and its
+   text, in the info text's size, open below. */
 .announcements-modal .announcement{
-  display:flex; flex-direction:column;
-  background:#fff;
-  border:1px solid rgba(20,19,17,0.1);
-  box-shadow:0 6px 20px rgba(0,0,0,0.1);
-  transition:box-shadow 0.35s ease;
+  margin-bottom:18px; padding-left:8px; border-left:1px solid transparent;
+  background:none; border-top:none; border-right:none; border-bottom:none; box-shadow:none;
+  transition:border-color 0.2s ease;
 }
-/* Cards sit straight and square. The staggered feel comes from the
-   masonry packing and the uneven bottom margins below, not from tilting
-   them off-axis. Hovering (or opening) lifts a card clear of its
-   neighbours with a deeper shadow. */
-.announcements-modal .announcement:nth-child(3n+2){ margin-bottom:2.4em; }
-.announcements-modal .announcement:nth-child(5n+3){ margin-bottom:1em; }
-.announcements-modal .announcement:hover,
-.announcements-modal .announcement.open{
-  box-shadow:0 14px 34px rgba(0,0,0,0.2);
-  position:relative; z-index:2;
+.announcements-modal .announcement.open{ border-left-color:var(--rust); }
+.announcements-modal .announcement-head{
+  display:flex; align-items:flex-start; gap:12px; cursor:pointer;
 }
-/* No fixed ratio: each image keeps its own proportions and is shown
-   whole, so the cards come out at different heights and the grid reads
-   as a puzzle rather than a row of identical boxes. min-height reserves
-   room for the caption on very wide, short images. The hover zoom is
-   off here — scaling up inside the frame would crop the edges, which is
-   the thing this layout is meant to avoid. */
-.announcements-modal .announcement-figure{
-  position:relative; width:100%; min-height:132px; background:#fff;
-}
+.announcements-modal .announcement-head:focus{ outline:none; }
+.announcements-modal .announcement-head:focus-visible{ outline:1px solid var(--rust); outline-offset:3px; }
 .announcements-modal .announcement-thumb{
-  width:100%; height:auto; display:block;
+  flex:0 0 56px; width:56px; height:56px; object-fit:cover; display:block;
   filter:grayscale(20%) contrast(1.05);
 }
-/* A translucent white veil over the whole image, with the title and date
-   centred on it — the photo reads through the wash rather than being
-   boxed off behind a band. */
-.announcements-modal .announcement-caption{
-  position:absolute; inset:0; z-index:1;
-  background:rgba(255,255,255,0.62);
-  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
-  color:var(--ink);
-  text-align:center; cursor:pointer;
-  transition:background-color 0.35s ease, backdrop-filter 0.35s ease;
-}
-/* Hovering thins the veil so the photo comes forward, then settles back
-   when the pointer leaves. Only while the card is closed — once it's
-   open the full wash returns and stays, hovered or not, so the title
-   sitting at the foot of the image stays legible. */
-.announcements-modal .announcement:not(.open):hover .announcement-caption{
-  background:rgba(255,255,255,0.28);
-  -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px);
-}
-/* The title block sits centred on a closed card and slides down to the
-   foot of the image when the card is opened. Driven by top/transform
-   rather than flex alignment, because those animate — switching
-   justify-content would snap straight to the bottom with no motion. */
-.announcements-modal .announcement-caption-inner{
-  position:absolute; left:0; right:0; padding:0 1.2em;
-  top:50%; transform:translateY(-50%);
-  transition:top 0.38s ease, transform 0.38s ease, text-shadow 0.35s ease;
-}
-/* With the veil thinned on hover there isn't enough contrast for the
-   title over a photo, so the title and date fade out and the picture shows
-   on its own; clicking it opens the card. */
-.announcements-modal .announcement h3,
-.announcements-modal .announcement .when{ transition:opacity 0.3s ease; }
-.announcements-modal .announcement:not(.open):hover h3,
-.announcements-modal .announcement:not(.open):hover .when{ opacity:0; }
-.announcements-modal .announcement.open .announcement-caption-inner{
-  top:calc(100% - 1em); transform:translateY(-100%);
-}
+.announcements-modal .announcement.open .announcement-thumb{ display:none; }
+.announcements-modal .announcement-text{ min-width:0; padding-top:1px; }
 .announcements-modal .announcement h3{
-  font-family:'Space Grotesk',sans-serif; font-weight:500;
-  font-size:1.18rem; line-height:1.28; margin-bottom:0.45em; color:var(--ink);
+  font-family:'Space Grotesk',sans-serif; font-weight:400; font-size:0.85rem; line-height:1.35;
+  color:var(--grey); text-transform:lowercase; margin:0; transition:color 0.2s ease;
 }
+.announcements-modal .announcement-head:hover h3,
+.announcements-modal .announcement.open h3{ color:var(--ink); }
 .announcements-modal .announcement .when{
-  font-family:'Space Grotesk',sans-serif; font-size:0.74rem; letter-spacing:0.06em;
-  text-transform:uppercase; color:rgba(20,19,17,0.66);
-  margin-bottom:0; display:block;
+  display:block; margin-top:3px;
+  font-family:'Space Grotesk',sans-serif; font-size:0.66rem; letter-spacing:0.03em;
+  color:var(--rust); opacity:0.85; text-transform:lowercase;
 }
-/* no separate button: the whole image opens the card. Keyboard users get a
-   visible focus ring on it. */
-.announcements-modal .announcement-caption:focus{ outline:none; }
-.announcements-modal .announcement-caption:focus-visible{ outline:1px solid var(--rust); outline-offset:-4px; }
-/* collapsed by default; expands in place when the card is clicked */
-/* inset from the card's edges — the text ran flush against the border */
-.announcements-modal .announcement-body{ display:none; padding:1.2em 1.3em 1.4em; }
+.announcements-modal .announcement-body{ display:none; padding:10px 0 2px; }
 .announcements-modal .announcement.open .announcement-body{ display:block; }
+.announcements-modal .announcement-body img{
+  display:block; width:100%; height:auto; margin-bottom:10px;
+  filter:grayscale(20%) contrast(1.05);
+}
 .announcements-modal .announcement p{
-  font-size:0.9rem; line-height:1.55; margin-bottom:0.7em; text-transform:lowercase;
+  font-size:0.84rem; line-height:1.48; margin-bottom:0.8em; text-transform:lowercase; color:var(--ink);
 }
 .announcements-modal .announcement p:last-child{ margin-bottom:0; }
-
 @media (max-width:720px){
-  .announcements-modal-overlay{ padding:10px; }
-  .announcements-modal{ padding:1.6em 1.2em 1.4em; max-height:92vh; }
-  .announcements-modal h2{ font-size:1.15rem; margin-bottom:0.6em; }
-  .announcements-modal .announcement h3{ font-size:1.1rem; }
-  .announcements-modal .announcement p{ font-size:0.88rem; }
+  .announcements-modal .announcement p{ font-size:0.78rem; line-height:1.42; margin-bottom:0.65em; }
 }
 
 /* ===== store ===== */

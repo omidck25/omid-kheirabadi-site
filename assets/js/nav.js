@@ -648,75 +648,70 @@
     // its lower edge carrying the title + date, and the body text
     // collapsed until the card is clicked — so each item reads as its
     // own piece instead of blurring into a long run-on list.
+    // Each announcement is a quiet list entry in the side menus' language:
+    // a small thumbnail, the title, the date. Clicking the entry opens it:
+    // the full image and the text appear below, and the entry is marked
+    // with the rust hairline, the way the current page is in a menu.
     ANNOUNCEMENTS.forEach(function (item, i) {
       var article = document.createElement('article');
       article.className = 'announcement';
+      var bodyId = 'announcementBody' + i;
+      var src = item.slug ? BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext : null;
 
-      if (item.slug) {
-        var figure = document.createElement('div');
-        figure.className = 'announcement-figure';
-        var img = document.createElement('img');
-        img.className = 'announcement-thumb';
-        img.src = BASE + 'assets/images/announcements/' + item.slug + '.' + item.ext;
-        img.alt = '';
-        img.loading = 'lazy';
-        figure.appendChild(img);
-        article.appendChild(figure);
+      var head = document.createElement('div');
+      head.className = 'announcement-head';
+      head.setAttribute('role', 'button');
+      head.setAttribute('tabindex', '0');
+      head.setAttribute('aria-expanded', 'false');
+      head.setAttribute('aria-controls', bodyId);
+      if (src) {
+        var thumb = document.createElement('img');
+        thumb.className = 'announcement-thumb';
+        thumb.src = src;
+        thumb.alt = '';
+        thumb.loading = 'lazy';
+        head.appendChild(thumb);
       }
-
-      var caption = document.createElement('div');
-      caption.className = 'announcement-caption';
-      // inner wrapper so the whole title block can be slid from the middle
-      // of the image to its foot as one piece when the card opens
-      var capInner = document.createElement('div');
-      capInner.className = 'announcement-caption-inner';
-      caption.appendChild(capInner);
-
+      var text = document.createElement('div');
+      text.className = 'announcement-text';
       var h3 = document.createElement('h3');
       h3.textContent = item.title;
-      capInner.appendChild(h3);
-
+      text.appendChild(h3);
       if (item.when) {
         var when = document.createElement('span');
         when.className = 'when';
         when.textContent = item.when;
-        capInner.appendChild(when);
+        text.appendChild(when);
       }
+      head.appendChild(text);
 
-      var bodyId = 'announcementBody' + i;
       var body = document.createElement('div');
       body.className = 'announcement-body';
       body.id = bodyId;
+      if (src) {
+        var full = document.createElement('img');
+        full.src = src;
+        full.alt = item.title;
+        full.loading = 'lazy';
+        body.appendChild(full);
+      }
       item.body.forEach(function (para) {
         var p = document.createElement('p');
         p.textContent = para;
         body.appendChild(p);
       });
 
-      // No separate button: clicking or tapping the card's image opens and
-      // closes its text. The image area acts as the button, for keyboards
-      // and screen readers too. The listener sits on the caption (which
-      // covers the image) rather than the article, so clicks in the opened
-      // text below don't fold the card mid-read.
-      caption.setAttribute('role', 'button');
-      caption.setAttribute('tabindex', '0');
-      caption.setAttribute('aria-expanded', 'false');
-      caption.setAttribute('aria-controls', bodyId);
       function toggle() {
         var open = article.classList.toggle('open');
-        caption.setAttribute('aria-expanded', open ? 'true' : 'false');
+        head.setAttribute('aria-expanded', open ? 'true' : 'false');
       }
-      caption.addEventListener('click', toggle);
-      caption.addEventListener('keydown', function (e) {
+      head.addEventListener('click', toggle);
+      head.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
 
-      // the caption overlays the bottom of the image (see site.css), so it
-      // goes inside the figure when there is one
-      if (figure) figure.appendChild(caption);
-      else article.appendChild(caption);
+      article.appendChild(head);
       article.appendChild(body);
-
       cards.push(article);
     });
 
