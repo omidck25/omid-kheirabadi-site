@@ -132,6 +132,12 @@ body{
 #panel-more .announcements-modal-close{ display:none; }
 /* the bio runs in columns across the band so its lines stay readable */
 #panel-more .info-modal{ column-width:320px; column-gap:2.6em; }
+/* fill one column right down to the bottom of the band before starting
+   the next, instead of balancing them; a last column may stay empty.
+   Needs a fixed height, so only where there is room for columns at all. */
+@media (min-width:721px){
+  #panel-more .info-modal{ height:100%; column-fill:auto; }
+}
 #panel-more li button[aria-expanded="true"]{ color:var(--ink); border-left-color:var(--rust); }
 /* an open section always fills the visible area between the ribbons */
 .ribbon-bottom.open #panel-more.has-section{ height:calc(100vh - 2 * var(--ribbon-h)); }
