@@ -338,73 +338,78 @@ body{
    To / From / Message stacked, one big send action. ===== */
 .contact-modal-overlay{
   position:fixed; inset:0; z-index:100;
-  background:rgba(20,19,17,0.6);
+  background:rgba(20,19,17,0.4);
   display:flex; align-items:center; justify-content:center;
   padding:24px;
   opacity:0; pointer-events:none;
   transition:opacity 0.25s ease;
 }
 .contact-modal-overlay.open{ opacity:1; pointer-events:auto; }
+/* Same language as the ribbon dropdowns: white panel with their soft
+   shadow, Space Grotesk 400 at the dropdown size, all lowercase, grey
+   labels with ink content, and the rust hairline on the left that marks
+   the active item in a dropdown marks the field you are typing in. */
 .contact-modal{
-  background:#fff; width:100%; max-width:420px;
-  padding:2.4em 2em 2em;
-  box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  background:var(--bg); width:100%; max-width:380px;
+  padding:26px 26px 24px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.14);
   position:relative;
-  transform:translateY(14px);
+  font-family:'Space Grotesk',sans-serif; font-weight:400; font-size:0.85rem; line-height:1.35;
+  transform:translateY(8px);
   transition:transform 0.25s ease;
 }
 .contact-modal-overlay.open .contact-modal{ transform:translateY(0); }
 .contact-modal-close{
-  position:absolute; top:14px; right:16px;
+  position:absolute; top:12px; right:14px;
   background:none; border:none; cursor:pointer; padding:6px;
-  font-family:'Space Grotesk',sans-serif; font-size:1.6rem; line-height:1;
+  font-family:'Space Grotesk',sans-serif; font-size:1.4rem; line-height:1;
   color:#b8b3a9; opacity:0.5;
 }
 .contact-modal-close:hover{ color:var(--rust); opacity:1; }
 .contact-modal h2{
   font-family:'Space Grotesk',sans-serif; font-weight:500;
-  font-size:1.3rem; margin-bottom:1em;
+  font-size:0.95rem; color:var(--ink); margin-bottom:1.1em;
 }
 .qc-row{
-  display:flex; align-items:baseline; gap:0.6em; padding:0.7em 0;
-  border-bottom:1px solid rgba(20,19,17,0.12);
-  font-family:'Space Grotesk',sans-serif; font-size:0.72rem;
+  display:flex; align-items:baseline; gap:0.6em; padding:6px 0 6px 8px;
+  border-left:1px solid transparent; transition:border-color 0.2s ease;
 }
-.qc-label{
-  color:var(--grey); text-transform:uppercase; letter-spacing:0.05em; flex-shrink:0;
-}
-.qc-value{ font-family:'Space Grotesk',sans-serif; font-size:0.95rem; color:var(--ink); }
+.qc-row:focus-within, .qc-message-wrap:focus-within{ border-left-color:var(--rust); }
+.qc-label, .qc-message-label{ color:var(--grey); flex-shrink:0; font-size:0.85rem; }
+.qc-value{ color:var(--ink); font-size:0.85rem; }
 .qc-input{
-  border:none; background:none; flex:1; min-width:0;
-  font:inherit; font-family:'Space Grotesk',sans-serif; font-size:0.95rem; color:var(--ink); padding:0;
+  border:none; background:none; flex:1; min-width:0; padding:0;
+  font:inherit; font-size:0.85rem; color:var(--ink);
 }
+.qc-input::placeholder, #qc-message::placeholder{ color:#b8b3a9; }
 .qc-input:focus{ outline:none; }
-.qc-message-label{
-  font-family:'Space Grotesk',sans-serif; font-size:0.72rem; letter-spacing:0.05em;
-  text-transform:uppercase; color:var(--grey); display:block; margin-top:0.9em;
-}
+.qc-message-wrap{ padding:6px 0 6px 8px; margin-top:2px; border-left:1px solid transparent; transition:border-color 0.2s ease; }
+.qc-message-label{ display:block; }
 #qc-message{
-  width:100%; border:none; border-bottom:1px solid rgba(20,19,17,0.12);
-  background:none; font:inherit; font-family:'Space Grotesk',sans-serif; font-size:0.95rem;
-  padding:0.7em 0; margin-top:0.3em; resize:vertical; min-height:110px;
+  width:100%; border:none; background:none; color:var(--ink);
+  font:inherit; font-size:0.85rem; line-height:1.35;
+  padding:4px 0 0; resize:vertical; min-height:110px;
 }
-#qc-message:focus{ outline:none; border-bottom-color:var(--rust); }
-.qc-actions{ display:flex; gap:12px; margin-top:1.8em; }
-.qc-send{
-  flex:2; font-family:'Space Grotesk',sans-serif; font-size:0.75rem; letter-spacing:0.05em;
-  text-transform:uppercase; background:var(--ink); color:#fff; border:none;
-  padding:0.85em 1em; cursor:pointer; transition:background 0.25s ease;
+#qc-message:focus{ outline:none; }
+/* actions read like dropdown items, not boxed buttons */
+.qc-actions{ display:flex; gap:1.6em; margin-top:1.2em; padding-left:8px; }
+.qc-send, .qc-cancel{
+  font:inherit; font-size:0.85rem; background:none; border:none; cursor:pointer;
+  padding:2px 0 2px 8px; margin-left:-8px; border-left:1px solid transparent;
+  transition:color 0.2s ease, border-color 0.2s ease;
 }
-.qc-send:hover{ background:var(--rust); }
-.qc-send.sending{ background:var(--grey); cursor:default; }
-.qc-send.sent{ background:#3a7a4e; }
-.qc-cancel{
-  flex:1; font-family:'Space Grotesk',sans-serif; font-size:0.75rem; letter-spacing:0.05em;
-  text-transform:uppercase; background:none; border:1px solid rgba(20,19,17,0.25);
-  color:var(--ink); padding:0.85em 1em; cursor:pointer; transition:border-color 0.2s ease;
+.qc-send{ color:var(--ink); border-left-color:var(--rust); }
+.qc-send:hover{ color:var(--rust); }
+.qc-send.sending{ color:var(--grey); border-left-color:var(--grey); cursor:default; }
+.qc-send.sent{ color:var(--rust); }
+.qc-cancel{ color:var(--grey); }
+.qc-cancel:hover{ color:var(--ink); border-left-color:var(--rust); }
+.contact-modal .form-note{
+  margin-top:1em; padding:2px 0 2px 8px; font-size:0.8rem; color:var(--ink);
+  background:none; border-left:1px solid var(--rust);
 }
-.qc-cancel:hover{ border-color:var(--ink); }
-.contact-modal .form-note{ margin-top:1em; font-size:0.85rem; }
+.contact-modal .form-note.success, .contact-modal .form-note.error{ background:none; }
+.contact-modal .form-note.success{ border-left-color:var(--rust); }
 
 /* ===== info modal (opened from "info" inside the "more" ribbon-bottom
    dropdown, on every page) ===== */

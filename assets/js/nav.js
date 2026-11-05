@@ -426,15 +426,15 @@
           '<input type="hidden" name="access_key" value="6c272ff5-262f-418b-9d98-1b1960402820">' +
           '<input type="hidden" name="subject" value="New message from omidkheirabadi.com">' +
           '<input type="checkbox" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">' +
-          '<div class="qc-row"><span class="qc-label">To:</span><span class="qc-value">Omid Kheirabadi</span></div>' +
-          '<div class="qc-row"><label class="qc-label" for="qc-email">From:</label>' +
+          '<div class="qc-row"><span class="qc-label">to</span><span class="qc-value">omid kheirabadi</span></div>' +
+          '<div class="qc-row"><label class="qc-label" for="qc-email">from</label>' +
             '<input class="qc-input" type="email" id="qc-email" name="email" placeholder="your email address" required></div>' +
-          '<label class="qc-message-label" for="qc-message">your message:</label>' +
-          '<textarea id="qc-message" name="message" required></textarea>' +
+          '<div class="qc-message-wrap"><label class="qc-message-label" for="qc-message">your message</label>' +
+          '<textarea id="qc-message" name="message" required></textarea></div>' +
           '<p class="form-note" id="qcFormNote" style="display:none;"></p>' +
           '<div class="qc-actions">' +
-            '<button type="submit" class="qc-send">Send Email</button>' +
-            '<button type="button" class="qc-cancel">Cancel</button>' +
+            '<button type="submit" class="qc-send">send</button>' +
+            '<button type="button" class="qc-cancel">cancel</button>' +
           '</div>' +
         '</form>' +
       '</div>';
@@ -488,7 +488,7 @@
       var dots = 0;
       var dotTimer = setInterval(function () {
         dots = (dots % 3) + 1;
-        btn.textContent = 'Sending' + '.'.repeat(dots);
+        btn.textContent = 'sending' + '.'.repeat(dots);
       }, 350);
 
       Promise.all([submitPayload(payload), wait(1200)]).then(function (results) {
@@ -499,20 +499,20 @@
         formNote.style.display = 'block';
 
         if (data.success) {
-          btn.textContent = 'Sent ✓';
+          btn.textContent = 'sent';
           btn.classList.add('sent');
           formNote.classList.add('success');
-          formNote.textContent = "Thank you — your message is on its way. I'll get back to you soon.";
+          formNote.textContent = "thank you, your message is on its way. i'll get back to you soon.";
           form.reset();
           setTimeout(closeModal, 1600);
           setTimeout(function () {
             btn.classList.remove('sent');
-            btn.textContent = 'Send Email';
+            btn.textContent = 'send';
           }, 1800);
         } else {
-          btn.textContent = 'Send Email';
+          btn.textContent = 'send';
           formNote.classList.add('error');
-          formNote.textContent = 'Something went wrong — please try again, or email directly.';
+          formNote.textContent = 'something went wrong. please try again, or email directly.';
         }
         requestAnimationFrame(function () { formNote.classList.add('show'); });
       });
