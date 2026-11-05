@@ -340,7 +340,8 @@
     overlay.innerHTML =
       '<button type="button" class="lightbox-close" aria-label="Close">&times;</button>' +
       '<button type="button" class="lightbox-arrow lightbox-prev" aria-label="Previous image">&larr;</button>' +
-      '<img src="" alt="">' +
+      '<img alt="">' + // src is set on open; an empty src="" is invalid HTML
+
       '<button type="button" class="lightbox-arrow lightbox-next" aria-label="Next image">&rarr;</button>';
     document.body.appendChild(overlay);
 
