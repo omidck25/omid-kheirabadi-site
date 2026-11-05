@@ -702,7 +702,13 @@
       });
 
       function toggle() {
-        var open = article.classList.toggle('open');
+        var open = !article.classList.contains('open');
+        // Only one entry open at a time: opening this one closes the rest.
+        cards.forEach(function (other) {
+          other.classList.remove('open');
+          other.querySelector('.announcement-head').setAttribute('aria-expanded', 'false');
+        });
+        article.classList.toggle('open', open);
         head.setAttribute('aria-expanded', open ? 'true' : 'false');
       }
       head.addEventListener('click', toggle);
