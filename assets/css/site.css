@@ -106,11 +106,12 @@ body{
    (max-height animates like the side panels' max-width), with its three
    items spread along it. Item styling is the side lists' own: grey type,
    ink plus the rust hairline on hover. */
-.ribbon-bottom.open #panel-more{ max-height:64px; }
+.ribbon-bottom.open #panel-more{ max-height:var(--ribbon-h); }
 #panel-more{ box-shadow:0 -10px 30px rgba(0,0,0,0.12); }
 #panel-more ul{
   display:flex; justify-content:space-evenly; align-items:center;
-  columns:auto; width:auto; max-width:none; margin:0; padding:18px 26px;
+  columns:auto; width:auto; max-width:none; margin:0; padding:0 26px;
+  height:var(--ribbon-h); box-sizing:border-box;
 }
 #panel-more li a, #panel-more li button{ width:auto; white-space:nowrap; }
 /* Info and announcements open inside the band (nav.js mountMoreSection):

@@ -710,6 +710,15 @@
         });
         article.classList.toggle('open', open);
         head.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (!open) return;
+        revealEntry(article);
+        // the picture only loads once the entry opens; recheck at full height
+        var pic = body.querySelector('img');
+        if (pic && !pic.complete) {
+          pic.addEventListener('load', function () {
+            if (article.classList.contains('open')) revealEntry(article);
+          }, { once: true });
+        }
       }
       head.addEventListener('click', toggle);
       head.addEventListener('keydown', function (e) {
@@ -720,6 +729,21 @@
       article.appendChild(body);
       cards.push(article);
     });
+
+    // An entry that opens partly off screen scrolls the band so its title
+    // and picture sit at the top. One that already fits is left alone.
+    function revealEntry(article) {
+      var stage = article.closest('.more-stage');
+      if (!stage) return;
+      var view = stage.getBoundingClientRect();
+      var box = article.getBoundingClientRect();
+      if (box.top >= view.top && box.bottom <= view.bottom) return;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      stage.scrollTo({
+        top: stage.scrollTop + box.top - view.top - 16,
+        behavior: reduce ? 'auto' : 'smooth'
+      });
+    }
 
     // Masonry wall built from real columns (see site.css). Cards go in
     // round-robin — 1st to the left column, 2nd to the middle, 3rd to the

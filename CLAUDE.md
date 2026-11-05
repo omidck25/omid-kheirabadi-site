@@ -87,7 +87,8 @@ data object (projects / happenings / announcements) plus a few plain links
   was removed the same way `info.html` was), "contact" (see "Contact modal"
   below). Merged into one menu per explicit request ("not sure what to call
   it" — went with "more"; open to relabeling). The panel is a full-width
-  white band that grows up out of the bottom ribbon (max-height 0 → 64px,
+  white band that grows up out of the bottom ribbon (max-height 0 → the
+  ribbon's own height, `--ribbon-h`; 64px felt too tall,
   the side panels' max-width animation turned sideways), with the three
   items spread evenly along it and styled like the side lists. It was
   briefly a small centred popup on desktop; replaced per request because
