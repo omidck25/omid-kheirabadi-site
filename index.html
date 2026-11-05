@@ -259,8 +259,8 @@ function insets(){
   };
 }
 const W = window.innerWidth, H = window.innerHeight;
-const ins0 = insets();
-const SIZE = Math.min(240, (W - ins0.left - ins0.right) * 0.32) * 0.9;
+function sizeFor(ins){ return Math.min(240, (window.innerWidth - ins.left - ins.right) * 0.32) * 0.9; }
+let SIZE = sizeFor(insets());
 
 const nodes = [];
 
@@ -420,14 +420,35 @@ function isFixed(n){ return n.dragging || n.engaged; }
 
 // Tiles are allowed to overlap a little (like loose photos on a table) —
 // only pushed apart once the overlap goes past a quarter of their width.
-const OVERLAP_ALLOWED = SIZE * 0.25;
+let OVERLAP_ALLOWED = SIZE * 0.25;
 
 // Collision is checked against a virtually shrunk box (inset by half the
 // allowed overlap on every side), then resolved with the same single-axis
 // "least overlap" push used for a normal no-overlap solver. This keeps the
 // well-behaved convergence of that approach while letting tiles rest up to
 // OVERLAP_ALLOWED into each other before anything actually pushes back.
-const MARGIN = OVERLAP_ALLOWED;
+let MARGIN = OVERLAP_ALLOWED;
+
+// The tile size used to be worked out once, at load: a phone turned from
+// landscape to portrait kept tiles sized for the wide screen, crowding the
+// narrow one. Phones also fire resize when the address bar slides in and
+// out, but that only changes the height, which the size doesn't use.
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const next = sizeFor(insets());
+    if (Math.abs(next - SIZE) < 1) return;
+    SIZE = next;
+    OVERLAP_ALLOWED = MARGIN = SIZE * 0.25;
+    nodes.forEach((n) => {
+      n.w = n.h = SIZE;
+      n.el.style.width = n.el.style.height = SIZE + 'px';
+      n.el.style.setProperty('--sz', SIZE);
+    });
+    window.SIZE = SIZE; window.OVERLAP_ALLOWED = OVERLAP_ALLOWED;
+  }, 200);
+});
 
 // Corrections are softened (applied partially, not all at once) so tiles
 // ease apart over a couple of frames instead of visibly snapping/teleporting
