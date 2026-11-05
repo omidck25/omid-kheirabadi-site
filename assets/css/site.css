@@ -151,9 +151,10 @@ body{
 }
 .more-close:hover{ color:var(--rust); opacity:1; }
 #panel-more.has-section .more-close{ display:block; }
-/* info is see-through: the page shows underneath, softly blurred so the
-   bio stays readable */
-#panel-more:has(.info-modal:not([hidden])){
+/* info and announcements are see-through: the page shows underneath,
+   softly blurred so the text stays readable */
+#panel-more:has(.info-modal:not([hidden])),
+#panel-more:has(.announcements-modal:not([hidden])){
   background:rgba(255,255,255,0.78);
   -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
 }
