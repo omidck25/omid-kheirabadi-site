@@ -108,12 +108,19 @@ body{
    ink plus the rust hairline on hover. */
 .ribbon-bottom.open #panel-more{ max-height:var(--ribbon-h); }
 #panel-more{ box-shadow:0 -10px 30px rgba(0,0,0,0.12); }
+/* Three columns, the outer two equal, so the middle item sits exactly on
+   the centre line under "more" whatever the side words' lengths (an
+   evenly spaced flex row let a short "info" pull it off centre). */
 #panel-more ul{
-  display:flex; justify-content:space-evenly; align-items:center;
+  display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  justify-items:center; gap:0;
+  align-items:center;
   columns:auto; width:auto; max-width:none; margin:0; padding:0 26px;
   height:var(--ribbon-h); box-sizing:border-box;
 }
-#panel-more li a, #panel-more li button{ width:auto; white-space:nowrap; }
+/* right padding mirrors the marker's 1px + 8px on the left, so the word
+   itself (not just its box) is centred */
+#panel-more li a, #panel-more li button{ width:auto; white-space:nowrap; padding-right:9px; }
 /* Info and announcements open inside the band (nav.js mountMoreSection):
    it grows up to the top ribbon, the chosen section scrolls inside it,
    and the row of items stays at its foot, next to "more". */
