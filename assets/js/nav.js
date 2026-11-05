@@ -696,14 +696,14 @@
       var moreBtn = document.createElement('button');
       moreBtn.type = 'button';
       moreBtn.className = 'announcement-more';
-      moreBtn.textContent = 'Read More';
+      moreBtn.textContent = 'read more';
       moreBtn.setAttribute('aria-expanded', 'false');
       moreBtn.setAttribute('aria-controls', bodyId);
       capInner.appendChild(moreBtn);
 
       function toggle() {
         var open = article.classList.toggle('open');
-        moreBtn.textContent = open ? 'Close' : 'Read More';
+        moreBtn.textContent = open ? 'close' : 'read more';
         moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       }
       // The whole tile is clickable/tappable, not just the button. The
