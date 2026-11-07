@@ -15,3 +15,7 @@ omid kheirabadi — drift_files/
 # Files made for Omid (portfolio PDFs, exports, backups). Kept here on the
 # laptop only: never committed, never published.
 exports/
+
+# Portable backups for handing the project to another tool/developer
+# (source copy, git bundle, docs, zip). Local only, never committed.
+handoff/

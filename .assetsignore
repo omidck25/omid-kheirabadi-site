@@ -25,3 +25,6 @@ exports
 
 # maintenance scripts, not part of the site
 tools
+
+# portable backups, see .gitignore
+handoff
